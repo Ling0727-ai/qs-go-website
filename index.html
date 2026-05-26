@@ -3,189 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="QualityScaler - AI-powered image and video super-resolution tool. Upscale images and videos with Real-ESRGAN, BSRGAN, CodeFormer and more.">
-<meta name="keywords" content="AI upscaling, image super resolution, video upscaling, Real-ESRGAN, BSRGAN, CodeFormer, face enhancement">
-<meta property="og:title" content="QualityScaler - AI Image & Video Upscaler">
-<meta property="og:description" content="Free, open-source AI super-resolution for images and videos. Multi-GPU backend, face enhancement, batch processing.">
+<meta name="description" content="">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
 <meta property="og:type" content="website">
 <title>QualityScaler — AI Image & Video Upscaler</title>
 <link rel="icon" type="image/png" href="miao.png">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <style>
-/* ── CSS Variables (mirrors app design tokens) ──────── */
 :root {
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  --radius-xs: 4px; --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+  --radius-xl: 20px; --radius-full: 9999px;
   --font-sans: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Cascadia Code', 'SF Mono', 'Fira Code', Consolas, monospace;
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 [data-theme="dark"] {
-  --bg-body: #070b14;
-  --bg-primary: #0b1120;
-  --bg-secondary: #101827;
-  --bg-tertiary: #1c2538;
-  --bg-hover: #18213a;
-  --bg-elevated: #131d33;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --accent: #3b82f6;
-  --accent-soft: #60a5fa;
-  --accent-hover: #2563eb;
-  --accent-bg: rgba(59,130,246,0.12);
-  --accent-glow: rgba(59,130,246,0.28);
-  --border: #1e293b;
-  --border-strong: #334155;
-  --glass-bg: rgba(11,17,32,0.6);
-  --glass-border: rgba(30,41,59,0.5);
-  --card-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  --card-shadow-hover: 0 12px 36px rgba(0,0,0,0.35);
-  --success: #10b981;
-  --success-bg: rgba(16,185,129,0.10);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245,158,11,0.10);
-  --purple: #a78bfa;
-  --purple-bg: rgba(167,139,250,0.10);
+  --bg-body: #070b14; --bg-primary: #0b1120; --bg-secondary: #101827;
+  --bg-tertiary: #1c2538; --bg-hover: #18213a; --bg-elevated: #131d33;
+  --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-tertiary: #64748b;
+  --accent: #3b82f6; --accent-soft: #60a5fa; --accent-hover: #2563eb;
+  --accent-bg: rgba(59,130,246,0.12); --accent-glow: rgba(59,130,246,0.28);
+  --border: #1e293b; --border-strong: #334155;
+  --glass-bg: rgba(11,17,32,0.6); --glass-border: rgba(30,41,59,0.5);
+  --card-shadow: 0 2px 6px rgba(0,0,0,0.25); --card-shadow-hover: 0 12px 36px rgba(0,0,0,0.35);
+  --success: #10b981; --success-bg: rgba(16,185,129,0.10);
+  --warning: #f59e0b; --warning-bg: rgba(245,158,11,0.10);
 }
-
-/* ── Reset & Base ──────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  font-family:var(--font-sans);
-  font-size:15px;
-  line-height:1.6;
-  background:var(--bg-body);
-  color:var(--text-primary);
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
+body{font-family:var(--font-sans);font-size:15px;line-height:1.6;background:var(--bg-body);color:var(--text-primary);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--accent);text-decoration:none;transition:color var(--transition-fast)}
 a:hover{color:var(--accent-soft)}
 ::selection{background:var(--accent-bg);color:var(--accent)}
-
-/* ── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:10px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
-
-/* ── Layout ────────────────────────────────────────── */
 .container{max-width:1120px;margin:0 auto;padding:0 24px}
 .section{padding:100px 0}
 
-/* ── Navbar ────────────────────────────────────────── */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:var(--glass-bg);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--glass-border);
-  transition:background var(--transition-base);
-}
-.nav-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  height:56px;max-width:1120px;margin:0 auto;padding:0 24px;
-}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--glass-border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px;max-width:1120px;margin:0 auto;padding:0 24px}
 .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;color:var(--text-primary)}
 .nav-logo img{width:32px;height:32px;border-radius:var(--radius-sm)}
-.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
 .nav-links a{color:var(--text-secondary);font-size:14px;font-weight:500;transition:color var(--transition-fast)}
 .nav-links a:hover{color:var(--text-primary)}
-.nav-cta{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 18px;font-size:13px;font-weight:600;
-  background:linear-gradient(135deg,var(--accent),var(--accent-hover));
-  color:#fff;border-radius:var(--radius-full);
-  box-shadow:0 2px 10px var(--accent-glow);
-  transition:all var(--transition-fast);
-}
+.nav-right{display:flex;align-items:center;gap:12px}
+.lang-toggle{display:flex;align-items:center;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-full);padding:2px;cursor:pointer}
+.lang-opt{padding:5px 11px;font-size:12px;font-weight:600;border-radius:var(--radius-full);color:var(--text-tertiary);transition:all var(--transition-fast)}
+.lang-opt.active{background:var(--accent);color:#fff}
+.nav-cta{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;font-size:13px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--accent-hover));color:#fff;border-radius:var(--radius-full);box-shadow:0 2px 10px var(--accent-glow);transition:all var(--transition-fast)}
 .nav-cta:hover{box-shadow:0 6px 24px var(--accent-glow);transform:translateY(-1px);color:#fff}
 .nav-cta::after{content:'';display:inline-block;width:12px;height:12px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/%3E%3Cpolyline points='7 10 12 15 17 10'/%3E%3Cline x1='12' y1='15' x2='12' y2='3'/%3E%3C/svg%3E") center/contain no-repeat}
 
-/* ── Hero ──────────────────────────────────────────── */
-.hero{
-  padding:140px 0 80px;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
-}
-.hero::before{
-  content:'';
-  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
-  width:800px;height:600px;
-  background:radial-gradient(ellipse,var(--accent-glow) 0%,transparent 70%);
-  pointer-events:none;opacity:0.3;
-}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 14px;font-size:12px;font-weight:600;
-  background:var(--accent-bg);color:var(--accent-soft);
-  border:1px solid rgba(59,130,246,0.2);
-  border-radius:var(--radius-full);
-  margin-bottom:28px;
-}
+.hero{padding:140px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,var(--accent-glow) 0%,transparent 70%);pointer-events:none;opacity:0.3}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;font-weight:600;background:var(--accent-bg);color:var(--accent-soft);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-full);margin-bottom:28px}
 .hero-badge-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 2s infinite}
-.hero h1{
-  font-size:clamp(40px,6vw,64px);font-weight:800;
-  letter-spacing:-0.03em;line-height:1.1;
-  margin-bottom:20px;
-}
+.hero h1{font-size:clamp(40px,6vw,64px);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:20px}
 .hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent-soft));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-desc{
-  font-size:18px;color:var(--text-secondary);
-  max-width:560px;margin:0 auto 36px;
-  line-height:1.7;
-}
+.hero-desc{font-size:18px;color:var(--text-secondary);max-width:560px;margin:0 auto 36px;line-height:1.7}
 .hero-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 22px;font-size:14px;font-weight:600;
-  border:1px solid transparent;border-radius:var(--radius-full);
-  cursor:pointer;transition:all var(--transition-fast);
-  white-space:nowrap;
-}
-.btn-primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent-hover));
-  color:#fff;box-shadow:0 4px 16px var(--accent-glow);
-  font-size:15px;padding:12px 28px;
-}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;font-size:14px;font-weight:600;border:1px solid transparent;border-radius:var(--radius-full);cursor:pointer;transition:all var(--transition-fast);white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-hover));color:#fff;box-shadow:0 4px 16px var(--accent-glow);font-size:15px;padding:12px 28px}
 .btn-primary:hover{box-shadow:0 8px 32px var(--accent-glow);transform:translateY(-2px);color:#fff}
-.btn-secondary{
-  background:var(--bg-secondary);border-color:var(--border);
-  color:var(--text-secondary);
-}
+.btn-secondary{background:var(--bg-secondary);border-color:var(--border);color:var(--text-secondary)}
 .btn-secondary:hover{background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border-strong)}
-.btn svg{width:16px;height:16px}
-
-.hero-stats{
-  display:flex;justify-content:center;gap:48px;
-  margin-top:60px;flex-wrap:wrap;
-}
+.btn svg{width:16px;height:16px;flex-shrink:0}
+.hero-stats{display:flex;justify-content:center;gap:48px;margin-top:60px;flex-wrap:wrap}
 .hero-stat{text-align:center}
 .hero-stat-num{font-size:28px;font-weight:800;color:var(--text-primary)}
 .hero-stat-label{font-size:13px;color:var(--text-tertiary);margin-top:2px}
 
-/* ── Terminal mock ─────────────────────────────────── */
-.terminal{
-  max-width:640px;margin:48px auto 0;
-  background:#0d1117;border:1px solid #30363d;
-  border-radius:var(--radius-lg);overflow:hidden;
-  text-align:left;box-shadow:0 20px 60px rgba(0,0,0,0.4);
-}
-.terminal-bar{
-  display:flex;align-items:center;gap:6px;
-  padding:12px 16px;background:#161b22;
-  border-bottom:1px solid #30363d;
-}
+.terminal{max-width:640px;margin:48px auto 0;background:#0d1117;border:1px solid #30363d;border-radius:var(--radius-lg);overflow:hidden;text-align:left;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.terminal-bar{display:flex;align-items:center;gap:6px;padding:12px 16px;background:#161b22;border-bottom:1px solid #30363d}
 .terminal-dot{width:10px;height:10px;border-radius:50%}
 .terminal-dot:nth-child(1){background:#ff5f56}
 .terminal-dot:nth-child(2){background:#ffbd2e}
@@ -199,124 +94,50 @@ a:hover{color:var(--accent-soft)}
 .terminal-body .cursor{animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* ── Features ──────────────────────────────────────── */
-.features-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;margin-top:48px;
-}
-.feature-card{
-  background:var(--bg-elevated);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:28px;
-  transition:all var(--transition-base);
-}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px}
+.feature-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;transition:all var(--transition-base)}
 .feature-card:hover{border-color:var(--border-strong);box-shadow:var(--card-shadow-hover);transform:translateY(-2px)}
-.feature-icon{
-  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
-  background:var(--accent-bg);border-radius:var(--radius-md);
-  margin-bottom:18px;color:var(--accent);
-}
+.feature-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--accent-bg);border-radius:var(--radius-md);margin-bottom:18px;color:var(--accent)}
 .feature-icon svg{width:22px;height:22px}
 .feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em}
 .feature-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
 
-/* ── Section headers ───────────────────────────────── */
-.section-label{
-  display:inline-block;font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:0.08em;
-  color:var(--accent-soft);margin-bottom:12px;
-}
-.section-title{
-  font-size:clamp(28px,4vw,40px);font-weight:800;
-  letter-spacing:-0.02em;margin-bottom:16px;
-}
-.section-sub{
-  font-size:16px;color:var(--text-secondary);max-width:560px;
-}
+.section-label{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-soft);margin-bottom:12px}
+.section-title{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-0.02em;margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--text-secondary);max-width:560px}
 
-/* ── Models ────────────────────────────────────────── */
-.models-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:12px;margin-top:40px;
-}
-.model-card{
-  background:var(--bg-secondary);border:1px solid var(--border);
-  border-radius:var(--radius-md);padding:16px;
-  text-align:center;font-size:13px;font-weight:600;
-  color:var(--text-secondary);transition:all var(--transition-fast);
-}
+.models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:40px}
+.model-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;text-align:center;font-size:13px;font-weight:600;color:var(--text-secondary);transition:all var(--transition-fast)}
 .model-card:hover{border-color:var(--accent);color:var(--accent-soft);background:var(--accent-bg)}
 
-/* ── Versions / Downloads ──────────────────────────── */
-.versions-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;margin-top:40px;
-}
-.version-card{
-  background:var(--bg-elevated);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:28px;
-  transition:all var(--transition-base);
-  position:relative;
-}
+.versions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:40px}
+.version-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;transition:all var(--transition-base);position:relative}
 .version-card:hover{border-color:var(--border-strong);box-shadow:var(--card-shadow-hover)}
 .version-card.recommended{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 8px 32px var(--accent-glow)}
-.version-card.recommended::before{
-  content:'Recommended';
-  position:absolute;top:-10px;left:24px;
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
-  background:var(--accent);color:#fff;
-  padding:3px 10px;border-radius:var(--radius-full);
-}
+.version-card .rec-badge{position:absolute;top:-10px;left:24px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#fff;padding:3px 10px;border-radius:var(--radius-full);display:none}
+.version-card.recommended .rec-badge{display:block}
 .version-card h4{font-size:18px;font-weight:700;margin-bottom:4px}
 .version-card .ver-label{font-size:12px;color:var(--text-tertiary);margin-bottom:12px}
 .version-card .ver-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px}
 .version-card .ver-specs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.version-card .ver-spec{
-  font-size:11px;font-weight:600;padding:4px 10px;
-  border-radius:var(--radius-full);
-  background:var(--bg-secondary);color:var(--text-tertiary);
-}
+.version-card .ver-spec{font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--radius-full);background:var(--bg-secondary);color:var(--text-tertiary)}
 .version-card .ver-spec.gpu{background:var(--accent-bg);color:var(--accent-soft)}
 .version-card .ver-spec.cpu{background:var(--warning-bg);color:var(--warning)}
 .version-card .ver-spec.auto{background:var(--success-bg);color:var(--success)}
 .dl-btns{display:flex;gap:8px;flex-wrap:wrap}
-.dl-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:7px 14px;font-size:12px;font-weight:600;
-  border-radius:var(--radius-full);border:1px solid var(--border);
-  background:var(--bg-secondary);color:var(--text-secondary);
-  cursor:pointer;transition:all var(--transition-fast);
-}
+.dl-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;font-size:12px;font-weight:600;border-radius:var(--radius-full);border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-secondary);cursor:pointer;transition:all var(--transition-fast)}
 .dl-btn:hover{background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border-strong)}
 .dl-btn svg{width:14px;height:14px}
-.gh-link{
-  display:block;text-align:center;margin-top:36px;
-  font-size:14px;color:var(--text-tertiary);
-}
+.gh-link{display:block;text-align:center;margin-top:36px;font-size:14px;color:var(--text-tertiary)}
 
-/* ── How it works ──────────────────────────────────── */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px;margin-top:48px}
 .step-card{text-align:center}
-.step-num{
-  width:56px;height:56px;display:flex;align-items:center;justify-content:center;
-  margin:0 auto 20px;
-  background:var(--accent-bg);color:var(--accent);
-  border:2px solid rgba(59,130,246,0.3);
-  border-radius:50%;font-size:22px;font-weight:800;
-}
+.step-num{width:56px;height:56px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;background:var(--accent-bg);color:var(--accent);border:2px solid rgba(59,130,246,0.3);border-radius:50%;font-size:22px;font-weight:800}
 .step-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
 .step-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
 
-/* ── Footer ────────────────────────────────────────── */
-.footer{
-  border-top:1px solid var(--border);
-  padding:40px 0;
-  text-align:center;
-}
-.footer-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  max-width:1120px;margin:0 auto;padding:0 24px;
-  flex-wrap:wrap;gap:16px;
-}
+.footer{border-top:1px solid var(--border);padding:40px 0}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:0 24px;flex-wrap:wrap;gap:16px}
 .footer-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text-secondary)}
 .footer-logo img{width:24px;height:24px;border-radius:var(--radius-xs)}
 .footer-links{display:flex;gap:24px;list-style:none}
@@ -324,13 +145,10 @@ a:hover{color:var(--accent-soft)}
 .footer-links a:hover{color:var(--text-secondary)}
 .footer-copy{font-size:12px;color:var(--text-tertiary)}
 
-/* ── Animations ────────────────────────────────────── */
 @keyframes pulse{0%,100%{opacity:0.4;transform:scale(0.85)}50%{opacity:1;transform:scale(1.15)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .animate-in{opacity:0;transform:translateY(24px);transition:all 0.6s cubic-bezier(0.16,1,0.3,1)}
 .animate-in.visible{opacity:1;transform:translateY(0)}
 
-/* ── Responsive ────────────────────────────────────── */
 @media(max-width:768px){
   .nav-links{display:none}
   .section{padding:60px 0}
@@ -346,53 +164,43 @@ a:hover{color:var(--accent-soft)}
 </head>
 <body>
 
-<!-- ── Nav ──────────────────────────────────────── -->
-<nav class="nav" id="nav">
+<nav class="nav">
   <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <img src="miao.png" alt="QualityScaler logo">
-      QualityScaler
-    </a>
+    <a href="#" class="nav-logo"><img src="miao.png" alt="QualityScaler">QualityScaler</a>
     <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#models">Models</a></li>
-      <li><a href="#download">Download</a></li>
-      <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="#features" data-i18n="navFeatures">Features</a></li>
+      <li><a href="#models" data-i18n="navModels">Models</a></li>
+      <li><a href="#download" data-i18n="navDownload">Download</a></li>
+      <li><a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
-    <a href="#download" class="nav-cta">Download</a>
+    <div class="nav-right">
+      <div class="lang-toggle" id="langToggle">
+        <span class="lang-opt" data-lang="en">EN</span>
+        <span class="lang-opt" data-lang="zh">中文</span>
+      </div>
+      <a href="#download" class="nav-cta" data-i18n="navCTA">Download</a>
+    </div>
   </div>
 </nav>
 
-<!-- ── Hero ─────────────────────────────────────── -->
 <section class="hero">
   <div class="container">
-    <div class="hero-badge">
-      <span class="hero-badge-dot"></span> v4.2.0 — Free &amp; Open Source
-    </div>
-    <h1>
-      AI-Powered<br>
-      <span>Image &amp; Video Super‑Resolution</span>
-    </h1>
-    <p class="hero-desc">
-      Upscale images and videos with cutting-edge AI models.
-      Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.
-    </p>
+    <div class="hero-badge"><span class="hero-badge-dot"></span> <span data-i18n="heroBadge">v4.2.0 — Free &amp; Open Source</span></div>
+    <h1><span data-i18n="heroLine1">AI-Powered</span><br><span data-i18n-html="heroLine2">Image &amp; Video Super‑Resolution</span></h1>
+    <p class="hero-desc" data-i18n="heroDesc">Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.</p>
     <div class="hero-actions">
       <a href="#download" class="btn btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download Free
+        <span data-i18n="heroCTA">Download Free</span>
       </a>
-      <a href="https://github.com" target="_blank" rel="noopener" class="btn btn-secondary">
+      <a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener" class="btn btn-secondary">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
+        <span data-i18n="heroGitHub">View on GitHub</span>
       </a>
     </div>
     <div class="terminal">
-      <div class="terminal-bar">
-        <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-        <span class="terminal-title">QualityScaler Pipeline</span>
-      </div>
-      <div class="terminal-body">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-title" data-i18n="terminalTitle">QualityScaler Pipeline</span></div>
+      <div class="terminal-body" data-i18n-html="terminalBody">
         <span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br>
         <span class="output">[1/4] Loading model <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br>
         <span class="output">[2/4] Backend selected: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br>
@@ -402,216 +210,203 @@ a:hover{color:var(--accent-soft)}
       </div>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-num">10+</div>
-        <div class="hero-stat-label">AI Models</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">2×–4×</div>
-        <div class="hero-stat-label">Upscale Factor</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">FP16</div>
-        <div class="hero-stat-label">2-3× Faster Inference</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">MIT</div>
-        <div class="hero-stat-label">Open Source License</div>
-      </div>
+      <div class="hero-stat"><div class="hero-stat-num">10+</div><div class="hero-stat-label" data-i18n="statModels">AI Models</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">2×–4×</div><div class="hero-stat-label" data-i18n="statScale">Upscale Factor</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">FP16</div><div class="hero-stat-label" data-i18n="statSpeed">2-3× Faster Inference</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">MIT</div><div class="hero-stat-label" data-i18n="statLicense">Open Source License</div></div>
     </div>
   </div>
 </section>
 
-<!-- ── Features ──────────────────────────────────── -->
 <section class="section" id="features">
   <div class="container">
-    <div class="section-label">Features</div>
-    <h2 class="section-title">Everything you need for AI upscaling</h2>
-    <p class="section-sub">QualityScaler packs a complete AI super-resolution pipeline into a clean desktop app.</p>
+    <div class="section-label" data-i18n="featuresLabel">Features</div>
+    <h2 class="section-title" data-i18n="featuresTitle">Everything you need for AI upscaling</h2>
+    <p class="section-sub" data-i18n="featuresSub">QualityScaler packs a complete AI super-resolution pipeline into a clean desktop app.</p>
     <div class="features-grid">
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="12" cy="12" r="3"/><path d="M2 8h20M2 16h20"/></svg></div>
-        <h3>Image Upscaling</h3>
-        <p>2×, 3×, 4× upscaling with Real-ESRGAN, BSRGAN, Real-CUGAN, and more. Tiled inference prevents GPU OOM on large images.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3 6 21 12 3 18"/><rect x="8" y="5" width="8" height="2" rx="1"/></svg></div>
-        <h3>Video Upscaling</h3>
-        <p>Frame-by-frame AI processing with FFmpeg. Preserves original audio, framerate, and VFR (variable frame rate) streams.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="4"/><path d="M15 9a6 6 0 00-6-6M21 15a6 6 0 01-6 6"/></svg></div>
-        <h3>Face Enhancement</h3>
-        <p>Cascaded pipeline: detect faces at native resolution, enhance with CodeFormer, then seamlessly blend back via alpha feathering.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
-        <h3>Auto Backend Selection</h3>
-        <p>TensorRT → ONNX CUDA → ONNX CPU → fallback interpolation. Automatically picks the fastest available backend for your hardware.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-        <h3>Batch Processing</h3>
-        <p>Drop an entire folder of images and let the async goroutine pipeline process them all. Feeder → inference → saver with zero GPU starvation.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18M3 9h6M15 3v18M3 15h6"/></svg></div>
-        <h3>FP16 Quantization</h3>
-        <p>Half-precision inference delivers 2–3× throughput improvement with negligible quality loss. Zero-copy float buffer reuse via sync.Pool.</p>
-      </div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="12" cy="12" r="3"/><path d="M2 8h20M2 16h20"/></svg></div><h3 data-i18n="featImgTitle">Image Upscaling</h3><p data-i18n="featImgDesc">2×, 3×, 4× upscaling with Real-ESRGAN, BSRGAN, Real-CUGAN, and more.</p></div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3 6 21 12 3 18"/><rect x="8" y="5" width="8" height="2" rx="1"/></svg></div><h3 data-i18n="featVidTitle">Video Upscaling</h3><p data-i18n="featVidDesc">Frame-by-frame AI processing with FFmpeg. Preserves original audio, framerate, and VFR streams.</p></div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="4"/><path d="M15 9a6 6 0 00-6-6M21 15a6 6 0 01-6 6"/></svg></div><h3 data-i18n="featFaceTitle">Face Enhancement</h3><p data-i18n="featFaceDesc">Cascaded pipeline: detect faces, enhance with CodeFormer, then blend back via alpha feathering.</p></div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><h3 data-i18n="featBackendTitle">Auto Backend Selection</h3><p data-i18n="featBackendDesc">TensorRT → ONNX CUDA → ONNX CPU → fallback. Auto-picks the fastest backend.</p></div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><h3 data-i18n="featBatchTitle">Batch Processing</h3><p data-i18n="featBatchDesc">Drop a folder and let the async pipeline process everything. Feeder → inference → saver with zero GPU starvation.</p></div>
+      <div class="feature-card animate-in"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18M3 9h6M15 3v18M3 15h6"/></svg></div><h3 data-i18n="featFP16Title">FP16 Quantization</h3><p data-i18n="featFP16Desc">Half-precision inference delivers 2–3× throughput with negligible quality loss.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ── How it works ──────────────────────────────── -->
 <section class="section" style="background:var(--bg-primary)">
   <div class="container" style="text-align:center">
-    <div class="section-label">How It Works</div>
-    <h2 class="section-title" style="margin:0 auto 8px">Three steps to higher resolution</h2>
-    <p class="section-sub" style="margin:0 auto 48px">No cloud uploads. Everything runs locally on your machine.</p>
+    <div class="section-label" data-i18n="stepsLabel">How It Works</div>
+    <h2 class="section-title" style="margin:0 auto 8px" data-i18n="stepsTitle">Three steps to higher resolution</h2>
+    <p class="section-sub" style="margin:0 auto 48px" data-i18n="stepsSub">No cloud uploads. Everything runs locally on your machine.</p>
     <div class="steps">
-      <div class="step-card animate-in">
-        <div class="step-num">1</div>
-        <h3>Drop your files</h3>
-        <p>Drag & drop images or video files into QualityScaler. Batch folders supported.</p>
-      </div>
-      <div class="step-card animate-in">
-        <div class="step-num">2</div>
-        <h3>Choose a model</h3>
-        <p>Pick from 10+ AI models — Real-ESRGAN for general use, CodeFormer for faces, or anime-optimized variants.</p>
-      </div>
-      <div class="step-card animate-in">
-        <div class="step-num">3</div>
-        <h3>Export & enjoy</h3>
-        <p>Your upscaled output is saved locally. No watermark, no file size limit, no subscription.</p>
-      </div>
+      <div class="step-card animate-in"><div class="step-num">1</div><h3 data-i18n="step1Title">Drop your files</h3><p data-i18n="step1Desc">Drag &amp; drop images or video files into QualityScaler. Batch folders supported.</p></div>
+      <div class="step-card animate-in"><div class="step-num">2</div><h3 data-i18n="step2Title">Choose a model</h3><p data-i18n="step2Desc">Pick from 10+ AI models — Real-ESRGAN, CodeFormer, anime-optimized variants, and more.</p></div>
+      <div class="step-card animate-in"><div class="step-num">3</div><h3 data-i18n="step3Title">Export &amp; enjoy</h3><p data-i18n="step3Desc">Your upscaled output is saved locally. No watermark, no file size limit, no subscription.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ── Models ────────────────────────────────────── -->
 <section class="section" id="models">
   <div class="container">
-    <div class="section-label">AI Models</div>
-    <h2 class="section-title">10+ state-of-the-art models</h2>
-    <p class="section-sub">Each model is optimized for specific use cases. Pick the one that matches your content.</p>
+    <div class="section-label" data-i18n="modelsLabel">AI Models</div>
+    <h2 class="section-title" data-i18n="modelsTitle">10+ state-of-the-art models</h2>
+    <p class="section-sub" data-i18n="modelsSub">Each model is optimized for specific use cases. Pick the one that matches your content.</p>
     <div class="models-grid">
-      <div class="model-card">Real-ESRGAN x4</div>
-      <div class="model-card">Real-ESRGAN Anime</div>
-      <div class="model-card">BSRGAN x2</div>
-      <div class="model-card">BSRGAN x4</div>
-      <div class="model-card">Real-CUGAN v3 2×</div>
-      <div class="model-card">Real-CUGAN v3 3×</div>
-      <div class="model-card">Real-CUGAN v3 4×</div>
-      <div class="model-card">CodeFormer</div>
-      <div class="model-card">Face Enhance x4</div>
-      <div class="model-card">NAFNet (GoPro)</div>
-      <div class="model-card">NAFNet (REDS)</div>
-      <div class="model-card">NAFNet (SIDD)</div>
-      <div class="model-card">SCUNet GAN</div>
-      <div class="model-card">SCUNet PSNR</div>
-      <div class="model-card">DeblurGAN v2</div>
-      <div class="model-card">IRCNN</div>
-      <div class="model-card">MSharpx4</div>
+      <div class="model-card">Real-ESRGAN x4</div><div class="model-card">Real-ESRGAN Anime</div><div class="model-card">BSRGAN x2</div><div class="model-card">BSRGAN x4</div><div class="model-card">Real-CUGAN v3 2×</div><div class="model-card">Real-CUGAN v3 3×</div><div class="model-card">Real-CUGAN v3 4×</div><div class="model-card">CodeFormer</div><div class="model-card">Face Enhance x4</div><div class="model-card">NAFNet (GoPro)</div><div class="model-card">NAFNet (REDS)</div><div class="model-card">NAFNet (SIDD)</div><div class="model-card">SCUNet GAN</div><div class="model-card">SCUNet PSNR</div><div class="model-card">DeblurGAN v2</div><div class="model-card">IRCNN</div><div class="model-card">MSharpx4</div>
     </div>
   </div>
 </section>
 
-<!-- ── Download ──────────────────────────────────── -->
 <section class="section" id="download" style="background:var(--bg-primary)">
   <div class="container">
-    <div class="section-label">Download</div>
-    <h2 class="section-title">Choose your edition</h2>
-    <p class="section-sub">Four builds tailored to your hardware. Not sure? Pick the Full edition — it auto-detects the best backend.</p>
+    <div class="section-label" data-i18n="dlLabel">Download</div>
+    <h2 class="section-title" data-i18n="dlTitle">Choose your edition</h2>
+    <p class="section-sub" data-i18n="dlSub">Four builds tailored to your hardware. Not sure? Pick the Full edition — it auto-detects the best backend.</p>
     <div class="versions-grid">
       <div class="version-card recommended animate-in">
+        <span class="rec-badge" data-i18n="dlRecBadge">Recommended</span>
         <h4>QualityScaler Full</h4>
-        <div class="ver-label">All backends + auto-detect</div>
-        <div class="ver-desc">The complete package. TensorRT, ONNX CUDA, ONNX CPU, and OpenCV. Auto-selects the fastest path for your GPU.</div>
-        <div class="ver-specs">
-          <span class="ver-spec auto">Auto-Detect</span>
-          <span class="ver-spec gpu">TensorRT</span>
-          <span class="ver-spec gpu">CUDA</span>
-          <span class="ver-spec cpu">CPU</span>
-        </div>
-        <div class="dl-btns">
-          <a href="https://github.com" class="dl-btn">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12v7a2 2 0 002 2h14a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg> Windows
-          </a>
-          <a href="https://github.com" class="dl-btn">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12v7a2 2 0 002 2h14a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg> Linux
-          </a>
-        </div>
+        <div class="ver-label" data-i18n="dlFullLabel">All backends + auto-detect</div>
+        <div class="ver-desc" data-i18n="dlFullDesc">The complete package. TensorRT, ONNX CUDA, ONNX CPU, and OpenCV. Auto-selects the fastest path for your GPU.</div>
+        <div class="ver-specs"><span class="ver-spec auto" data-i18n="specAuto">Auto-Detect</span><span class="ver-spec gpu">TensorRT</span><span class="ver-spec gpu">CUDA</span><span class="ver-spec cpu">CPU</span></div>
+        <div class="dl-btns"><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12v7a2 2 0 002 2h14a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg> Windows</a><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12v7a2 2 0 002 2h14a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg> Linux</a></div>
       </div>
       <div class="version-card animate-in">
         <h4>TensorRT GPU</h4>
-        <div class="ver-label">Maximum performance</div>
-        <div class="ver-desc">Optimized for NVIDIA GPUs with TensorRT acceleration. Recommended for 12GB+ VRAM.</div>
-        <div class="ver-specs">
-          <span class="ver-spec gpu">TensorRT</span>
-          <span class="ver-spec gpu">CUDA</span>
-        </div>
-        <div class="dl-btns">
-          <a href="https://github.com" class="dl-btn">Windows</a>
-          <a href="https://github.com" class="dl-btn">Linux</a>
-        </div>
+        <div class="ver-label" data-i18n="dlTRTLabel">Maximum performance</div>
+        <div class="ver-desc" data-i18n="dlTRTDesc">Optimized for NVIDIA GPUs with TensorRT acceleration. Recommended for 12GB+ VRAM.</div>
+        <div class="ver-specs"><span class="ver-spec gpu">TensorRT</span><span class="ver-spec gpu">CUDA</span></div>
+        <div class="dl-btns"><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Windows</a><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Linux</a></div>
       </div>
       <div class="version-card animate-in">
         <h4>ONNX CUDA</h4>
-        <div class="ver-label">NVIDIA GPU via ONNX</div>
-        <div class="ver-desc">CUDA-accelerated ONNX Runtime. Great for NVIDIA users who want a simpler setup than TensorRT.</div>
-        <div class="ver-specs">
-          <span class="ver-spec gpu">CUDA</span>
-        </div>
-        <div class="dl-btns">
-          <a href="https://github.com" class="dl-btn">Windows</a>
-          <a href="https://github.com" class="dl-btn">Linux</a>
-        </div>
+        <div class="ver-label" data-i18n="dlCUDALabel">NVIDIA GPU via ONNX</div>
+        <div class="ver-desc" data-i18n="dlCUDADesc">CUDA-accelerated ONNX Runtime. Great for NVIDIA users who want a simpler setup than TensorRT.</div>
+        <div class="ver-specs"><span class="ver-spec gpu">CUDA</span></div>
+        <div class="dl-btns"><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Windows</a><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Linux</a></div>
       </div>
       <div class="version-card animate-in">
         <h4>ONNX CPU</h4>
-        <div class="ver-label">Universal compatibility</div>
-        <div class="ver-desc">Pure CPU inference via ONNX Runtime. Works on any machine — no GPU required.</div>
-        <div class="ver-specs">
-          <span class="ver-spec cpu">CPU Only</span>
-        </div>
-        <div class="dl-btns">
-          <a href="https://github.com" class="dl-btn">Windows</a>
-          <a href="https://github.com" class="dl-btn">Linux</a>
-        </div>
+        <div class="ver-label" data-i18n="dlCPULabel">Universal compatibility</div>
+        <div class="ver-desc" data-i18n="dlCPUDesc">Pure CPU inference via ONNX Runtime. Works on any machine — no GPU required.</div>
+        <div class="ver-specs"><span class="ver-spec cpu" data-i18n="specCPU">CPU Only</span></div>
+        <div class="dl-btns"><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Windows</a><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Linux</a></div>
       </div>
     </div>
-    <p class="gh-link">All downloads are hosted on <a href="https://github.com" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT License</p>
+    <p class="gh-link" data-i18n-html="ghLink">All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT License</p>
   </div>
 </section>
 
-<!-- ── Footer ────────────────────────────────────── -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-logo">
-      <img src="miao.png" alt=""> QualityScaler
-    </div>
+    <div class="footer-logo"><img src="miao.png" alt=""> QualityScaler</div>
     <ul class="footer-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#models">Models</a></li>
-      <li><a href="#download">Download</a></li>
-      <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="#features" data-i18n="navFeatures">Features</a></li>
+      <li><a href="#models" data-i18n="navModels">Models</a></li>
+      <li><a href="#download" data-i18n="navDownload">Download</a></li>
+      <li><a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
-    <span class="footer-copy">&copy; 2022–2026 Annunziata Gianluca. MIT License.</span>
+    <span class="footer-copy" data-i18n="footerCopy">&copy; 2022–2026 Annunziata Gianluca. MIT License.</span>
   </div>
 </footer>
 
-<!-- ── Scroll animations ─────────────────────────── -->
 <script>
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.15 });
+var T = {
+  en: {
+    pageTitle: 'QualityScaler — AI Image & Video Upscaler',
+    metaDesc: 'AI-powered image and video super-resolution tool. Upscale with Real-ESRGAN, BSRGAN, CodeFormer and more.',
+    metaKeys: 'AI upscaling,image super resolution,video upscaling,Real-ESRGAN,BSRGAN,CodeFormer,face enhancement',
+    ogTitle: 'QualityScaler — AI Image & Video Upscaler',
+    ogDesc: 'Free, open-source AI super-resolution for images and videos. Multi-GPU backend, face enhancement, batch processing.',
+    navFeatures: 'Features', navModels: 'Models', navDownload: 'Download', navCTA: 'Download',
+    heroBadge: 'v4.2.0 — Free & Open Source',
+    heroLine1: 'AI-Powered', heroLine2: 'Image &amp; Video Super‑Resolution',
+    heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.',
+    heroCTA: 'Download Free', heroGitHub: 'View on GitHub',
+    terminalTitle: 'QualityScaler Pipeline',
+    terminalBody: '<span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br><span class="output">[1/4] Loading model <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br><span class="output">[2/4] Backend selected: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br><span class="output">[3/4] Processing: 1920×1080 → <span class="highlight">7680×4320</span> (tile: 512×512, overlap: 64)</span><br><span class="output">[4/4] Saved: photo_4x.png (4.2s, 48 tiles)</span><br><span class="prompt">$</span> <span class="cursor">█</span>',
+    statModels: 'AI Models', statScale: 'Upscale Factor', statSpeed: '2-3× Faster Inference', statLicense: 'Open Source License',
+    featuresLabel: 'Features', featuresTitle: 'Everything you need for AI upscaling', featuresSub: 'QualityScaler packs a complete AI super-resolution pipeline into a clean desktop app.',
+    featImgTitle: 'Image Upscaling', featImgDesc: '2×, 3×, 4× upscaling with Real-ESRGAN, BSRGAN, Real-CUGAN, and more.',
+    featVidTitle: 'Video Upscaling', featVidDesc: 'Frame-by-frame AI processing with FFmpeg. Preserves original audio, framerate, and VFR streams.',
+    featFaceTitle: 'Face Enhancement', featFaceDesc: 'Cascaded pipeline: detect faces, enhance with CodeFormer, then blend back via alpha feathering.',
+    featBackendTitle: 'Auto Backend Selection', featBackendDesc: 'TensorRT → ONNX CUDA → ONNX CPU → fallback. Auto-picks the fastest backend.',
+    featBatchTitle: 'Batch Processing', featBatchDesc: 'Drop a folder and let the async pipeline process everything. Feeder → inference → saver with zero GPU starvation.',
+    featFP16Title: 'FP16 Quantization', featFP16Desc: 'Half-precision inference delivers 2–3× throughput with negligible quality loss.',
+    stepsLabel: 'How It Works', stepsTitle: 'Three steps to higher resolution', stepsSub: 'No cloud uploads. Everything runs locally on your machine.',
+    step1Title: 'Drop your files', step1Desc: 'Drag &amp; drop images or video files into QualityScaler. Batch folders supported.',
+    step2Title: 'Choose a model', step2Desc: 'Pick from 10+ AI models — Real-ESRGAN, CodeFormer, anime-optimized variants, and more.',
+    step3Title: 'Export &amp; enjoy', step3Desc: 'Your upscaled output is saved locally. No watermark, no file size limit, no subscription.',
+    modelsLabel: 'AI Models', modelsTitle: '10+ state-of-the-art models', modelsSub: 'Each model is optimized for specific use cases.',
+    dlLabel: 'Download', dlTitle: 'Choose your edition', dlSub: 'Four builds tailored to your hardware. Not sure? Pick the Full edition — it auto-detects the best backend.',
+    dlRecBadge: 'Recommended',
+    dlFullLabel: 'All backends + auto-detect', dlFullDesc: 'The complete package. TensorRT, ONNX CUDA, ONNX CPU, and OpenCV. Auto-selects the fastest path for your GPU.',
+    dlTRTLabel: 'Maximum performance', dlTRTDesc: 'Optimized for NVIDIA GPUs with TensorRT acceleration. Recommended for 12GB+ VRAM.',
+    dlCUDALabel: 'NVIDIA GPU via ONNX', dlCUDADesc: 'CUDA-accelerated ONNX Runtime. Great for NVIDIA users who want a simpler setup than TensorRT.',
+    dlCPULabel: 'Universal compatibility', dlCPUDesc: 'Pure CPU inference via ONNX Runtime. Works on any machine — no GPU required.',
+    specAuto: 'Auto-Detect', specCPU: 'CPU Only',
+    ghLink: 'All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT License',
+    footerCopy: '&copy; 2022–2026 Annunziata Gianluca. MIT License.'
+  },
+  zh: {
+    pageTitle: 'QualityScaler — AI 图像与视频超分辨率',
+    metaDesc: 'AI 驱动的图像和视频超分辨率工具。支持 Real-ESRGAN、BSRGAN、CodeFormer 等模型，智能 GPU 后端选择。',
+    metaKeys: 'AI超分,图像超分辨率,视频超分,Real-ESRGAN,BSRGAN,CodeFormer,人脸增强',
+    ogTitle: 'QualityScaler — AI 图像与视频超分辨率',
+    ogDesc: '免费开源的 AI 图像与视频超分辨率桌面工具。多 GPU 后端，人脸增强，批量处理，本地运行。',
+    navFeatures: '功能', navModels: '模型', navDownload: '下载', navCTA: '免费下载',
+    heroBadge: 'v4.2.0 — 免费开源',
+    heroLine1: 'AI 驱动', heroLine2: '图像与视频超分辨率',
+    heroDesc: '使用前沿 AI 模型放大图像和视频。支持 Real-ESRGAN、BSRGAN、CodeFormer —— 自动选择最优 GPU 后端，内置人脸增强。',
+    heroCTA: '免费下载', heroGitHub: '在 GitHub 查看',
+    terminalTitle: 'QualityScaler 处理流水线',
+    terminalBody: '<span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br><span class="output">[1/4] 加载模型 <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br><span class="output">[2/4] 推理后端: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br><span class="output">[3/4] 处理中: 1920×1080 → <span class="highlight">7680×4320</span> (分块: 512×512, 重叠: 64)</span><br><span class="output">[4/4] 已保存: photo_4x.png (4.2s, 48 块)</span><br><span class="prompt">$</span> <span class="cursor">█</span>',
+    statModels: 'AI 模型', statScale: '放大倍率', statSpeed: '2-3倍 推理加速', statLicense: '开源协议',
+    featuresLabel: '功能特性', featuresTitle: 'AI 超分辨率所需的一切', featuresSub: 'QualityScaler 将完整的 AI 超分流水线集成在一个简洁的桌面应用中。',
+    featImgTitle: '图像超分辨率', featImgDesc: '支持 Real-ESRGAN、BSRGAN、Real-CUGAN 等模型的 2×、3×、4× 放大。分块推理防止大图显存溢出。',
+    featVidTitle: '视频超分辨率', featVidDesc: '基于 FFmpeg 的逐帧 AI 处理。保留原始音频、帧率和 VFR（可变帧率）流。',
+    featFaceTitle: '人脸增强', featFaceDesc: '级联流水线：原始分辨率检测人脸 → CodeFormer 增强 → Alpha 羽化无缝融合回背景图像。',
+    featBackendTitle: '自动后端选择', featBackendDesc: 'TensorRT → ONNX CUDA → ONNX CPU → 插值回退。自动为你的硬件选择最快的后端。',
+    featBatchTitle: '批量处理', featBatchDesc: '拖入整个文件夹，异步流水线自动处理全部文件。Feeder → 推理 → 保存，GPU 零空闲。',
+    featFP16Title: 'FP16 半精度量化', featFP16Desc: '半精度推理实现 2–3 倍吞吐量提升，画质损失可忽略。',
+    stepsLabel: '使用流程', stepsTitle: '三步获得更高分辨率', stepsSub: '无需云端上传，一切在本地机器上运行。',
+    step1Title: '拖入文件', step1Desc: '将图像或视频文件拖入 QualityScaler，支持批量文件夹处理。',
+    step2Title: '选择模型', step2Desc: '从 10+ 个 AI 模型中选择 —— 通用场景用 Real-ESRGAN，人脸用 CodeFormer，还有动漫优化版本。',
+    step3Title: '导出享用', step3Desc: '超分结果保存在本地。无水印、无文件大小限制、无需订阅。',
+    modelsLabel: 'AI 模型', modelsTitle: '10+ 个顶级 AI 模型', modelsSub: '每个模型针对不同场景优化，选择最适合你内容的那一个。',
+    dlLabel: '下载', dlTitle: '选择你的版本', dlSub: '四种版本适配不同硬件配置。不确定选哪个？选 Full 版本 —— 它会自动检测最佳后端。',
+    dlRecBadge: '推荐',
+    dlFullLabel: '全部后端 + 自动检测', dlFullDesc: '完整包。TensorRT、ONNX CUDA、ONNX CPU 和 OpenCV 全包含，自动选择最快的推理路径。',
+    dlTRTLabel: '极致性能', dlTRTDesc: '针对 NVIDIA GPU 的 TensorRT 加速优化。推荐 12GB+ 显存用户。',
+    dlCUDALabel: 'NVIDIA GPU (ONNX)', dlCUDADesc: 'CUDA 加速的 ONNX Runtime。适合想简化配置的 NVIDIA 用户，比 TensorRT 更易设置。',
+    dlCPULabel: '通用兼容', dlCPUDesc: '纯 CPU 推理，基于 ONNX Runtime。无需 GPU，任何机器都能运行。',
+    specAuto: '自动检测', specCPU: '仅 CPU',
+    ghLink: '所有下载托管在 <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>。Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT 协议',
+    footerCopy: '&copy; 2022–2026 Annunziata Gianluca. MIT License.'
+  }
+};
 
-document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+var lang = localStorage.getItem('qs-lang') || 'en';
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('qs-lang', l);
+  document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
+  var t = T[l];
+  document.title = t.pageTitle;
+  ['description','keywords'].forEach(function(n){ var e = document.querySelector('meta[name="'+n+'"]'); if(e) e.content = t[n === 'description' ? 'metaDesc' : 'metaKeys']; });
+  ['og:title','og:description'].forEach(function(n){ var e = document.querySelector('meta[property="'+n+'"]'); if(e) e.content = t[n === 'og:title' ? 'ogTitle' : 'ogDesc']; });
+  document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t[el.dataset.i18n] || el.dataset.i18n; });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = t[el.dataset.i18nHtml] || el.dataset.i18nHtml; });
+  document.querySelectorAll('.lang-opt').forEach(function(o){ o.classList.toggle('active', o.dataset.lang === l); });
+}
+
+document.getElementById('langToggle').addEventListener('click', function(e){ var o = e.target.closest('.lang-opt'); if (o) setLang(o.dataset.lang); });
+setLang(lang);
+
+var obs = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(function(el){ obs.observe(el); });
 </script>
 </body>
 </html>
