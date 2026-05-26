@@ -185,8 +185,8 @@ a:hover{color:var(--accent-soft)}
 
 <section class="hero">
   <div class="container">
-
-    <h1><span data-i18n="heroLine1">AI-Powered</span><br><span data-i18n-html="heroLine2">Image &amp; Video Super‑Resolution</span></h1>
+    <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="heroBadge">v4.2.0 — Free &amp; Open Source</span></div>
+    <h1><span data-i18n="heroLine1">AI-Powered</span><br><span data-i18n="heroLine2">Image &amp; Video Super‑Resolution</span></h1>
     <p class="hero-desc" data-i18n="heroDesc">Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.</p>
     <div class="hero-actions">
       <a href="#download" class="btn btn-primary">
@@ -321,8 +321,8 @@ var T = {
     ogDesc: 'Free, open-source AI super-resolution for images and videos. Multi-GPU backend, face enhancement, batch processing.',
     navFeatures: 'Features', navModels: 'Models', navDownload: 'Download', navCTA: 'Download',
     heroBadge: 'v4.2.0 — Free & Open Source',
-    heroLine1: 'AI-Powered', heroLine2: 'Image &amp; Video Super‑Resolution',
-    heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.',
+    heroLine1: 'AI-Powered', heroLine2: 'Image & Video Super‑Resolution',
+    heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection & face enhancement.',
     heroCTA: 'Download Free', heroGitHub: 'View on GitHub',
     terminalTitle: 'QualityScaler Pipeline',
     terminalBody: '<span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br><span class="output">[1/4] Loading model <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br><span class="output">[2/4] Backend selected: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br><span class="output">[3/4] Processing: 1920×1080 → <span class="highlight">7680×4320</span> (tile: 512×512, overlap: 64)</span><br><span class="output">[4/4] Saved: photo_4x.png (4.2s, 48 tiles)</span><br><span class="prompt">$</span> <span class="cursor">█</span>',
@@ -335,9 +335,9 @@ var T = {
     featBatchTitle: 'Batch Processing', featBatchDesc: 'Drop a folder and let the async pipeline process everything. Feeder → inference → saver with zero GPU starvation.',
     featFP16Title: 'FP16 Quantization', featFP16Desc: 'Half-precision inference delivers 2–3× throughput with negligible quality loss.',
     stepsLabel: 'How It Works', stepsTitle: 'Three steps to higher resolution', stepsSub: 'No cloud uploads. Everything runs locally on your machine.',
-    step1Title: 'Drop your files', step1Desc: 'Drag &amp; drop images or video files into QualityScaler. Batch folders supported.',
+    step1Title: 'Drop your files', step1Desc: 'Drag & drop images or video files into QualityScaler. Batch folders supported.',
     step2Title: 'Choose a model', step2Desc: 'Pick from 10+ AI models — Real-ESRGAN, CodeFormer, anime-optimized variants, and more.',
-    step3Title: 'Export &amp; enjoy', step3Desc: 'Your upscaled output is saved locally. No watermark, no file size limit, no subscription.',
+    step3Title: 'Export & enjoy', step3Desc: 'Your upscaled output is saved locally. No watermark, no file size limit, no subscription.',
     modelsLabel: 'AI Models', modelsTitle: '10+ state-of-the-art models', modelsSub: 'Each model is optimized for specific use cases.',
     dlLabel: 'Download', dlTitle: 'Choose your edition', dlSub: 'Four builds tailored to your hardware. Not sure? Pick the Full edition — it auto-detects the best backend.',
     dlRecBadge: 'Recommended',
