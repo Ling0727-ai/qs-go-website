@@ -411,6 +411,16 @@ function setLang(l) {
 document.getElementById('langToggle').addEventListener('click', function(e){ var o = e.target.closest('.lang-opt'); if (o) setLang(o.dataset.lang); });
 setLang(lang);
 
+// IndexNow submission
+(function(){
+  var key = 'aae455a0183e42d69ec877b1ee390594';
+  var url = location.href.split('#')[0];
+  var api = 'https://api.indexnow.org/indexnow?url=' + encodeURIComponent(url) + '&key=' + encodeURIComponent(key);
+  var r = new XMLHttpRequest();
+  r.open('GET', api, true);
+  r.send();
+})();
+
 var obs = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.15 });
 document.querySelectorAll('.animate-in').forEach(function(el){ obs.observe(el); });
 </script>
