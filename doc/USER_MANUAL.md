@@ -1,19 +1,20 @@
 # QualityScaler-Go 用户操作手册
 
-> **版本**: 2026.1-mvp | **适用平台**: Windows 10/11 | **语言**: 简体中文
+> **适用平台**: Windows 10/11 | **语言**: 简体中文
 
 ---
 
 ## 目录
 
 1. [快速入门](#1-快速入门)
-2. [版本选择指南](#2-版本选择指南)
-3. [AI 模型详解](#3-ai-模型详解)
-4. [参数选项说明](#4-参数选项说明)
-5. [显存分级与推荐配置](#5-显存分级与推荐配置)
-6. [管线模式详解：Memory vs Disk](#6-管线模式详解memory-vs-disk)
-7. [人脸增强](#7-人脸增强)
-8. [常见问题排查](#8-常见问题排查)
+2. [环境要求](#2-环境要求)
+3. [版本选择指南](#3-版本选择指南)
+4. [AI 模型详解](#4-ai-模型详解)
+5. [参数选项说明](#5-参数选项说明)
+6. [显存分级与推荐配置](#6-显存分级与推荐配置)
+7. [管线模式详解：Memory vs Disk](#7-管线模式详解memory-vs-disk)
+8. [人脸增强](#8-人脸增强)
+9. [常见问题排查](#9-常见问题排查)
 
 ---
 
@@ -37,7 +38,162 @@
 
 ---
 
-## 2. 版本选择指南
+## 2. 环境要求
+
+### 2.1 操作系统
+
+- **Windows 10/11 64-bit**（主要支持平台）
+- **Linux**（实验性支持，部分功能可能不可用）
+
+### 2.2 必装基础环境
+
+**Visual C++ Redistributable 2015-2022**（所有版本必需）
+
+ONNX Runtime 底层依赖 VC++ 运行时库。如果缺失，程序启动时会报 DLL 错误（如 `VCRUNTIME140.dll not found`）。
+
+> 📥 下载：[vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+
+### 2.3 NVIDIA GPU 加速环境
+
+GPU 加速需要三层组件，**层层依赖**。表格汇总见 [2.4 节](#24-各版本依赖汇总)。
+
+#### 第一层：NVIDIA 显卡驱动
+
+所有 GPU 加速方案的基础。建议通过 NVIDIA GeForce Experience 或官网下载最新 Game Ready / Studio 驱动。
+
+验证方式：
+```powershell
+nvidia-smi
+```
+如果命令正常输出 GPU 信息，说明驱动已安装。
+
+#### 第二层：CUDA Toolkit 12.x（必需）
+
+CUDA 提供 GPU 并行计算的基础运行时库（`cudart64_*.dll` 等），是 **ONNX CUDA 和 TensorRT 的通用前提**。
+
+- **推荐版本**: CUDA 12.4 ~ 13.1
+- **安装路径**: 默认 `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\`
+- **环境变量**: 安装器通常自动设 `CUDA_PATH`
+
+验证方式：
+```powershell
+# 检查 CUDA 版本
+nvcc --version
+# 或检查环境变量
+echo $env:CUDA_PATH
+```
+
+#### 第三层-1：cuDNN 9.x（ONNX CUDA / TensorRT 必需）⚠️ 关键
+
+**仅安装 CUDA 是不够的！** ONNX Runtime 的 CUDA provider 依赖 cuDNN（CUDA Deep Neural Network Library）才能启用 GPU 加速。**缺少 cuDNN 是最常见的 GPU 未生效原因。**
+
+- **推荐版本**: cuDNN 9.x（v9.0 以上）
+- **安装路径**: `C:\Program Files\NVIDIA\CUDNN\v9.x\bin\`
+- **关键 DLL**: `cudnn_engines_runtime_compiled64_9.dll`
+
+> 📥 下载：从 [NVIDIA cuDNN 官网](https://developer.nvidia.com/cudnn) 下载（需注册 NVIDIA Developer 账号，免费）
+
+**安装步骤：**
+1. 下载 cuDNN 9.x for CUDA 12.x（ZIP 包）
+2. 解压后将 `bin/`、`include/`、`lib/` 目录合并到 CUDA 安装目录：
+   ```
+   将 cudnn\bin\*.dll      复制到 → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\bin\
+   将 cudnn\include\*.h     复制到 → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\include\
+   将 cudnn\lib\x64\*.lib   复制到 → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\lib\x64\
+   ```
+3. 或者使用 NVIDIA 官方安装器（exe），安装到 `C:\Program Files\NVIDIA\CUDNN\v9.x\`
+
+**验证 cuDNN 是否生效：**
+- 程序启动时日志会输出 `Added cuDNN to PATH: ...`（表示已检测到）
+- 如果 CUDA 已安装但推理仍走 CPU，**大概率是缺少 cuDNN**
+
+#### 第三层-2：TensorRT 10.x（仅 tensorrt-gpu / full 版本）
+
+追求极致性能的用户才需要 TensorRT。它依赖 CUDA + cuDNN。
+
+- **推荐版本**: TensorRT 10.x（10.16+）
+- **推荐安装路径**: `C:\TensorRT-10.16.0.72`
+- **关键 DLL**: `qualityscaler_tensorrt.dll`（由项目提供）依赖 `nvinfer_10.dll`
+
+> 📥 下载：从 [NVIDIA TensorRT 官网](https://developer.nvidia.com/tensorrt) 下载
+
+> 💡 **日常用户提示**：如果不追求极限性能，**onnx-cuda 版本已足够**，无需安装 TensorRT。TensorRT 的额外加速（约 20-40%）仅在批量处理长视频时明显。
+
+### 2.4 各版本依赖汇总
+
+| 组件 | onnx-cpu | onnx-cuda | tensorrt-gpu | full |
+|------|:---:|:---:|:---:|:---:|
+| VC++ Redist 2015-2022 | ✅ | ✅ | ✅ | ✅ |
+| ONNX Runtime DLL | ✅ | ✅ | ✅ | ✅ |
+| NVIDIA 显卡 + 驱动 | ❌ | ✅ | ✅ | ✅ |
+| CUDA Toolkit 12.x | ❌ | ✅ | ✅ | ✅ |
+| **cuDNN 9.x** | ❌ | ✅ **必需** | ✅ **必需** | ✅ **必需** |
+| TensorRT 10.x | ❌ | ❌ | ✅ | ✅ |
+| qualityscaler_tensorrt.dll | ❌ | ❌ | ✅ | ✅ |
+| OpenCV (gocv) | ❌ | ❌ | ❌ | ✅ |
+
+### 2.5 依赖关系图
+
+```
+基础层（所有版本）
+  └─ Visual C++ Redistributable 2015-2022
+  └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+
+GPU 加速（onnx-cuda / tensorrt-gpu / full）
+  ├─ NVIDIA 显卡驱动
+  ├─ CUDA Toolkit 12.x
+  └─ cuDNN 9.x  ← ⚠️ 最易遗漏！没有它，ONNX Runtime 无法使用 GPU
+
+TensorRT 加速（tensorrt-gpu / full）
+  └─ TensorRT 10.x  ← 在 CUDA + cuDNN 的基础上叠加
+  └─ qualityscaler_tensorrt.dll
+```
+
+### 2.6 环境验证清单
+
+安装完成后，按以下步骤验证环境是否就绪：
+
+```powershell
+# 1. 检查显卡驱动
+nvidia-smi
+# 预期：显示 GPU 型号、驱动版本、CUDA 版本
+
+# 2. 检查 CUDA
+nvcc --version
+# 预期：显示 CUDA 版本号（如 12.6）
+
+# 3. 检查 cuDNN（查看 DLL 是否存在）
+ls "C:\Program Files\NVIDIA\CUDNN\v9*\bin\cudnn_engines_runtime_compiled64_9.dll"
+ls "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines_runtime_compiled64_9.dll"
+# 预期：至少一处能找到该 DLL
+
+# 4. 检查 VC++ Redist
+# 控制面板 → 程序和功能 → 查找 "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+```
+
+**程序内验证**（最可靠的方式）：
+启动 QualityScaler-Go，观察标题栏或日志中的推理后端信息：
+- `TensorRT (GPU)` — 全部就绪，极致性能 ✅
+- `CUDA (GPU 0)` — CUDA + cuDNN 正常，GPU 加速生效 ✅
+- `CPU (ONNX)` — GPU 未生效，请检查 CUDA 和 cuDNN 安装 ❌
+
+### 2.7 常见环境坑
+
+**❌ "我装了 CUDA，为什么还是 CPU 推理？"**
+→ **99% 是因为没装 cuDNN**。CUDA Toolkit 不包含 cuDNN，需单独下载安装。详见上方「第三层-1：cuDNN 9.x」段落。
+
+**❌ "cuDNN 装了，但程序找不到？"**
+→ 检查 cuDNN 的 `bin/` 目录是否在系统 PATH 中。程序会自动搜索 `C:\Program Files\NVIDIA\CUDNN\v9*\bin\`，如果放在其他位置，需要手动添加 PATH 或将 DLL 复制到 CUDA 的 `bin/` 目录。
+
+**❌ "TensorRT 引擎文件报错？"**
+→ `.engine` 文件绑定具体 GPU 架构（SM 版本），不可跨显卡使用。换显卡后需要删除 `AI-tensorrt/*.engine` 重新生成。详见 [3. 版本选择指南](#3-版本选择指南)。
+
+**❌ "ffmpeg 找不到 / 报错？"**
+→ 发布包通常自带 ffmpeg，如果缺失，从 [ffmpeg.org](https://ffmpeg.org/download.html) 下载 Windows 版本，将 `ffmpeg.exe` 和 `ffprobe.exe` 放到程序目录或系统 PATH 中。
+
+---
+
+## 3. 版本选择指南
 
 QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 
@@ -52,9 +208,9 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 
 ---
 
-## 3. AI 模型详解
+## 4. AI 模型详解
 
-### 3.1 模型速查表
+### 4.1 模型速查表
 
 | 模型 | 倍率 | 类型 | 速度 | 显存占用 | 最佳场景 |
 |------|------|------|------|---------|---------|
@@ -67,7 +223,7 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 | **IRCNN_Mx1** | ×1 | 去噪修复 | ⚡⚡⚡ 最快 | 🟢 低 | 中度噪声去除（保持分辨率） |
 | **IRCNN_Lx1** | ×1 | 重度修复 | ⚡⚡ 较快 | 🟡 中 | 重度图像损伤修复（保持分辨率） |
 
-### 3.2 模型详细说明
+### 4.2 模型详细说明
 
 #### LVAx2 — 轻量自然放大
 - **特点**: 提升分辨率的同时保持极高的边缘保真度，处理风格自然
@@ -109,7 +265,7 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
   - **IRCNN_Mx1**: 中度噪声去除
   - **IRCNN_Lx1**: 重度图像损伤修复
 
-### 3.3 场景选型指南
+### 4.3 场景选型指南
 
 | 你的需求 | 首选模型 | 备选模型 |
 |---------|---------|---------|
@@ -122,12 +278,12 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 
 ---
 
-## 4. 参数选项说明
+## 5. 参数选项说明
 
-### 4.1 AI 核心标签页
+### 5.1 AI 核心标签页
 
 #### AI 模型
-选择用于超分辨率的主模型。详见 [第 3 章 AI 模型详解](#3-ai-模型详解)。
+选择用于超分辨率的主模型。详见 [第 4 章 AI 模型详解](#3-ai-模型详解)。
 
 #### 去模糊模型
 在超分前对图像进行去模糊/去噪预处理。
@@ -142,7 +298,7 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 
 ---
 
-### 4.2 性能与硬件标签页
+### 5.2 性能与硬件标签页
 
 #### 性能模式
 
@@ -170,7 +326,7 @@ QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
 - 设置过高：可能导致显存溢出（OOM），推理失败
 - 集成显卡建议从 **2GB** 开始尝试
 
-详见 [第 5 章 显存分级与推荐配置](#5-显存分级与推荐配置)。
+详见 [第 7 章 显存分级与推荐配置](#5-显存分级与推荐配置)。
 
 #### 多线程
 控制视频逐帧处理时的并行线程数。
@@ -224,7 +380,7 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 
 ---
 
-### 4.3 图像处理标签页
+### 5.3 图像处理标签页
 
 #### 输入缩放 %
 送入 AI 模型前的图像缩放比例。
@@ -269,7 +425,7 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 
 ---
 
-### 4.4 视频处理标签页
+### 5.4 视频处理标签页
 
 #### 视频格式
 输出视频的封装格式。
@@ -340,9 +496,9 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 
 ---
 
-## 5. 显存分级与推荐配置
+## 6. 显存分级与推荐配置
 
-### 5.1 显存分级总览
+### 6.1 显存分级总览
 
 | 显存 | 等级 | GPU 示例 | 推荐模型 | 输入缩放 | 性能模式 | 多线程 | 批处理 |
 |------|------|---------|---------|---------|---------|--------|--------|
@@ -354,7 +510,7 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 | **16GB+** | 旗舰 | RTX 4080, RTX 4090, RTX 5080 | 全部模型 | 50-100% | Extreme Perf | 6-8 | 4-8 |
 | **24GB** | 专业 | RTX 3090, RTX 4090, RTX 5090 | 全部 + 去模糊 + 人脸 | 100% | Extreme Perf | 8 | 8 |
 
-### 5.2 分级详解
+### 6.2 分级详解
 
 #### 🟢 入门级（≤4GB 显存）
 
@@ -411,7 +567,7 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 管线模式: Memory
 ```
 
-### 5.3 集成显卡 / AMD 显卡用户
+### 6.3 集成显卡 / AMD 显卡用户
 
 - 设置显存为 **2GB** 起步，根据实际效果调整
 - 性能模式选择 **Quality**
@@ -420,9 +576,9 @@ GPU 一次处理多少帧（仅 TensorRT 版本）。
 
 ---
 
-## 6. 管线模式详解：Memory vs Disk
+## 7. 管线模式详解：Memory vs Disk
 
-### 6.1 两种管线的架构差异
+### 7.1 两种管线的架构差异
 
 #### Memory 管线（纯内存管道）
 
@@ -456,7 +612,7 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 - ❌ **磁盘占用大**: 需要存储所有中间帧（如 4K 视频 10 万帧 × 1MB/帧 = 100GB）
 - ❌ **速度较慢**: 额外的 JPEG 编码/解码和磁盘 I/O 增加处理时间约 10-20%
 
-### 6.2 如何选择
+### 7.2 如何选择
 
 | 场景 | 推荐管线 | 原因 |
 |------|---------|------|
@@ -468,7 +624,7 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 | 磁盘空间紧张 | **Memory** | 不产生临时文件 |
 | Memory 管线卡死/报错 | **Disk** ⬅️ | 见下方排查指南 |
 
-### 6.3 ⚠️ Memory 管线卡死排查与解决
+### 7.3 ⚠️ Memory 管线卡死排查与解决
 
 **症状识别：**
 - 进度条长时间不动（超过预期帧处理时间的 3 倍以上）
@@ -507,7 +663,7 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 **第五步：尝试其他 AI 模型**
 - 切换到显存占用更低的模型（如 LVAx2 替代 BSRGANx4）
 
-### 6.4 Memory vs Disk 性能对比
+### 7.4 Memory vs Disk 性能对比
 
 以下为实测参考数据（1080p → 4K，RTX 3070 8GB，RealESR_Gx4）：
 
@@ -522,20 +678,20 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 
 ---
 
-## 7. 人脸增强
+## 8. 人脸增强
 
-### 7.1 功能说明
+### 8.1 功能说明
 
 人脸增强是在超分完成后，对人脸区域进行专门的细节修复。适用于视频中人物面部占比较大的内容（如访谈、Vlog、影视剧）。
 
-### 7.2 人脸模型
+### 8.2 人脸模型
 
 | 模型 | 输出尺寸 | 质量 | 说明 |
 |------|---------|------|------|
 | **codeformer**（推荐） | 固定 512×512 | 🟢 最好 | Transformer 架构，修复效果自然 |
 | **face_dat_x4** | 4× 超分 | 🟡 一般 | 旧版模型，简单放大 |
 
-### 7.3 参数说明
+### 8.3 参数说明
 
 #### 颜色匹配
 - **开启**: 融合前做颜色直方图匹配，消除人脸与背景的色调差异
@@ -549,16 +705,16 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 
 > 💡 推荐值：**0.5~0.7**。如果人脸出现扭曲或过度平滑，调高此值。
 
-### 7.4 注意事项
+### 8.4 注意事项
 - 人脸增强需要额外约 **1-2GB 显存**
 - 处理时间增加约 20-40%（取决于画面中人脸数量和大小）
 - 对于没有人脸或人脸极小的视频（远景、风景），建议关闭以节省时间
 
 ---
 
-## 8. 常见问题排查
+## 9. 常见问题排查
 
-### 8.1 处理速度太慢
+### 9.1 处理速度太慢
 
 1. **检查推理后端**: 确认标题栏显示 TensorRT 或 CUDA，如果显示 CPU 则 GPU 未生效
 2. **提高输入缩放**: 默认 25% 已经很快，如果还慢 → 降低输入缩放到 10-15%
@@ -566,7 +722,7 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 4. **性能模式**: 切换到 Extreme Performance
 5. **关闭去模糊和人脸增强**: 这两个功能会显著增加处理时间
 
-### 8.2 显存不足 (OOM) / 程序崩溃
+### 9.2 显存不足 (OOM) / 程序崩溃
 
 1. **降低多线程**: OFF → 2 threads 逐步尝试
 2. **降低批处理**: 设为 1
@@ -575,25 +731,25 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 5. **关闭去模糊和人脸增强**
 6. **切换到 Disk 管线**（减少内存压力）
 
-### 8.3 输出视频没有声音
+### 9.3 输出视频没有声音
 
 - 检查源视频是否有音轨（部分视频源无音频）
 - Disk 管线会自动保留音频
 - Memory 管线通过 `-map 1:a?` 复制音频流，如果源视频音频编码特殊可能导致失败
 
-### 8.4 画面出现网格状接缝
+### 9.4 画面出现网格状接缝
 
 - 增大 **Tile 重叠** 参数（16 → 32 或 64）
 - 切换到 Quality 性能模式
 - 适当提高输入缩放比例
 
-### 8.5 AI 输出画面过于 "塑料感"
+### 9.5 AI 输出画面过于 "塑料感"
 
 - 开启 **AI 融合**，选择 Low 或 Medium
 - 切换到更自然的模型（如 LVAx2）
 - 使用 IRCNN 先做去噪预处理
 
-### 8.6 程序启动后无响应/白屏
+### 9.6 程序启动后无响应/白屏
 
 1. 确认运行目录下存在 `Assets/` 文件夹及 ONNX Runtime DLL
 2. 安装 [Visual C++ Redistributable 2015-2022](https://aka.ms/vs/17/release/vc_redist.x64.exe)
@@ -623,5 +779,3 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 ---
 
 > 📧 问题反馈与技术支持: 请在项目仓库提交 Issue。
->
-> 🔄 本文档版本: 2026.1 | 与 QualityScaler-Go 2026.1-mvp 配套
