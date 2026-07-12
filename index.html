@@ -39,7 +39,7 @@
   "url": "https://qualityscaler-go.lingxin.org",
   "datePublished": "2022-01-01",
   "dateModified": "2026-06-04",
-  "version": "4.2.0",
+  "version": "",
   "license": "https://opensource.org/licenses/MIT",
   "offers": {
     "@type": "Offer",
@@ -278,7 +278,7 @@ a:hover{color:var(--accent-soft)}
 <main>
 <section class="hero">
   <div class="container">
-    <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="heroBadge">v4.2.0 — Free &amp; Open Source</span></div>
+    <div class="hero-badge"><span class="hero-badge-dot"></span><span data-i18n="heroBadge">{v} — Free &amp; Open Source</span></div>
     <h1><span data-i18n="heroLine1">AI-Powered</span><br><span data-i18n="heroLine2">Image &amp; Video Super‑Resolution</span></h1>
     <p class="hero-desc" data-i18n="heroDesc">Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.</p>
     <div class="hero-actions">
@@ -387,7 +387,7 @@ a:hover{color:var(--accent-soft)}
         <div class="dl-btns"><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Windows</a><a href="https://github.com/Ling0727-ai/qs-go-website/releases/" class="dl-btn">Linux</a></div>
       </div>
     </div>
-    <p class="gh-link" data-i18n-html="ghLink">All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT License</p>
+    <p class="gh-link" data-i18n-html="ghLink">All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · {v} · MIT License</p>
   </div>
 </section>
 </main>
@@ -415,7 +415,7 @@ var T = {
     ogTitle: 'QualityScaler-Go — AI Image & Video Super-Resolution',
     ogDesc: 'Free, open-source AI super-resolution for images and videos. Built in Go with TensorRT. Multi-GPU backend, face enhancement, batch processing.',
     navFeatures: 'Features', navModels: 'Models', navDownload: 'Download', navDocs: 'Docs', navCTA: 'Download',
-    heroBadge: 'v4.2.0 — Free & Open Source',
+    heroBadge: '{v} — Free & Open Source',
     heroLine1: 'AI-Powered', heroLine2: 'Image & Video Super‑Resolution',
     heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.',
     heroCTA: 'Download Free', heroGitHub: 'View on GitHub',
@@ -441,7 +441,7 @@ var T = {
     dlCUDALabel: 'NVIDIA GPU via ONNX', dlCUDADesc: 'CUDA-accelerated ONNX Runtime. Great for NVIDIA users who want a simpler setup than TensorRT.',
     dlCPULabel: 'Universal compatibility', dlCPUDesc: 'Pure CPU inference via ONNX Runtime. Works on any machine — no GPU required.',
     specAuto: 'Auto-Detect', specCPU: 'CPU Only',
-    ghLink: 'All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT License',
+    ghLink: 'All downloads are hosted on <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>. Windows (.zip) &amp; Linux (.tar.gz) · {v} · MIT License',
     footerCopy: '&copy; 2022–2026 Annunziata Gianluca. MIT License.'
   },
   zh: {
@@ -451,7 +451,7 @@ var T = {
     ogTitle: 'QualityScaler-Go — AI 图像与视频超分辨率',
     ogDesc: '免费开源的 AI 图像与视频超分辨率桌面工具。多 GPU 后端，人脸增强，批量处理，本地运行。',
     navFeatures: '功能', navModels: '模型', navDownload: '下载', navDocs: '文档', navCTA: '免费下载',
-    heroBadge: 'v4.2.0 — 免费开源',
+    heroBadge: '{v} — 免费开源',
     heroLine1: 'AI 驱动', heroLine2: '图像与视频超分辨率',
     heroDesc: '使用前沿 AI 模型放大图像和视频。支持 Real-ESRGAN、BSRGAN、CodeFormer —— 自动选择最优 GPU 后端，内置人脸增强。',
     heroCTA: '免费下载', heroGitHub: '在 GitHub 查看',
@@ -477,26 +477,40 @@ var T = {
     dlCUDALabel: 'NVIDIA GPU (ONNX)', dlCUDADesc: 'CUDA 加速的 ONNX Runtime。适合想简化配置的 NVIDIA 用户，比 TensorRT 更易设置。',
     dlCPULabel: '通用兼容', dlCPUDesc: '纯 CPU 推理，基于 ONNX Runtime。无需 GPU，任何机器都能运行。',
     specAuto: '自动检测', specCPU: '仅 CPU',
-    ghLink: '所有下载托管在 <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>。Windows (.zip) &amp; Linux (.tar.gz) · v4.2.0 · MIT 协议',
+    ghLink: '所有下载托管在 <a href="https://github.com/Ling0727-ai/qs-go-website/releases/" target="_blank" rel="noopener">GitHub Releases</a>。Windows (.zip) &amp; Linux (.tar.gz) · {v} · MIT 协议',
     footerCopy: '&copy; 2022–2026 Annunziata Gianluca. MIT License.'
   }
 };
 
-var lang = localStorage.getItem('qs-lang') || 'en';
+var lang = localStorage.getItem('qs-lang') || 'en'; var appVersion = ''; var downloadUrl = '';
 
-function setLang(l) {
+function renderLang(l) {
   lang = l;
   localStorage.setItem('qs-lang', l);
   document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
-  var t = T[l];
+  var t = T[l]; var v = appVersion || '';
   document.title = t.pageTitle;
   ['description','keywords'].forEach(function(n){ var e = document.querySelector('meta[name="'+n+'"]'); if(e) e.content = t[n === 'description' ? 'metaDesc' : 'metaKeys']; });
   ['og:title','og:description'].forEach(function(n){ var e = document.querySelector('meta[property="'+n+'"]'); if(e) e.content = t[n === 'og:title' ? 'ogTitle' : 'ogDesc']; });
-  document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t[el.dataset.i18n] || el.dataset.i18n; });
-  document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = t[el.dataset.i18nHtml] || el.dataset.i18nHtml; });
+  document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = (t[el.dataset.i18n] || el.dataset.i18n).replace(/\{v\}/g, v); });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = (t[el.dataset.i18nHtml] || el.dataset.i18nHtml).replace(/\{v\}/g, v); });
   document.querySelectorAll('.lang-opt').forEach(function(o){ o.classList.toggle('active', o.dataset.lang === l); });
 }
 
+async function setLang(l) {
+  if (!appVersion) {
+    try {
+      var r = await fetch('/version.json');
+      if (r.ok) { var j = await r.json(); appVersion = j.version || ''; downloadUrl = j.downloadUrl || ''; }
+      // update JSON-LD version
+      var ld = document.querySelector('script[type="application/ld+json"]');
+      if (ld && appVersion) {
+        try { var d = JSON.parse(ld.textContent); if (d.version) { d.version = appVersion.replace(/^v/, ''); ld.textContent = JSON.stringify(d); } } catch(e) {}
+      }
+    } catch(e) {}
+  }
+  renderLang(l);
+}
 document.getElementById('langToggle').addEventListener('click', function(e){ var o = e.target.closest('.lang-opt'); if (o) setLang(o.dataset.lang); });
 setLang(lang);
 
