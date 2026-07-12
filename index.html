@@ -13,19 +13,18 @@
 	<meta name="msapplication-TileImage" content="miao.png">
 	<link rel="sitemap" type="application/xml" href="/sitemap.xml">
 	<link rel="preconnect" href="https://api.indexnow.org">
-<title>QualityScaler-go - High-Performance AI Video Enhancer (TensorRT & Go)</title>
-<meta name="description" content="Free, open-source AI video upscaler and face restoration tool. Rewritten in Go with TensorRT 10.x for maximum GPU performance.">
-<meta name="keywords" content="qualityscaler-go, ai video enhancer, tensorrt video upscale, real-esrgan go, codeformer tensorrt, video frame interpolation, nvidia rtx optimization">
-<meta property="og:title" content="QualityScaler-go - High-Performance AI Video Enhancer">
-<meta property="og:description" content="Rewritten in Go with TensorRT 10.x acceleration. High-speed AI video upscaling and face restoration.">
+<title>QualityScaler-Go — AI Image & Video Super-Resolution</title>
+<meta name="description" content="QualityScaler-Go: free, open-source AI image and video super-resolution. Built in Go with TensorRT, Real-ESRGAN, BSRGAN, CodeFormer. GPU auto-detect, face enhancement, batch processing.">
+<meta name="keywords" content="QualityScaler-Go, ai video enhancer, tensorrt video upscale, real-esrgan go, codeformer tensorrt, video frame interpolation, nvidia rtx optimization">
+<meta property="og:title" content="QualityScaler-Go — AI Image & Video Super-Resolution">
+<meta property="og:description" content="Free, open-source AI super-resolution. Built in Go with TensorRT 10.x acceleration. Upscale with Real-ESRGAN, BSRGAN, CodeFormer.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://qualityscaler-go.lingxin.org">
 <meta property="og:image" content="https://qualityscaler-go.lingxin.org/miao.png">
 <meta property="og:image:width" content="673">
 <meta property="og:image:height" content="694">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="QualityScaler-go - High-Performance AI Video Enhancer">
-<meta name="twitter:description" content="Rewritten in Go with TensorRT 10.x acceleration. High-speed AI video upscaling and face restoration.">
+<meta name="twitter:title" content="QualityScaler-Go — AI Image & Video Super-Resolution">
+<meta name="twitter:description" content="Free, open-source AI super-resolution. Built in Go with TensorRT 10.x acceleration.">
 <meta name="twitter:image" content="https://qualityscaler-go.lingxin.org/miao.png">
 <link rel="canonical" href="https://qualityscaler-go.lingxin.org">
 <meta name="robots" content="index, follow">
@@ -33,7 +32,7 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "QualityScaler",
+  "name": "QualityScaler-Go",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows, Linux",
   "description": "AI-powered image and video super-resolution tool with TensorRT acceleration. Upscale with Real-ESRGAN, BSRGAN, CodeFormer and more.",
@@ -57,7 +56,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "QualityScaler",
+  "name": "QualityScaler-Go",
   "url": "https://qualityscaler-go.lingxin.org",
   "potentialAction": {
     "@type": "SearchAction",
@@ -73,7 +72,7 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "QualityScaler",
+  "name": "QualityScaler-Go",
   "url": "https://qualityscaler-go.lingxin.org",
   "logo": "https://qualityscaler-go.lingxin.org/miao.png",
   "sameAs": [
@@ -257,11 +256,12 @@ a:hover{color:var(--accent-soft)}
 <header>
 <nav class="nav" aria-label="Main navigation">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" aria-label="QualityScaler Home"><img src="miao.png" alt="QualityScaler" width="32" height="32" decoding="async">QualityScaler</a>
+    <a href="#" class="nav-logo" aria-label="QualityScaler-Go Home"><img src="miao.png" alt="QualityScaler-Go" width="32" height="32" decoding="async">QualityScaler-Go</a>
     <ul class="nav-links">
       <li><a href="#features" data-i18n="navFeatures">Features</a></li>
       <li><a href="#models" data-i18n="navModels">Models</a></li>
       <li><a href="#download" data-i18n="navDownload">Download</a></li>
+      <li><a href="/doc/" data-i18n="navDocs">Docs</a></li>
       <li><a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
     <div class="nav-right">
@@ -333,7 +333,7 @@ a:hover{color:var(--accent-soft)}
     <h2 class="section-title" style="margin:0 auto 8px" data-i18n="stepsTitle">Three steps to higher resolution</h2>
     <p class="section-sub" style="margin:0 auto 48px" data-i18n="stepsSub">No cloud uploads. Everything runs locally on your machine.</p>
     <div class="steps">
-      <div class="step-card animate-in"><div class="step-num">1</div><h3 data-i18n="step1Title">Drop your files</h3><p data-i18n="step1Desc">Drag &amp; drop images or video files into QualityScaler. Batch folders supported.</p></div>
+      <div class="step-card animate-in"><div class="step-num">1</div><h3 data-i18n="step1Title">Drop your files</h3><p data-i18n="step1Desc">Drag &amp; drop images or video files into QualityScaler-Go. Batch folders supported.</p></div>
       <div class="step-card animate-in"><div class="step-num">2</div><h3 data-i18n="step2Title">Choose a model</h3><p data-i18n="step2Desc">Pick from 10+ AI models — Real-ESRGAN, CodeFormer, anime-optimized variants, and more.</p></div>
       <div class="step-card animate-in"><div class="step-num">3</div><h3 data-i18n="step3Title">Export &amp; enjoy</h3><p data-i18n="step3Desc">Your upscaled output is saved locally. No watermark, no file size limit, no subscription.</p></div>
     </div>
@@ -394,11 +394,12 @@ a:hover{color:var(--accent-soft)}
 
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-logo"><img src="miao.png" alt="QualityScaler" width="24" height="24" decoding="async"> QualityScaler</div>
+    <div class="footer-logo"><img src="miao.png" alt="QualityScaler-Go" width="24" height="24" decoding="async"> QualityScaler-Go</div>
     <ul class="footer-links">
       <li><a href="#features" data-i18n="navFeatures">Features</a></li>
       <li><a href="#models" data-i18n="navModels">Models</a></li>
       <li><a href="#download" data-i18n="navDownload">Download</a></li>
+      <li><a href="/doc/" data-i18n="navDocs">Docs</a></li>
       <li><a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
     <span class="footer-copy"><time datetime="2022">2022</time>–<time datetime="2026">2026</time> Annunziata Gianluca. MIT License.</span>
@@ -408,20 +409,20 @@ a:hover{color:var(--accent-soft)}
 <script>
 var T = {
   en: {
-    pageTitle: 'QualityScaler — AI Image & Video Upscaler',
-    metaDesc: 'AI-powered image and video super-resolution tool. Upscale with Real-ESRGAN, BSRGAN, CodeFormer and more.',
-    metaKeys: 'AI upscaling,image super resolution,video upscaling,Real-ESRGAN,BSRGAN,CodeFormer,face enhancement',
-    ogTitle: 'QualityScaler — AI Image & Video Upscaler',
-    ogDesc: 'Free, open-source AI super-resolution for images and videos. Multi-GPU backend, face enhancement, batch processing.',
-    navFeatures: 'Features', navModels: 'Models', navDownload: 'Download', navCTA: 'Download',
+    pageTitle: 'QualityScaler-Go — AI Image & Video Super-Resolution',
+    metaDesc: 'QualityScaler-Go: free, open-source AI image and video super-resolution. Real-ESRGAN, BSRGAN, CodeFormer with TensorRT acceleration.',
+    metaKeys: 'QualityScaler-Go,AI upscaling,image super resolution,video upscaling,Real-ESRGAN,BSRGAN,CodeFormer,face enhancement',
+    ogTitle: 'QualityScaler-Go — AI Image & Video Super-Resolution',
+    ogDesc: 'Free, open-source AI super-resolution for images and videos. Built in Go with TensorRT. Multi-GPU backend, face enhancement, batch processing.',
+    navFeatures: 'Features', navModels: 'Models', navDownload: 'Download', navDocs: 'Docs', navCTA: 'Download',
     heroBadge: 'v4.2.0 — Free & Open Source',
     heroLine1: 'AI-Powered', heroLine2: 'Image & Video Super‑Resolution',
-    heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection & face enhancement.',
+    heroDesc: 'Upscale images and videos with cutting-edge AI models. Real-ESRGAN, BSRGAN, CodeFormer — with automatic GPU backend selection &amp; face enhancement.',
     heroCTA: 'Download Free', heroGitHub: 'View on GitHub',
-    terminalTitle: 'QualityScaler Pipeline',
+    terminalTitle: 'QualityScaler-Go Pipeline',
     terminalBody: '<span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br><span class="output">[1/4] Loading model <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br><span class="output">[2/4] Backend selected: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br><span class="output">[3/4] Processing: 1920×1080 → <span class="highlight">7680×4320</span> (tile: 512×512, overlap: 64)</span><br><span class="output">[4/4] Saved: photo_4x.png (4.2s, 48 tiles)</span><br><span class="prompt">$</span> <span class="cursor">█</span>',
     statModels: 'AI Models', statScale: 'Upscale Factor', statSpeed: '2-3× Faster Inference', statLicense: 'Open Source License',
-    featuresLabel: 'Features', featuresTitle: 'Everything you need for AI upscaling', featuresSub: 'QualityScaler packs a complete AI super-resolution pipeline into a clean desktop app.',
+    featuresLabel: 'Features', featuresTitle: 'Everything you need for AI upscaling', featuresSub: 'QualityScaler-Go packs a complete AI super-resolution pipeline into a clean desktop app.',
     featImgTitle: 'Image Upscaling', featImgDesc: '2×, 3×, 4× upscaling with Real-ESRGAN, BSRGAN, Real-CUGAN, and more.',
     featVidTitle: 'Video Upscaling', featVidDesc: 'Frame-by-frame AI processing with FFmpeg. Preserves original audio, framerate, and VFR streams.',
     featFaceTitle: 'Face Enhancement', featFaceDesc: 'Cascaded pipeline: detect faces, enhance with CodeFormer, then blend back via alpha feathering.',
@@ -429,7 +430,7 @@ var T = {
     featBatchTitle: 'Batch Processing', featBatchDesc: 'Drop a folder and let the async pipeline process everything. Feeder → inference → saver with zero GPU starvation.',
     featFP16Title: 'FP16 Quantization', featFP16Desc: 'Half-precision inference delivers 2–3× throughput with negligible quality loss.',
     stepsLabel: 'How It Works', stepsTitle: 'Three steps to higher resolution', stepsSub: 'No cloud uploads. Everything runs locally on your machine.',
-    step1Title: 'Drop your files', step1Desc: 'Drag & drop images or video files into QualityScaler. Batch folders supported.',
+    step1Title: 'Drop your files', step1Desc: 'Drag & drop images or video files into QualityScaler-Go. Batch folders supported.',
     step2Title: 'Choose a model', step2Desc: 'Pick from 10+ AI models — Real-ESRGAN, CodeFormer, anime-optimized variants, and more.',
     step3Title: 'Export & enjoy', step3Desc: 'Your upscaled output is saved locally. No watermark, no file size limit, no subscription.',
     modelsLabel: 'AI Models', modelsTitle: '10+ state-of-the-art models', modelsSub: 'Each model is optimized for specific use cases.',
@@ -444,20 +445,20 @@ var T = {
     footerCopy: '&copy; 2022–2026 Annunziata Gianluca. MIT License.'
   },
   zh: {
-    pageTitle: 'QualityScaler — AI 图像与视频超分辨率',
+    pageTitle: 'QualityScaler-Go — AI 图像与视频超分辨率',
     metaDesc: 'AI 驱动的图像和视频超分辨率工具。支持 Real-ESRGAN、BSRGAN、CodeFormer 等模型，智能 GPU 后端选择。',
     metaKeys: 'AI超分,图像超分辨率,视频超分,Real-ESRGAN,BSRGAN,CodeFormer,人脸增强',
-    ogTitle: 'QualityScaler — AI 图像与视频超分辨率',
+    ogTitle: 'QualityScaler-Go — AI 图像与视频超分辨率',
     ogDesc: '免费开源的 AI 图像与视频超分辨率桌面工具。多 GPU 后端，人脸增强，批量处理，本地运行。',
-    navFeatures: '功能', navModels: '模型', navDownload: '下载', navCTA: '免费下载',
+    navFeatures: '功能', navModels: '模型', navDownload: '下载', navDocs: '文档', navCTA: '免费下载',
     heroBadge: 'v4.2.0 — 免费开源',
     heroLine1: 'AI 驱动', heroLine2: '图像与视频超分辨率',
     heroDesc: '使用前沿 AI 模型放大图像和视频。支持 Real-ESRGAN、BSRGAN、CodeFormer —— 自动选择最优 GPU 后端，内置人脸增强。',
     heroCTA: '免费下载', heroGitHub: '在 GitHub 查看',
-    terminalTitle: 'QualityScaler 处理流水线',
+    terminalTitle: 'QualityScaler-Go 处理流水线',
     terminalBody: '<span class="prompt">$</span> <span class="cmd">qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4</span><br><span class="output">[1/4] 加载模型 <span class="highlight">Real-ESRGAN x4</span> ... OK</span><br><span class="output">[2/4] 推理后端: <span class="highlight">TensorRT (NVIDIA GeForce RTX 4090)</span></span><br><span class="output">[3/4] 处理中: 1920×1080 → <span class="highlight">7680×4320</span> (分块: 512×512, 重叠: 64)</span><br><span class="output">[4/4] 已保存: photo_4x.png (4.2s, 48 块)</span><br><span class="prompt">$</span> <span class="cursor">█</span>',
     statModels: 'AI 模型', statScale: '放大倍率', statSpeed: '2-3倍 推理加速', statLicense: '开源协议',
-    featuresLabel: '功能特性', featuresTitle: 'AI 超分辨率所需的一切', featuresSub: 'QualityScaler 将完整的 AI 超分流水线集成在一个简洁的桌面应用中。',
+    featuresLabel: '功能特性', featuresTitle: 'AI 超分辨率所需的一切', featuresSub: 'QualityScaler-Go 将完整的 AI 超分流水线集成在一个简洁的桌面应用中。',
     featImgTitle: '图像超分辨率', featImgDesc: '支持 Real-ESRGAN、BSRGAN、Real-CUGAN 等模型的 2×、3×、4× 放大。分块推理防止大图显存溢出。',
     featVidTitle: '视频超分辨率', featVidDesc: '基于 FFmpeg 的逐帧 AI 处理。保留原始音频、帧率和 VFR（可变帧率）流。',
     featFaceTitle: '人脸增强', featFaceDesc: '级联流水线：原始分辨率检测人脸 → CodeFormer 增强 → Alpha 羽化无缝融合回背景图像。',
@@ -465,7 +466,7 @@ var T = {
     featBatchTitle: '批量处理', featBatchDesc: '拖入整个文件夹，异步流水线自动处理全部文件。Feeder → 推理 → 保存，GPU 零空闲。',
     featFP16Title: 'FP16 半精度量化', featFP16Desc: '半精度推理实现 2–3 倍吞吐量提升，画质损失可忽略。',
     stepsLabel: '使用流程', stepsTitle: '三步获得更高分辨率', stepsSub: '无需云端上传，一切在本地机器上运行。',
-    step1Title: '拖入文件', step1Desc: '将图像或视频文件拖入 QualityScaler，支持批量文件夹处理。',
+    step1Title: '拖入文件', step1Desc: '将图像或视频文件拖入 QualityScaler-Go，支持批量文件夹处理。',
     step2Title: '选择模型', step2Desc: '从 10+ 个 AI 模型中选择 —— 通用场景用 Real-ESRGAN，人脸用 CodeFormer，还有动漫优化版本。',
     step3Title: '导出享用', step3Desc: '超分结果保存在本地。无水印、无文件大小限制、无需订阅。',
     modelsLabel: 'AI 模型', modelsTitle: '10+ 个顶级 AI 模型', modelsSub: '每个模型针对不同场景优化，选择最适合你内容的那一个。',
