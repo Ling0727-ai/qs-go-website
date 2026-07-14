@@ -50,6 +50,10 @@ a:hover{color:var(--accent-soft)}
 .nav-links a:hover{color:var(--text-primary)}
 .nav-links a.active{color:var(--accent-soft)}
 
+.lang-toggle{display:flex;align-items:center;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-full);padding:2px;cursor:pointer}
+.lang-opt{padding:5px 11px;font-size:12px;font-weight:600;border-radius:var(--radius-full);color:var(--text-tertiary);transition:all var(--transition-fast)}
+.lang-opt.active{background:var(--accent);color:#fff}
+
 .doc-wrapper{display:flex;max-width:1120px;margin:0 auto;padding:72px 24px 40px;gap:32px}
 .doc-sidebar{width:220px;flex-shrink:0;position:sticky;top:80px;align-self:flex-start;max-height:calc(100vh - 100px);overflow-y:auto;padding-right:8px}
 .doc-sidebar nav{display:flex;flex-direction:column;gap:2px}
@@ -119,6 +123,12 @@ h2:hover .header-anchor,h3:hover .header-anchor{opacity:1}
       <li><a href="/doc/" class="active">Docs</a></li>
       <li><a href="https://github.com/Ling0727-ai/qs-go-website" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
+    <div class="nav-right">
+      <div class="lang-toggle" id="langToggle">
+        <span class="lang-opt" data-lang="en">EN</span>
+        <span class="lang-opt" data-lang="zh">中文</span>
+      </div>
+    </div>
   </div>
 </nav>
 </header>
@@ -140,9 +150,24 @@ h2:hover .header-anchor,h3:hover .header-anchor{opacity:1}
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-(async function(){
+var LANG_CONFIG = {
+  en: { file: '/doc/USER_MANUAL-en.md' },
+  zh: { file: '/doc/USER_MANUAL-zh_cn.md' }
+};
+
+function getLang(){ return localStorage.getItem('qs-lang') || 'en'; }
+function setLang(lang){
+  localStorage.setItem('qs-lang', lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('#langToggle .lang-opt').forEach(function(o){
+    o.classList.toggle('active', o.dataset.lang === lang);
+  });
+}
+
+async function loadDoc(lang){
+  var cfg = LANG_CONFIG[lang] || LANG_CONFIG['en'];
   try {
-    var resp = await fetch('/doc/USER_MANUAL.md');
+    var resp = await fetch(cfg.file);
     if (!resp.ok) throw new Error('Failed to load manual: ' + resp.status);
     var md = await resp.text();
     var html = marked.parse(md);
@@ -196,6 +221,23 @@ h2:hover .header-anchor,h3:hover .header-anchor{opacity:1}
   } catch(e){
     document.getElementById('docContent').innerHTML = '<p style="color:var(--danger)">Failed to load documentation: ' + e.message + '</p>';
   }
+}
+
+// Language switch handler
+document.getElementById('langToggle').addEventListener('click', function(e){
+  var opt = e.target.closest('.lang-opt');
+  if (!opt) return;
+  var lang = opt.dataset.lang;
+  if (lang === getLang()) return;
+  setLang(lang);
+  loadDoc(lang);
+});
+
+// Init
+(function init(){
+  var lang = getLang();
+  setLang(lang);
+  loadDoc(lang);
 })();
 </script>
 </body>
