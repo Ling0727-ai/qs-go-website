@@ -12,22 +12,25 @@
 	<meta name="msapplication-TileColor" content="#0b1120">
 	<meta name="msapplication-TileImage" content="miao.png">
 	<link rel="sitemap" type="application/xml" href="/sitemap.xml">
-	<link rel="preconnect" href="https://api.indexnow.org">
 <title>QualityScaler-Go — AI Image & Video Super-Resolution</title>
 <meta name="description" content="QualityScaler-Go: free, open-source AI image and video super-resolution. Built in Go with TensorRT, Real-ESRGAN, BSRGAN, CodeFormer. GPU auto-detect, face enhancement, batch processing.">
 <meta name="keywords" content="QualityScaler-Go, ai video enhancer, tensorrt video upscale, real-esrgan go, codeformer tensorrt, video frame interpolation, nvidia rtx optimization">
 <meta property="og:title" content="QualityScaler-Go — AI Image & Video Super-Resolution">
 <meta property="og:description" content="Free, open-source AI super-resolution. Built in Go with TensorRT 10.x acceleration. Upscale with Real-ESRGAN, BSRGAN, CodeFormer.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://qualityscaler-go.lingxin.org">
+<meta property="og:url" content="https://qualityscaler-go.lingxin.org/">
+<meta property="og:site_name" content="QualityScaler-Go">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://qualityscaler-go.lingxin.org/miao.png">
 <meta property="og:image:width" content="673">
 <meta property="og:image:height" content="694">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="QualityScaler-Go — AI Image & Video Super-Resolution">
 <meta name="twitter:description" content="Free, open-source AI super-resolution. Built in Go with TensorRT 10.x acceleration.">
 <meta name="twitter:image" content="https://qualityscaler-go.lingxin.org/miao.png">
-<link rel="canonical" href="https://qualityscaler-go.lingxin.org">
+<link rel="canonical" href="https://qualityscaler-go.lingxin.org/">
 <meta name="robots" content="index, follow">
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -36,10 +39,13 @@
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Windows, Linux",
   "description": "AI-powered image and video super-resolution tool with TensorRT acceleration. Upscale with Real-ESRGAN, BSRGAN, CodeFormer and more.",
-  "url": "https://qualityscaler-go.lingxin.org",
+  "url": "https://qualityscaler-go.lingxin.org/",
+  "mainEntityOfPage": "https://qualityscaler-go.lingxin.org/",
+  "image": "https://qualityscaler-go.lingxin.org/miao.png",
   "datePublished": "2022-01-01",
-  "dateModified": "2026-06-04",
+  "dateModified": "2026-07-28",
   "version": "",
+  "downloadUrl": "https://github.com/Ling0727-ai/qs-go-website/releases/",
   "license": "https://opensource.org/licenses/MIT",
   "offers": {
     "@type": "Offer",
@@ -57,15 +63,8 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "QualityScaler-Go",
-  "url": "https://qualityscaler-go.lingxin.org",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://qualityscaler-go.lingxin.org?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
-  }
+  "url": "https://qualityscaler-go.lingxin.org/",
+  "inLanguage": ["en", "zh-CN"]
 }
 </script>
 <script type="application/ld+json">
@@ -73,9 +72,10 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "QualityScaler-Go",
-  "url": "https://qualityscaler-go.lingxin.org",
+  "url": "https://qualityscaler-go.lingxin.org/",
   "logo": "https://qualityscaler-go.lingxin.org/miao.png",
   "sameAs": [
+    "https://github.com/Ling0727-ai/QualityScaler-go",
     "https://github.com/Ling0727-ai/qs-go-website"
   ]
 }
@@ -89,7 +89,7 @@
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://qualityscaler-go.lingxin.org"
+      "item": "https://qualityscaler-go.lingxin.org/"
     }
   ]
 }
@@ -513,16 +513,6 @@ async function setLang(l) {
 }
 document.getElementById('langToggle').addEventListener('click', function(e){ var o = e.target.closest('.lang-opt'); if (o) setLang(o.dataset.lang); });
 setLang(lang);
-
-// IndexNow submission
-(function(){
-  var key = 'aae455a0183e42d69ec877b1ee390594';
-  var url = location.href.split('#')[0];
-  var api = 'https://api.indexnow.org/indexnow?url=' + encodeURIComponent(url) + '&key=' + encodeURIComponent(key);
-  var r = new XMLHttpRequest();
-  r.open('GET', api, true);
-  r.send();
-})();
 
 var obs = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.15 });
 document.querySelectorAll('.animate-in').forEach(function(el){ obs.observe(el); });
