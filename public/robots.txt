@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+User-agent: Googlebot
+Allow: /
+
 Sitemap: https://qualityscaler-go.lingxin.org/sitemap.xml
