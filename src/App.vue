@@ -170,11 +170,12 @@ const copy = {
   },
 } as const
 
-const lang = ref<Lang>('zh')
+const routePath = window.location.pathname
+const lang = ref<Lang>(routePath === '/en' || routePath.startsWith('/en/') ? 'en' : 'zh')
 const version = ref('v5.0.1-rc1')
 const downloadUrl = ref('https://github.com/Ling0727-ai/qs-go-website/releases/')
 const terminalStep = ref(0)
-const isDocPage = ref(window.location.pathname.startsWith('/doc'))
+const isDocPage = ref(routePath.startsWith('/doc') || routePath.startsWith('/en/doc'))
 const docHtml = ref('')
 const docLoading = ref(false)
 const docError = ref('')
@@ -196,14 +197,18 @@ const editions = computed<Edition[]>(() =>
 const manualFile = computed(() => (lang.value === 'zh' ? '/doc/USER_MANUAL-zh_cn.md' : '/doc/USER_MANUAL-en.md'))
 
 function toggleLang() {
-  lang.value = lang.value === 'en' ? 'zh' : 'en'
-  localStorage.setItem('qs-site-lang', lang.value)
-  document.documentElement.lang = lang.value === 'zh' ? 'zh-CN' : 'en'
+  const nextLang: Lang = lang.value === 'en' ? 'zh' : 'en'
+  const targetPath = isDocPage.value
+    ? (nextLang === 'en' ? '/en/doc/' : '/doc/')
+    : (nextLang === 'en' ? '/en/' : '/')
+  localStorage.setItem('qs-site-lang', nextLang)
+  window.location.assign(`${targetPath}${window.location.hash}`)
 }
 
 function navHref(target: string) {
-  if (target === 'docs') return '/doc/'
-  return isDocPage.value ? `/#${target}` : `#${target}`
+  const homePath = lang.value === 'en' ? '/en/' : '/'
+  if (target === 'docs') return lang.value === 'en' ? '/en/doc/' : '/doc/'
+  return isDocPage.value ? `${homePath}#${target}` : `#${target}`
 }
 
 function makeSlug(text: string) {
@@ -241,7 +246,9 @@ async function loadDoc() {
     await nextTick()
     requestAnimationFrame(setupTocHighlight)
     window.setTimeout(setupTocHighlight, 80)
-    document.title = `${lang.value === 'zh' ? '用户手册' : 'User Manual'} - QualityScaler-Go`
+    document.title = lang.value === 'zh'
+      ? 'QualityScaler-Go 用户手册 | 安装、模型与故障排查'
+      : 'QualityScaler-Go User Manual | Setup, models and troubleshooting'
   } catch (error) {
     docError.value = error instanceof Error ? error.message : 'Failed to load documentation.'
   } finally {
@@ -305,10 +312,7 @@ function scrollTocToHeading(id: string) {
 }
 
 onMounted(async () => {
-  const savedLang = localStorage.getItem('qs-site-lang')
-  if (savedLang === 'en' || savedLang === 'zh') {
-    lang.value = savedLang
-  }
+  localStorage.setItem('qs-site-lang', lang.value)
   document.documentElement.lang = lang.value === 'zh' ? 'zh-CN' : 'en'
 
   try {
@@ -340,7 +344,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="site-shell">
     <header class="nav-bar">
-      <a class="brand" :href="isDocPage ? '/' : '#top'" aria-label="QualityScaler-Go home">
+      <a class="brand" :href="isDocPage ? (lang === 'en' ? '/en/' : '/') : '#top'" aria-label="QualityScaler-Go home">
         <img src="/miao.png" alt="" width="34" height="34" />
         <span>QualityScaler-Go</span>
       </a>
@@ -496,7 +500,7 @@ onBeforeUnmount(() => {
           <p>{{ t.docsDesc }}</p>
         </div>
         <div class="doc-actions">
-          <a class="button button-secondary" href="/doc/">
+          <a class="button button-secondary" :href="lang === 'en' ? '/en/doc/' : '/doc/'">
             <BookOpen :size="18" />
             {{ lang === 'zh' ? t.chineseManual : t.englishManual }}
           </a>

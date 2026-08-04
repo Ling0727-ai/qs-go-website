@@ -1,0 +1,1393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QualityScaler-Go User Manual | Setup, models and troubleshooting</title>
+    <meta name="description" content="QualityScaler-Go user manual covering installation, CUDA and cuDNN setup, AI model selection, VRAM settings, video pipelines, and troubleshooting." />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta property="og:title" content="QualityScaler-Go User Manual | Setup, models and troubleshooting" />
+    <meta property="og:description" content="QualityScaler-Go user manual covering installation, CUDA and cuDNN setup, AI model selection, VRAM settings, video pipelines, and troubleshooting." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://qualityscaler-go.lingxin.org/en/doc/" />
+    <meta property="og:image" content="https://qualityscaler-go.lingxin.org/miao.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <script type="module" crossorigin src="/assets/index-DOT62C06.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Byb9a6O1.css">
+
+    <link rel="canonical" href="https://qualityscaler-go.lingxin.org/en/doc/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://qualityscaler-go.lingxin.org/doc/" />
+    <link rel="alternate" hreflang="en" href="https://qualityscaler-go.lingxin.org/en/doc/" />
+    <link rel="alternate" hreflang="x-default" href="https://qualityscaler-go.lingxin.org/doc/" />
+    <meta name="twitter:title" content="QualityScaler-Go User Manual | Setup, models and troubleshooting" />
+    <meta name="twitter:description" content="QualityScaler-Go user manual covering installation, CUDA and cuDNN setup, AI model selection, VRAM settings, video pipelines, and troubleshooting." />
+    <meta name="twitter:image" content="https://qualityscaler-go.lingxin.org/miao.png" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"QualityScaler-Go User Manual","description":"QualityScaler-Go user manual covering installation, CUDA and cuDNN setup, AI model selection, VRAM settings, video pipelines, and troubleshooting.","inLanguage":"en","url":"https://qualityscaler-go.lingxin.org/en/doc/","dateModified":"2026-08-04","author":{"@type":"Organization","name":"QualityScaler-Go contributors","url":"https://github.com/Ling0727-ai/QualityScaler-go"}}</script>
+  </head>
+  <body>
+    <div id="app">
+    <div class="site-shell">
+      <main class="doc-page">
+        <aside class="doc-sidebar">
+          <nav aria-label="Documentation table of contents"><a class="toc-h2" href="#table-of-contents">Table of Contents</a><a class="toc-h2" href="#1-quick-start">1. Quick Start</a><a class="toc-h3" href="#11-basic-workflow">1.1 Basic Workflow</a><a class="toc-h3" href="#12-interface-overview">1.2 Interface Overview</a><a class="toc-h2" href="#2-system-requirements">2. System Requirements</a><a class="toc-h3" href="#21-operating-system">2.1 Operating System</a><a class="toc-h3" href="#22-mandatory-base-environment">2.2 Mandatory Base Environment</a><a class="toc-h3" href="#23-nvidia-gpu-acceleration-environment">2.3 NVIDIA GPU Acceleration Environment</a><a class="toc-h3" href="#24-dependency-summary-by-version">2.4 Dependency Summary by Version</a><a class="toc-h3" href="#25-dependency-graph">2.5 Dependency Graph</a><a class="toc-h3" href="#26-environment-verification-checklist">2.6 Environment Verification Checklist</a><a class="toc-h3" href="#27-common-environment-pitfalls">2.7 Common Environment Pitfalls</a><a class="toc-h2" href="#3-version-selection-guide">3. Version Selection Guide</a><a class="toc-h2" href="#4-ai-model-details">4. AI Model Details</a><a class="toc-h3" href="#41-model-quick-reference">4.1 Model Quick Reference</a><a class="toc-h3" href="#42-detailed-model-descriptions">4.2 Detailed Model Descriptions</a><a class="toc-h3" href="#43-scenario-selection-guide">4.3 Scenario Selection Guide</a><a class="toc-h2" href="#5-parameter-options">5. Parameter Options</a><a class="toc-h3" href="#51-ai-core-tab">5.1 AI Core Tab</a><a class="toc-h3" href="#52-performance--hardware-tab">5.2 Performance &amp; Hardware Tab</a><a class="toc-h3" href="#53-image-processing-tab">5.3 Image Processing Tab</a><a class="toc-h3" href="#54-video-processing-tab">5.4 Video Processing Tab</a><a class="toc-h2" href="#6-vram-tiers-and-recommended-configurations">6. VRAM Tiers and Recommended Configurations</a><a class="toc-h3" href="#61-vram-tiers-overview">6.1 VRAM Tiers Overview</a><a class="toc-h3" href="#62-tier-details">6.2 Tier Details</a><a class="toc-h3" href="#63-integrated-graphics--amd-gpu-users">6.3 Integrated Graphics / AMD GPU Users</a><a class="toc-h2" href="#7-pipeline-modes-memory-vs-disk">7. Pipeline Modes: Memory vs Disk</a><a class="toc-h3" href="#71-architectural-differences">7.1 Architectural Differences</a><a class="toc-h3" href="#72-how-to-choose">7.2 How to Choose</a><a class="toc-h3" href="#73--memory-pipeline-freeze-troubleshooting-and-solutions">7.3 ⚠️ Memory Pipeline Freeze Troubleshooting and Solutions</a><a class="toc-h3" href="#74-memory-vs-disk-performance-comparison">7.4 Memory vs Disk Performance Comparison</a><a class="toc-h2" href="#8-face-enhancement">8. Face Enhancement</a><a class="toc-h3" href="#81-feature-description">8.1 Feature Description</a><a class="toc-h3" href="#82-face-models">8.2 Face Models</a><a class="toc-h3" href="#83-parameter-descriptions">8.3 Parameter Descriptions</a><a class="toc-h3" href="#84-notes">8.4 Notes</a><a class="toc-h2" href="#9-faq--troubleshooting">9. FAQ / Troubleshooting</a><a class="toc-h3" href="#91-processing-speed-too-slow">9.1 Processing Speed Too Slow</a><a class="toc-h3" href="#92-out-of-memory-oom--program-crashes">9.2 Out of Memory (OOM) / Program Crashes</a><a class="toc-h3" href="#93-output-video-has-no-audio">9.3 Output Video Has No Audio</a><a class="toc-h3" href="#94-grid-like-seams-appear-in-image">9.4 Grid-Like Seams Appear in Image</a><a class="toc-h3" href="#95-ai-output-looks-too-plasticky">9.5 AI Output Looks Too &quot;Plasticky&quot;</a><a class="toc-h3" href="#96-program-not-responding--white-screen-on-startup">9.6 Program Not Responding / White Screen on Startup</a><a class="toc-h2" href="#appendix-full-processing-pipeline-overview">Appendix: Full Processing Pipeline Overview</a></nav>
+        </aside>
+        <article class="doc-content"><div><h1 id="qualityscaler-go-user-manual">QualityScaler-Go User Manual</h1>
+<blockquote>
+<p><strong>Supported Platforms</strong>: Windows 10/11 | <strong>Language</strong>: English</p>
+</blockquote>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-quick-start">Quick Start</a></li>
+<li><a href="#2-system-requirements">System Requirements</a></li>
+<li><a href="#3-version-selection-guide">Version Selection Guide</a></li>
+<li><a href="#4-ai-model-details">AI Model Details</a></li>
+<li><a href="#5-parameter-options">Parameter Options</a></li>
+<li><a href="#6-vram-tiers-and-recommended-configurations">VRAM Tiers and Recommended Configurations</a></li>
+<li><a href="#7-pipeline-modes-memory-vs-disk">Pipeline Modes: Memory vs Disk</a></li>
+<li><a href="#8-face-enhancement">Face Enhancement</a></li>
+<li><a href="#9-faq--troubleshooting">FAQ / Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="1-quick-start">1. Quick Start</h2>
+<h3 id="11-basic-workflow">1.1 Basic Workflow</h3>
+<ol>
+<li><strong>Add Files</strong> — Click &quot;Add Files&quot; or &quot;Add Folder&quot; on the left, or drag and drop files into the window.</li>
+<li><strong>Select AI Model</strong> — Under the &quot;AI Core&quot; tab, choose a suitable model (default LVAx2 works for most scenarios).</li>
+<li><strong>Set Output Directory</strong> — Click &quot;Browse&quot; on the right to choose where to save results.</li>
+<li><strong>Start Processing</strong> — Click the &quot;Start Processing&quot; button.</li>
+</ol>
+<h3 id="12-interface-overview">1.2 Interface Overview</h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Left — File List</strong></td>
+<td>Add/clear pending files, display processing status</td>
+</tr>
+<tr>
+<td><strong>Center — Processing Parameters</strong></td>
+<td>4 tabs: AI Core, Performance &amp; Hardware, Image Processing, Video Processing</td>
+</tr>
+<tr>
+<td><strong>Upper Right — Resolution Preview</strong></td>
+<td>Real-time preview of Source → Input Scale → Model Upscale → Output Resolution</td>
+</tr>
+<tr>
+<td><strong>Lower Right — Output/Progress/Control</strong></td>
+<td>Output directory selection, progress bar, Start/Stop buttons</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-system-requirements">2. System Requirements</h2>
+<h3 id="21-operating-system">2.1 Operating System</h3>
+<ul>
+<li><strong>Windows 10/11 64-bit</strong> (primary supported platform)</li>
+<li><strong>Linux</strong> (experimental support, some features may be unavailable)</li>
+</ul>
+<h3 id="22-mandatory-base-environment">2.2 Mandatory Base Environment</h3>
+<p><strong>Visual C++ Redistributable 2015-2022</strong> (required for all versions)</p>
+<p>ONNX Runtime depends on the VC++ runtime libraries. If missing, the program will report DLL errors on startup (e.g., <code>VCRUNTIME140.dll not found</code>).</p>
+<blockquote>
+<p>📥 Download: <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">vc_redist.x64.exe</a></p>
+</blockquote>
+<h3 id="23-nvidia-gpu-acceleration-environment">2.3 NVIDIA GPU Acceleration Environment</h3>
+<p>GPU acceleration requires three layers of components, <strong>each dependent on the previous</strong>. See the summary table in <a href="#24-dependency-summary-by-version">Section 2.4</a>.</p>
+<h4 id="layer-1-nvidia-graphics-driver">Layer 1: NVIDIA Graphics Driver</h4>
+<p>The foundation for all GPU acceleration. It is recommended to download the latest Game Ready or Studio Driver via NVIDIA GeForce Experience or the official website.</p>
+<p>Verification:</p>
+<pre><code class="language-powershell">nvidia-smi
+</code></pre>
+<p>If the command outputs GPU information, the driver is installed.</p>
+<h4 id="layer-2-cuda-toolkit-12x-required">Layer 2: CUDA Toolkit 12.x (Required)</h4>
+<p>CUDA provides the fundamental parallel computing runtime libraries (<code>cudart64_*.dll</code> etc.) and is a <strong>common prerequisite for ONNX CUDA and TensorRT</strong>.</p>
+<ul>
+<li><strong>Recommended Version</strong>: CUDA 12.4 ~ 13.1</li>
+<li><strong>Installation Path</strong>: Default <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\</code></li>
+<li><strong>Environment Variable</strong>: The installer usually sets <code>CUDA_PATH</code> automatically.</li>
+</ul>
+<p>Verification:</p>
+<pre><code class="language-powershell"># Check CUDA version
+nvcc --version
+# Or check environment variable
+echo $env:CUDA_PATH
+</code></pre>
+<h4 id="layer-3-1-cudnn-9x-required-for-onnx-cuda--tensorrt--critical">Layer 3-1: cuDNN 9.x (Required for ONNX CUDA / TensorRT) ⚠️ Critical</h4>
+<p><strong>Installing only CUDA is not enough!</strong> ONNX Runtime&#39;s CUDA provider relies on cuDNN (CUDA Deep Neural Network Library) to enable GPU acceleration. <strong>Missing cuDNN is the most common reason GPU acceleration fails.</strong></p>
+<ul>
+<li><strong>Recommended Version</strong>: cuDNN 9.x (v9.0 and above)</li>
+<li><strong>Installation Path</strong>: <code>C:\Program Files\NVIDIA\CUDNN\v9.x\bin\</code></li>
+<li><strong>Key DLL</strong>: <code>cudnn_engines_runtime_compiled64_9.dll</code></li>
+</ul>
+<blockquote>
+<p>📥 Download: From the <a href="https://developer.nvidia.com/cudnn">NVIDIA cuDNN website</a> (requires a free NVIDIA Developer account)</p>
+</blockquote>
+<p><strong>Installation Steps:</strong></p>
+<ol>
+<li>Download cuDNN 9.x for CUDA 12.x (ZIP package)</li>
+<li>Extract and merge the <code>bin/</code>, <code>include/</code>, <code>lib/</code> directories into your CUDA installation directory:<pre><code>Copy cudnn\bin\*.dll      to → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\bin\
+Copy cudnn\include\*.h     to → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\include\
+Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\lib\x64\
+</code></pre>
+</li>
+<li>Alternatively, use the NVIDIA official installer (.exe) and install to <code>C:\Program Files\NVIDIA\CUDNN\v9.x\</code></li>
+</ol>
+<p><strong>Verifying cuDNN is active:</strong></p>
+<ul>
+<li>The program log will show <code>Added cuDNN to PATH: ...</code> at startup (indicates detection).</li>
+<li>If CUDA is installed but inference still runs on CPU, <strong>it is most likely due to missing cuDNN</strong>.</li>
+</ul>
+<h4 id="layer-3-2-tensorrt-10x-only-for-tensorrt-gpu--full-versions">Layer 3-2: TensorRT 10.x (Only for tensorrt-gpu / full versions)</h4>
+<p>Required only for users pursuing ultimate performance. It depends on CUDA + cuDNN.</p>
+<ul>
+<li><strong>Recommended Version</strong>: TensorRT 10.x (10.16+)</li>
+<li><strong>Recommended Installation Path</strong>: <code>C:\TensorRT-10.16.0.72</code></li>
+<li><strong>Key DLL</strong>: <code>qualityscaler_tensorrt.dll</code> (provided by the project) depends on <code>nvinfer_10.dll</code></li>
+</ul>
+<blockquote>
+<p>📥 Download: From the <a href="https://developer.nvidia.com/tensorrt">NVIDIA TensorRT website</a></p>
+</blockquote>
+<blockquote>
+<p>💡 <strong>Note for everyday users</strong>: If you don&#39;t need extreme performance, the <strong>onnx-cuda version is sufficient</strong>; TensorRT is not required. The extra speedup from TensorRT (approximately 20-40%) is most noticeable when batch-processing long videos.</p>
+</blockquote>
+<h3 id="24-dependency-summary-by-version">2.4 Dependency Summary by Version</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th align="center">onnx-cpu</th>
+<th align="center">onnx-cuda</th>
+<th align="center">tensorrt-gpu</th>
+<th align="center">full</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VC++ Redist 2015-2022</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>ONNX Runtime DLL</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>NVIDIA GPU + Driver</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>CUDA Toolkit 12.x</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td><strong>cuDNN 9.x</strong></td>
+<td align="center">❌</td>
+<td align="center">✅ <strong>Required</strong></td>
+<td align="center">✅ <strong>Required</strong></td>
+<td align="center">✅ <strong>Required</strong></td>
+</tr>
+<tr>
+<td>TensorRT 10.x</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>qualityscaler_tensorrt.dll</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>OpenCV (gocv)</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+</tr>
+</tbody></table>
+<h3 id="25-dependency-graph">2.5 Dependency Graph</h3>
+<pre><code>Base Layer (All versions)
+  └─ Visual C++ Redistributable 2015-2022
+  └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+
+GPU Acceleration (onnx-cuda / tensorrt-gpu / full)
+  ├─ NVIDIA Graphics Driver
+  ├─ CUDA Toolkit 12.x
+  └─ cuDNN 9.x  ← ⚠️ Most easily missed! Without it, ONNX Runtime cannot use GPU.
+
+TensorRT Acceleration (tensorrt-gpu / full)
+  └─ TensorRT 10.x  ← Added on top of CUDA + cuDNN
+  └─ qualityscaler_tensorrt.dll
+</code></pre>
+<h3 id="26-environment-verification-checklist">2.6 Environment Verification Checklist</h3>
+<p>After installation, verify the environment is ready with these steps:</p>
+<pre><code class="language-powershell"># 1. Check graphics driver
+nvidia-smi
+# Expected: Displays GPU model, driver version, CUDA version
+
+# 2. Check CUDA
+nvcc --version
+# Expected: Displays CUDA version number (e.g., 12.6)
+
+# 3. Check cuDNN (check if DLL exists)
+ls &quot;C:\Program Files\NVIDIA\CUDNN\v9*\bin\cudnn_engines_runtime_compiled64_9.dll&quot;
+ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines_runtime_compiled64_9.dll&quot;
+# Expected: At least one location contains the DLL
+
+# 4. Check VC++ Redist
+# Control Panel → Programs and Features → Look for &quot;Microsoft Visual C++ 2015-2022 Redistributable (x64)&quot;
+</code></pre>
+<p><strong>In-Program Verification</strong> (most reliable):
+Launch QualityScaler-Go and observe the inference backend in the title bar or log:</p>
+<ul>
+<li><code>TensorRT (GPU)</code> — All components ready, ultimate performance ✅</li>
+<li><code>CUDA (GPU 0)</code> — CUDA + cuDNN working correctly, GPU acceleration active ✅</li>
+<li><code>CPU (ONNX)</code> — GPU not active, please check CUDA and cuDNN installations ❌</li>
+</ul>
+<h3 id="27-common-environment-pitfalls">2.7 Common Environment Pitfalls</h3>
+<p><strong>❌ &quot;I installed CUDA, why is it still doing CPU inference?&quot;</strong>
+→ <strong>99% of the time it&#39;s because cuDNN is not installed.</strong> CUDA Toolkit does not include cuDNN; it must be downloaded and installed separately. See &quot;Layer 3-1: cuDNN 9.x&quot; above.</p>
+<p><strong>❌ &quot;I installed cuDNN, but the program can&#39;t find it?&quot;</strong>
+→ Check if cuDNN&#39;s <code>bin/</code> directory is in the system PATH. The program automatically searches <code>C:\Program Files\NVIDIA\CUDNN\v9*\bin\</code>; if you placed it elsewhere, you must add it to PATH or copy the DLLs to CUDA&#39;s <code>bin/</code> directory.</p>
+<p><strong>❌ &quot;TensorRT engine file error?&quot;</strong>
+→ <code>.engine</code> files are tied to the specific GPU architecture (SM version) and cannot be shared across different GPUs. If you change graphics cards, you need to delete <code>AI-tensorrt/*.engine</code> and regenerate them. See <a href="#3-version-selection-guide">3. Version Selection Guide</a>.</p>
+<p><strong>❌ &quot;ffmpeg not found / error?&quot;</strong>
+→ The release package usually includes ffmpeg. If it is missing, download the Windows build from <a href="https://ffmpeg.org/download.html">ffmpeg.org</a> and place <code>ffmpeg.exe</code> and <code>ffprobe.exe</code> in the program directory or your system PATH.</p>
+<hr>
+<h2 id="3-version-selection-guide">3. Version Selection Guide</h2>
+<p>QualityScaler-Go is provided in 4 versions. Choose based on your hardware:</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Inference Backend</th>
+<th>Target User</th>
+<th>Required Environment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>onnx-cpu</strong></td>
+<td>ONNX CPU</td>
+<td>No NVIDIA GPU, maximum compatibility</td>
+<td>No GPU needed</td>
+</tr>
+<tr>
+<td><strong>onnx-cuda</strong></td>
+<td>ONNX + CUDA</td>
+<td>Nvidia GPU users who don&#39;t want to set up TensorRT</td>
+<td>NVIDIA GPU + CUDA DLLs</td>
+</tr>
+<tr>
+<td><strong>tensorrt-gpu</strong></td>
+<td>TensorRT → ONNX → CPU fallback</td>
+<td>Nvidia GPU users seeking maximum performance</td>
+<td>TensorRT 10.x + CUDA 12.x</td>
+</tr>
+<tr>
+<td><strong>full</strong></td>
+<td>All backends + gocv acceleration</td>
+<td>One download, auto-adapts to hardware</td>
+<td>TensorRT + OpenCV</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Recommendation</strong>: Most NVIDIA GPU users should choose the <strong>tensorrt-gpu</strong> version for the fastest speed. Integrated graphics / no dedicated GPU users should pick <strong>onnx-cpu</strong>.</p>
+</blockquote>
+<hr>
+<h2 id="4-ai-model-details">4. AI Model Details</h2>
+<h3 id="41-model-quick-reference">4.1 Model Quick Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Scale</th>
+<th>Type</th>
+<th>Speed</th>
+<th>VRAM Usage</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LVAx2</strong></td>
+<td>×2</td>
+<td>Light Enhancement</td>
+<td>⚡⚡⚡ Fastest</td>
+<td>🟢 Low</td>
+<td>Light enhancement, natural look</td>
+</tr>
+<tr>
+<td><strong>RealESR_Gx4</strong></td>
+<td>×4</td>
+<td>General Super-Res</td>
+<td>⚡⚡ Fast</td>
+<td>🟡 Medium</td>
+<td>Real photos, landscapes, realistic video</td>
+</tr>
+<tr>
+<td><strong>RealESR_Animex4</strong></td>
+<td>×4</td>
+<td>Anime Optimized</td>
+<td>⚡⚡ Fast</td>
+<td>🟡 Medium</td>
+<td>Anime, illustrations, 2D game graphics</td>
+</tr>
+<tr>
+<td><strong>BSRGANx2</strong></td>
+<td>×2</td>
+<td>Denoising Enhancement</td>
+<td>⚡⚡ Fast</td>
+<td>🟡 Medium</td>
+<td>Low-quality sources, unknown degradations</td>
+</tr>
+<tr>
+<td><strong>BSRGANx4</strong></td>
+<td>×4</td>
+<td>Heavy Restoration</td>
+<td>⚡ Slower</td>
+<td>🔴 High</td>
+<td>Extremely poor quality, old sources, heavy noise</td>
+</tr>
+<tr>
+<td><strong>MSharpx4</strong></td>
+<td>×4</td>
+<td>Sharpening Enhancement</td>
+<td>⚡⚡ Fast</td>
+<td>🟡 Medium</td>
+<td>Blurry sources, need to emphasize contours</td>
+</tr>
+<tr>
+<td><strong>IRCNN_Mx1</strong></td>
+<td>×1</td>
+<td>Denoising Restoration</td>
+<td>⚡⚡⚡ Fastest</td>
+<td>🟢 Low</td>
+<td>Moderate noise removal (keeps resolution)</td>
+</tr>
+<tr>
+<td><strong>IRCNN_Lx1</strong></td>
+<td>×1</td>
+<td>Heavy Restoration</td>
+<td>⚡⚡ Fast</td>
+<td>🟡 Medium</td>
+<td>Severe image damage repair (keeps resolution)</td>
+</tr>
+</tbody></table>
+<h3 id="42-detailed-model-descriptions">4.2 Detailed Model Descriptions</h3>
+<h4 id="lvax2--lightweight-natural-upscaling">LVAx2 — Lightweight Natural Upscaling</h4>
+<ul>
+<li><strong>Characteristics</strong>: Enhances resolution while preserving extremely high edge fidelity; processing style is natural.</li>
+<li><strong>Pros</strong>: Fast, low VRAM usage, natural-looking output without an &quot;AI feel&quot;.</li>
+<li><strong>Cons</strong>: Only ×2 scale, limited magnification.</li>
+<li><strong>Best for</strong>: Low-scale upscaling needs, light enhancement tasks where you don&#39;t want the image to appear over-processed.</li>
+</ul>
+<h4 id="realesr_gx4--real-photo-enhancement-recommended">RealESR_Gx4 — Real Photo Enhancement (Recommended)</h4>
+<ul>
+<li><strong>Characteristics</strong>: Designed for complex real-world degradations, strong generalization ability.</li>
+<li><strong>Pros</strong>: Balanced texture reconstruction and noise suppression, most versatile.</li>
+<li><strong>Cons</strong>: Limited effectiveness on extremely low-quality sources.</li>
+<li><strong>Best for</strong>: Everyday photos, landscapes, realistic video footage — <strong>the first choice for most users</strong>.</li>
+</ul>
+<h4 id="realesr_animex4--animeillustration-specialized">RealESR_Animex4 — Anime/Illustration Specialized</h4>
+<ul>
+<li><strong>Characteristics</strong>: Optimized for 2D content, emphasizes smooth lines and clean color blocks.</li>
+<li><strong>Pros</strong>: Significantly eliminates compression artifacts (ringing/artifacts), clean lines.</li>
+<li><strong>Cons</strong>: Poor on real photos, produces over-smoothing.</li>
+<li><strong>Best for</strong>: Anime, illustrations, 2D game graphics, line art.</li>
+</ul>
+<h4 id="bsrganx2--bsrganx4--denoising-and-restoration">BSRGANx2 / BSRGANx4 — Denoising and Restoration</h4>
+<ul>
+<li><strong>Characteristics</strong>: Trained with a &quot;random degradation space&quot;, very high tolerance for unknown disturbances.</li>
+<li><strong>Pros</strong>: Good restoration even for extremely poor quality sources.</li>
+<li><strong>Cons</strong>: Slower, may introduce subtle texture changes.</li>
+<li><strong>Best for</strong>: Very poor quality, lots of unknown noise, multiple low-quality compression old sources.<ul>
+<li>x2: Mildly degraded sources</li>
+<li>x4: Heavily degraded sources</li>
+</ul>
+</li>
+</ul>
+<h4 id="msharpx4--high-contrast-sharpening">MSharpx4 — High Contrast Sharpening</h4>
+<ul>
+<li><strong>Characteristics</strong>: Emphasizes high visual contrast and contour clarity.</li>
+<li><strong>Pros</strong>: Can forcefully outline subjects from blurry sources.</li>
+<li><strong>Cons</strong>: May over-sharpen, creating unnatural edges.</li>
+<li><strong>Best for</strong>: Sources that are overly soft/blurry, specific scenes requiring prominent contours.</li>
+</ul>
+<h4 id="ircnn_mx1--ircnn_lx1--denoising-restoration-no-upscaling">IRCNN_Mx1 / IRCNN_Lx1 — Denoising Restoration (No Upscaling)</h4>
+<ul>
+<li><strong>Characteristics</strong>: Non-upscaling restoration models focused on deconvolution and denoising while keeping original resolution.</li>
+<li><strong>Pros</strong>: Does not change resolution, focuses purely on repair; can be cascaded with upscaling models.</li>
+<li><strong>Cons</strong>: Does not increase resolution.</li>
+<li><strong>Best for</strong>: Preprocessing step.<ul>
+<li><strong>IRCNN_Mx1</strong>: Moderate noise removal</li>
+<li><strong>IRCNN_Lx1</strong>: Heavy image damage repair</li>
+</ul>
+</li>
+</ul>
+<h3 id="43-scenario-selection-guide">4.3 Scenario Selection Guide</h3>
+<table>
+<thead>
+<tr>
+<th>Your Need</th>
+<th>Primary Model</th>
+<th>Alternative Model</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Upscale real photos</td>
+<td><strong>RealESR_Gx4</strong></td>
+<td>BSRGANx4</td>
+</tr>
+<tr>
+<td>Enhance anime/illustration</td>
+<td><strong>RealESR_Animex4</strong></td>
+<td>LVAx2</td>
+</tr>
+<tr>
+<td>Repair extremely poor quality</td>
+<td><strong>BSRGANx4</strong></td>
+<td>IRCNN_Lx1 → RealESR_Gx4</td>
+</tr>
+<tr>
+<td>Denoise without resizing</td>
+<td><strong>IRCNN_Mx1</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>High contrast / sharpen edges</td>
+<td><strong>MSharpx4</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Light enhancement (minimize AI look)</td>
+<td><strong>LVAx2</strong></td>
+<td>RealESR_Gx4 (reduce output scale)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-parameter-options">5. Parameter Options</h2>
+<h3 id="51-ai-core-tab">5.1 AI Core Tab</h3>
+<h4 id="ai-model">AI Model</h4>
+<p>Select the main super-resolution model. See <a href="#4-ai-model-details">Chapter 4 AI Model Details</a>.</p>
+<h4 id="deblur-model">Deblur Model</h4>
+<p>Preprocess the image with deblurring/denoising before super-resolution.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OFF</strong></td>
+<td>Disable deblur (default, recommended)</td>
+</tr>
+<tr>
+<td><strong>SCUNet-GAN</strong></td>
+<td>GAN-trained, stronger restoration, better visual quality</td>
+</tr>
+<tr>
+<td><strong>SCUNet-PSNR</strong></td>
+<td>PSNR-oriented training, higher fidelity but may retain some noise</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ Enabling deblur consumes an additional ~<strong>2GB VRAM</strong> and increases processing time by approximately 30-50%.</p>
+</blockquote>
+<hr>
+<h3 id="52-performance--hardware-tab">5.2 Performance &amp; Hardware Tab</h3>
+<h4 id="performance-mode">Performance Mode</h4>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>AI Threads</th>
+<th>Batch</th>
+<th>Fusion Intensity</th>
+<th>Characteristics</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Balanced</strong> (recommended)</td>
+<td>CPU cores / 2 (≤4)</td>
+<td>1</td>
+<td>Unchanged</td>
+<td>Balance of speed and quality</td>
+</tr>
+<tr>
+<td><strong>Extreme Performance</strong></td>
+<td>CPU cores (≤8)</td>
+<td>4</td>
+<td>Forced OFF</td>
+<td>Fastest, suitable for batch processing</td>
+</tr>
+<tr>
+<td><strong>Quality</strong></td>
+<td>1</td>
+<td>1</td>
+<td>Unchanged</td>
+<td>Most stable, best compatibility</td>
+</tr>
+</tbody></table>
+<h4 id="gpu">GPU</h4>
+<p>Select the graphics card for AI inference.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Auto</strong> (recommended)</td>
+<td>Automatically select high-performance GPU</td>
+</tr>
+<tr>
+<td><strong>GPU 1</strong></td>
+<td>Corresponds to GPU 0 in Task Manager</td>
+</tr>
+<tr>
+<td><strong>GPU 2-4</strong></td>
+<td>Other GPUs in multi-GPU systems</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ Selecting a non-existent GPU may cause fallback to CPU, resulting in very slow speed.</p>
+</blockquote>
+<h4 id="vram-gb">VRAM (GB)</h4>
+<p>Limits the VRAM budget available for AI inference. <strong>This is one of the most important performance parameters.</strong></p>
+<ul>
+<li>It is recommended to set this to your GPU&#39;s <strong>actual available VRAM</strong> (e.g., 8 for an 8GB graphics card).</li>
+<li>Setting too low: tile size becomes too small, slowing processing.</li>
+<li>Setting too high: may cause out-of-memory (OOM) errors, inference fails.</li>
+<li>For integrated graphics, start with <strong>2GB</strong>.</li>
+</ul>
+<p>See <a href="#6-vram-tiers-and-recommended-configurations">Chapter 7 VRAM Tiers and Recommended Configurations</a>.</p>
+<h4 id="multithreading">Multithreading</h4>
+<p>Controls the number of parallel threads for video frame-by-frame processing.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Suitable Scenario</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Auto</strong></td>
+<td>Let the program choose based on CPU cores</td>
+</tr>
+<tr>
+<td><strong>OFF</strong></td>
+<td>Most stable, lowest memory/VRAM usage</td>
+</tr>
+<tr>
+<td><strong>2 threads</strong></td>
+<td>Light parallelism</td>
+</tr>
+<tr>
+<td><strong>4 threads</strong></td>
+<td>Moderate parallelism (recommended for 6-8 core CPUs)</td>
+</tr>
+<tr>
+<td><strong>6 threads</strong></td>
+<td>High parallelism</td>
+</tr>
+<tr>
+<td><strong>8 threads</strong></td>
+<td>Maximum parallelism (requires sufficient VRAM and RAM)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ More threads can increase speed but also raise VRAM and RAM usage. If you encounter OOM, reduce threads first.</p>
+</blockquote>
+<h4 id="trt-precision-tensorrtfull-versions-only">TRT Precision (TensorRT/Full versions only)</h4>
+<p>Controls the quantization precision of the TensorRT engine.</p>
+<table>
+<thead>
+<tr>
+<th>Precision</th>
+<th>Speed</th>
+<th>VRAM Usage</th>
+<th>Accuracy Loss</th>
+<th>Recommended For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>fp16</strong> (recommended)</td>
+<td>⚡⚡⚡ Fastest</td>
+<td>🟢 Low</td>
+<td>Minimal</td>
+<td>Daily use</td>
+</tr>
+<tr>
+<td><strong>fp32</strong></td>
+<td>⚡ Slower</td>
+<td>🔴 High (~2×)</td>
+<td>None</td>
+<td>Professional scenarios requiring highest accuracy</td>
+</tr>
+<tr>
+<td><strong>int8</strong></td>
+<td>⚡⚡⚡ Fastest</td>
+<td>🟢 Lowest</td>
+<td>Larger</td>
+<td>When VRAM is extremely tight, requires calibration dataset</td>
+</tr>
+</tbody></table>
+<h4 id="tile-overlap-px">Tile Overlap (px)</h4>
+<p>The number of overlapping pixels between tiles during AI inference.</p>
+<ul>
+<li><strong>Default</strong>: 16px</li>
+<li><strong>Increase (32/64)</strong>: Can eliminate tile seams, at a slight cost of inference time.</li>
+<li><strong>Decrease (0)</strong>: Slightly faster, but visible grid-like seams may appear.</li>
+<li><strong>Range</strong>: 0-256</li>
+</ul>
+<h4 id="gpu-batch">GPU Batch</h4>
+<p>How many frames the GPU processes at once (TensorRT version only).</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1</strong> (recommended)</td>
+<td>Frame-by-frame inference, most stable</td>
+</tr>
+<tr>
+<td><strong>2/4/6/8</strong></td>
+<td>Batch processing, faster but VRAM usage multiplies</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ Requires the TensorRT engine to support dynamic batch dimensions, otherwise it automatically falls back to 1.</p>
+</blockquote>
+<h4 id="pipeline-mode-">Pipeline Mode ⭐</h4>
+<p>Controls the data pipeline for video processing. <strong>This is one of the most critical options.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Memory</strong> (default)</td>
+<td>Pure in-memory pipeline, fast, no temporary files</td>
+</tr>
+<tr>
+<td><strong>Disk</strong></td>
+<td>File-based pipeline, compatible with VFR/resume, requires disk space</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>📖 <strong>For detailed comparison and troubleshooting, please read <a href="#7-pipeline-modes-memory-vs-disk">Chapter 6</a>.</strong></p>
+</blockquote>
+<hr>
+<h3 id="53-image-processing-tab">5.3 Image Processing Tab</h3>
+<h4 id="input-scale-">Input Scale %</h4>
+<p>Scale the image before feeding it into the AI model.</p>
+<ul>
+<li><strong>25% (default)</strong>: Greatly reduces computation, fastest.</li>
+<li><strong>50%</strong>: Preserves more original detail.</li>
+<li><strong>100%</strong>: Original resolution into AI, best quality but slowest.</li>
+<li><strong>&gt;100%</strong>: Upsample before processing (not recommended, doesn&#39;t add real detail).</li>
+</ul>
+<blockquote>
+<p>💡 For 4K video, it&#39;s recommended to use 25-50%; for 1080p video, 50-100%.</p>
+</blockquote>
+<h4 id="output-scale-">Output Scale %</h4>
+<p>Rescale the AI output result.</p>
+<ul>
+<li><strong>100% (default)</strong>: Keep AI native output size.</li>
+<li><strong>&lt;100%</strong>: Downscale output, reduces file size and processing time.</li>
+<li><strong>&gt;100%</strong>: Only interpolation, doesn&#39;t add real detail.</li>
+</ul>
+<blockquote>
+<p>💡 Final resolution = Source resolution × Input Scale% × Model scale × Output Scale%</p>
+</blockquote>
+<h4 id="ai-fusion">AI Fusion</h4>
+<p>Blend the original image with the AI super-resolution result by a ratio.</p>
+<ul>
+<li><strong>OFF</strong>: Fully retains AI output (clearest).</li>
+<li><strong>Low (0.3)</strong>: 30% original + 70% AI output.</li>
+<li><strong>Medium (0.5)</strong>: 50% original + 50% AI output.</li>
+<li><strong>High (0.7)</strong>: 70% original + 30% AI output (closest to original).</li>
+</ul>
+<blockquote>
+<p>💡 AI output sometimes has unnatural textures; appropriate fusion can preserve the natural feel of the original.</p>
+</blockquote>
+<h4 id="image-format">Image Format</h4>
+<p>Output image format.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Quality</th>
+<th>File Size</th>
+<th>Suitable Scenario</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>.jpg</strong> (default)</td>
+<td>Lossy</td>
+<td>🟢 Small</td>
+<td>Daily use, web sharing</td>
+</tr>
+<tr>
+<td><strong>.png</strong></td>
+<td>Lossless</td>
+<td>🔴 Large</td>
+<td>High-quality archiving, further editing</td>
+</tr>
+<tr>
+<td><strong>.bmp</strong></td>
+<td>Lossless, uncompressed</td>
+<td>🔴 Very large</td>
+<td>Specific toolchain compatibility</td>
+</tr>
+<tr>
+<td><strong>.tiff</strong></td>
+<td>Lossless/lossy selectable</td>
+<td>🟡 Medium-Large</td>
+<td>Professional image processing, archiving</td>
+</tr>
+</tbody></table>
+<h4 id="keep-frames">Keep Frames</h4>
+<p>Controls whether to retain intermediate frame files during video processing.</p>
+<ul>
+<li><strong>OFF</strong> (default): Automatically clean up temporary frames after task completion.</li>
+<li><strong>ON</strong>: Keep intermediate frames for troubleshooting or reuse (will consume significant disk space).</li>
+</ul>
+<hr>
+<h3 id="54-video-processing-tab">5.4 Video Processing Tab</h3>
+<h4 id="video-format">Video Format</h4>
+<p>Output video container format.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Compatibility</th>
+<th>Characteristics</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>.mkv</strong> (default)</td>
+<td>🟡 Good</td>
+<td>High quality, supports multiple audio tracks/subtitles</td>
+</tr>
+<tr>
+<td><strong>.mp4</strong></td>
+<td>🟢 Best</td>
+<td>Compatible with almost all devices</td>
+</tr>
+<tr>
+<td><strong>.avi</strong></td>
+<td>🟡 Fair</td>
+<td>Suitable for specific toolchains, larger file size</td>
+</tr>
+<tr>
+<td><strong>.mov</strong></td>
+<td>🟡 Fair</td>
+<td>Apple ecosystem, professional editing software</td>
+</tr>
+</tbody></table>
+<h4 id="video-encoder">Video Encoder</h4>
+<p>Output video encoder. <strong>Divided into three hardware categories</strong>:</p>
+<p><strong>CPU Software Encoding (best compatibility):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>x264</strong> (default ONNX version)</td>
+<td>H.264 CPU encoding, best compatibility</td>
+</tr>
+<tr>
+<td><strong>x265</strong></td>
+<td>H.265 CPU encoding, higher quality at same bitrate, slower encoding</td>
+</tr>
+</tbody></table>
+<p><strong>NVIDIA GPU Hardware Encoding (fastest):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>h264_nvenc</strong> (default TRT version)</td>
+<td>NVIDIA H.264 hardware encoding</td>
+</tr>
+<tr>
+<td><strong>hevc_nvenc</strong></td>
+<td>NVIDIA H.265 hardware encoding</td>
+</tr>
+<tr>
+<td><strong>av1_nvenc</strong></td>
+<td>NVIDIA AV1 hardware encoding (RTX 40 series+)</td>
+</tr>
+</tbody></table>
+<p><strong>AMD GPU Hardware Encoding:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>h264_amf</strong></td>
+<td>AMD H.264 hardware encoding</td>
+</tr>
+<tr>
+<td><strong>hevc_amf</strong></td>
+<td>AMD H.265 hardware encoding</td>
+</tr>
+<tr>
+<td><strong>av1_amf</strong></td>
+<td>AMD AV1 hardware encoding</td>
+</tr>
+</tbody></table>
+<p><strong>Intel GPU Hardware Encoding:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>h264_qsv</strong></td>
+<td>Intel QuickSync H.264</td>
+</tr>
+<tr>
+<td><strong>hevc_qsv</strong></td>
+<td>Intel QuickSync H.265</td>
+</tr>
+<tr>
+<td><strong>av1_qsv</strong></td>
+<td>Intel QuickSync AV1 (Arc graphics+)</td>
+</tr>
+</tbody></table>
+<p><strong>Universal AV1 Encoding:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Encoder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>av1_svt</strong></td>
+<td>CPU AV1 encoding, highest quality at same bitrate, very slow encoding</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 Hardware encoding is 5-10× faster but slightly lower quality than software encoding at the same bitrate. For daily use, <code>h264_nvenc</code> (NVIDIA) or <code>x264</code> (others) is recommended.</p>
+</blockquote>
+<h4 id="frame-rate-mode">Frame Rate Mode</h4>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CFR</strong> (default)</td>
+<td>Constant frame rate, best compatibility, suitable for Memory pipeline</td>
+</tr>
+<tr>
+<td><strong>VFR</strong></td>
+<td>Variable frame rate, preserves original timestamps, requires Disk pipeline</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ VFR mode <strong>must use the Disk pipeline</strong>; Memory pipeline does not support VFR.</p>
+</blockquote>
+<h4 id="bitrate-quality">Bitrate Quality</h4>
+<p>Controls the output video bitrate (affects file size and visual quality).</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Bitrate Multiplier</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Extreme</strong></td>
+<td>×2.0</td>
+<td>Very large file, extreme quality</td>
+</tr>
+<tr>
+<td><strong>High</strong> (default)</td>
+<td>×1.0</td>
+<td>Standard high quality</td>
+</tr>
+<tr>
+<td><strong>Medium</strong></td>
+<td>×0.75</td>
+<td>Moderate file size</td>
+</tr>
+<tr>
+<td><strong>Low</strong></td>
+<td>×0.5</td>
+<td>Smaller file</td>
+</tr>
+<tr>
+<td><strong>Compatible</strong></td>
+<td>×0.3</td>
+<td>Smallest file, compatibility priority</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="6-vram-tiers-and-recommended-configurations">6. VRAM Tiers and Recommended Configurations</h2>
+<h3 id="61-vram-tiers-overview">6.1 VRAM Tiers Overview</h3>
+<table>
+<thead>
+<tr>
+<th>VRAM</th>
+<th>Tier</th>
+<th>GPU Examples</th>
+<th>Recommended Models</th>
+<th>Input Scale</th>
+<th>Perf Mode</th>
+<th>Multi-thread</th>
+<th>Batch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>≤2GB</strong></td>
+<td>Entry</td>
+<td>GT 1030, Integrated</td>
+<td>LVAx2, IRCNN</td>
+<td>25%</td>
+<td>Quality</td>
+<td>OFF</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>4GB</strong></td>
+<td>Entry+</td>
+<td>GTX 1050 Ti, GTX 1650</td>
+<td>LVAx2, RealESR_Gx4</td>
+<td>25%</td>
+<td>Quality</td>
+<td>OFF</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>6GB</strong></td>
+<td>Mainstream</td>
+<td>GTX 1060, GTX 1660, RTX 2060</td>
+<td>RealESR_Gx4, Anime</td>
+<td>25-50%</td>
+<td>Balanced</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>8GB</strong></td>
+<td>Mainstream+</td>
+<td>RTX 2070, RTX 3070, RTX 4060</td>
+<td>All models</td>
+<td>25-50%</td>
+<td>Balanced</td>
+<td>2-4</td>
+<td>1-2</td>
+</tr>
+<tr>
+<td><strong>12GB</strong></td>
+<td>High-End</td>
+<td>RTX 3080, RTX 4070, RTX 5070</td>
+<td>All models</td>
+<td>50-100%</td>
+<td>Extreme Perf</td>
+<td>4-6</td>
+<td>2-4</td>
+</tr>
+<tr>
+<td><strong>16GB+</strong></td>
+<td>Flagship</td>
+<td>RTX 4080, RTX 4090, RTX 5080</td>
+<td>All models</td>
+<td>50-100%</td>
+<td>Extreme Perf</td>
+<td>6-8</td>
+<td>4-8</td>
+</tr>
+<tr>
+<td><strong>24GB</strong></td>
+<td>Professional</td>
+<td>RTX 3090, RTX 4090, RTX 5090</td>
+<td>All + Deblur + Face</td>
+<td>100%</td>
+<td>Extreme Perf</td>
+<td>8</td>
+<td>8</td>
+</tr>
+</tbody></table>
+<h3 id="62-tier-details">6.2 Tier Details</h3>
+<h4 id="-entry-level-4gb-vram">🟢 Entry Level (≤4GB VRAM)</h4>
+<p><strong>Limitations and Notes:</strong></p>
+<ul>
+<li>Tile size automatically drops to 256×256, inference is slower.</li>
+<li>Batch must be set to 1.</li>
+<li>Multithreading recommended OFF or Auto.</li>
+<li>Avoid enabling Face Enhancement and Deblur simultaneously.</li>
+</ul>
+<p><strong>Recommended Configuration:</strong></p>
+<pre><code>Model: LVAx2 or RealESR_Gx4
+Input Scale: 25%
+Output Scale: 100%
+Performance Mode: Quality
+Multithreading: OFF
+Batch: 1
+Deblur: OFF
+Face Enhancement: Disabled
+Pipeline Mode: Disk
+</code></pre>
+<h4 id="-mainstream-level-6-8gb-vram">🟡 Mainstream Level (6-8GB VRAM)</h4>
+<p>This is the configuration range for most users, capable of running most models smoothly.</p>
+<p><strong>Recommended Configuration:</strong></p>
+<pre><code>Model: As needed (RealESR_Gx4 recommended)
+Input Scale: 25-50%
+Output Scale: 100%
+Performance Mode: Balanced
+Multithreading: 2-4 threads
+Batch: 1
+Deblur: OFF (if enabled, reduce multithreading)
+Face Enhancement: Optional (consumes ~1-2GB extra VRAM)
+Pipeline Mode: Memory (default)
+</code></pre>
+<h4 id="-high-end--flagship-12gb-vram">🔴 High-End / Flagship (12GB+ VRAM)</h4>
+<p>Almost no restrictions, all enhancement features can be enabled simultaneously.</p>
+<p><strong>Recommended Configuration:</strong></p>
+<pre><code>Model: As needed
+Input Scale: 50-100%
+Output Scale: As desired
+Performance Mode: Extreme Performance
+Multithreading: 4-8 threads
+Batch: 2-8
+Deblur: Optional
+Face Enhancement: Enabled
+Pipeline Mode: Memory
+</code></pre>
+<h3 id="63-integrated-graphics--amd-gpu-users">6.3 Integrated Graphics / AMD GPU Users</h3>
+<ul>
+<li>Set VRAM starting at <strong>2GB</strong>, adjust based on actual results.</li>
+<li>Performance mode: <strong>Quality</strong>.</li>
+<li>Multithreading: <strong>OFF</strong>.</li>
+<li>Use <strong>x264</strong> CPU encoding (do not use NVENC/AMF unless confirmed working).</li>
+</ul>
+<hr>
+<h2 id="7-pipeline-modes-memory-vs-disk">7. Pipeline Modes: Memory vs Disk</h2>
+<h3 id="71-architectural-differences">7.1 Architectural Differences</h3>
+<h4 id="memory-pipeline-pure-in-memory-pipeline">Memory Pipeline (Pure In-Memory Pipeline)</h4>
+<pre><code>ffmpeg decode → stdout → [raw video frame data] → Go AI inference → [processed frame data] → stdin → ffmpeg encode
+                    ↑                              ↑
+              Zero disk I/O, all in memory          No intermediate files
+</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>✅ <strong>Fast</strong>: Saves JPEG encoding/decoding and disk read/write, zero I/O overhead.</li>
+<li>✅ <strong>No temp files</strong>: No intermediate frame files, no extra disk space usage.</li>
+<li>✅ <strong>Memory efficient</strong>: Frame data streamed, no accumulation of massive files on disk.</li>
+<li>❌ <strong>No VFR support</strong>: Variable frame rate video must use Disk pipeline.</li>
+<li>❌ <strong>No resume support</strong>: Cannot resume from last progress if interrupted; must start over.</li>
+<li>❌ <strong>Potential freezes</strong>: May hang under certain conditions (ffmpeg version compatibility, pipe blocking, etc.).</li>
+</ul>
+<h4 id="disk-pipeline-file-based-pipeline">Disk Pipeline (File-Based Pipeline)</h4>
+<pre><code>ffmpeg extract frames → write to disk → read frame files → AI inference → write upscaled frames → read upscaled frames → ffmpeg assemble video
+     ↑                        ↑                      ↑
+  Disk I/O                Disk I/O                Disk I/O
+</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>✅ <strong>Supports VFR</strong>: Fully compatible with variable frame rate videos.</li>
+<li>✅ <strong>Resume support</strong>: Can resume after interruption; already upscaled frames are not lost.</li>
+<li>✅ <strong>High stability</strong>: Each stage is independent, won&#39;t hang due to pipe issues.</li>
+<li>✅ <strong>Debuggable</strong>: Retained intermediate frame files can be inspected to check per-frame processing.</li>
+<li>❌ <strong>High disk usage</strong>: Must store all intermediate frames (e.g., 4K video 100k frames × 1MB/frame = 100GB).</li>
+<li>❌ <strong>Slower</strong>: Additional JPEG encoding/decoding and disk I/O increase processing time by about 10-20%.</li>
+</ul>
+<h3 id="72-how-to-choose">7.2 How to Choose</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended Pipeline</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CFR video (most cases)</td>
+<td><strong>Memory</strong></td>
+<td>Fastest, no disk usage</td>
+</tr>
+<tr>
+<td>VFR video</td>
+<td><strong>Disk</strong> (mandatory)</td>
+<td>Memory does not support VFR</td>
+</tr>
+<tr>
+<td>Very large video (&gt;50GB source)</td>
+<td><strong>Disk</strong></td>
+<td>Avoid excessive memory pressure</td>
+</tr>
+<tr>
+<td>Need resume capability</td>
+<td><strong>Disk</strong></td>
+<td>Can resume after interruption</td>
+</tr>
+<tr>
+<td>Need to debug during processing</td>
+<td><strong>Disk</strong> + Keep Frames ON</td>
+<td>Can inspect intermediate frames</td>
+</tr>
+<tr>
+<td>Low disk space</td>
+<td><strong>Memory</strong></td>
+<td>No temporary files generated</td>
+</tr>
+<tr>
+<td>Memory pipeline freezes/errors</td>
+<td><strong>Disk</strong> ⬅️</td>
+<td>See troubleshooting below</td>
+</tr>
+</tbody></table>
+<h3 id="73--memory-pipeline-freeze-troubleshooting-and-solutions">7.3 ⚠️ Memory Pipeline Freeze Troubleshooting and Solutions</h3>
+<p><strong>Symptom Identification:</strong></p>
+<ul>
+<li>Progress bar stuck for a long time (more than 3× expected frame processing time).</li>
+<li>No error message, but program unresponsive.</li>
+<li>Task Manager shows ffmpeg process present but CPU usage at 0%.</li>
+<li>Logs stuck at &quot;Upscaling video&quot; stage.</li>
+</ul>
+<p><strong>Common Root Causes:</strong></p>
+<ol>
+<li>ffmpeg version compatibility issues — the pipe&#39;s rawvideo protocol is unstable in some ffmpeg builds.</li>
+<li>Pipe buffer full — AI inference speed cannot keep up with decode speed, causing pipe block/deadlock.</li>
+<li>GPU VRAM exhausted — multithreading + large model depletes VRAM, inference thread hangs.</li>
+<li>Special input video codec — abnormal rawvideo decoding for certain codecs.</li>
+</ol>
+<p><strong>Solutions (in order of priority):</strong></p>
+<blockquote>
+<p><strong>🔧 Step 1: Switch to Disk Pipeline</strong></p>
+<p>In the &quot;Performance &amp; Hardware&quot; tab, change &quot;Pipeline Mode&quot; from <strong>Memory</strong> to <strong>Disk</strong>.
+This is the simplest and most effective solution; 90% of freeze issues complete normally after switching to Disk.</p>
+<p>Although the Disk pipeline is slightly slower (about 10-20% slower), it is extremely stable and almost never freezes.</p>
+</blockquote>
+<p><strong>Step 2: Reduce concurrent load</strong></p>
+<ul>
+<li>Change performance mode to <strong>Quality</strong> or <strong>Balanced</strong>.</li>
+<li>Set multithreading to <strong>OFF</strong> or <strong>2 threads</strong>.</li>
+<li>Set batch size to <strong>1</strong>.</li>
+</ul>
+<p><strong>Step 3: Check VRAM settings</strong></p>
+<ul>
+<li>Ensure VRAM (GB) is set to the actual size of your graphics card.</li>
+<li>If it still freezes, try reducing the VRAM value by <strong>2GB</strong> (e.g., set 6GB for an 8GB card).</li>
+</ul>
+<p><strong>Step 4: Reduce input resolution</strong></p>
+<ul>
+<li>Lower input scale further from 25% to 10-15%.</li>
+<li>Or pre-downscale the video with another tool before processing.</li>
+</ul>
+<p><strong>Step 5: Try a different AI model</strong></p>
+<ul>
+<li>Switch to a model with lower VRAM usage (e.g., LVAx2 instead of BSRGANx4).</li>
+</ul>
+<h3 id="74-memory-vs-disk-performance-comparison">7.4 Memory vs Disk Performance Comparison</h3>
+<p>Below is benchmark reference data (1080p → 4K, RTX 3070 8GB, RealESR_Gx4):</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Memory Pipeline</th>
+<th>Disk Pipeline</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Processing Speed</td>
+<td>~0.8 sec/frame</td>
+<td>~0.95 sec/frame</td>
+<td>Memory ~15% faster</td>
+</tr>
+<tr>
+<td>Disk Usage</td>
+<td>0 GB (no temp files)</td>
+<td>~80 GB (intermediate frames)</td>
+<td>Disk requires significant space</td>
+</tr>
+<tr>
+<td>RAM Usage</td>
+<td>~4 GB</td>
+<td>~2 GB</td>
+<td>Memory uses slightly more RAM</td>
+</tr>
+<tr>
+<td>Resume Support</td>
+<td>❌ Not supported</td>
+<td>✅ Supported</td>
+<td>—</td>
+</tr>
+<tr>
+<td>VFR Compatibility</td>
+<td>❌ Not supported</td>
+<td>✅ Supported</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Stability</td>
+<td>🟡 Occasional freezes</td>
+<td>🟢 Very stable</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="8-face-enhancement">8. Face Enhancement</h2>
+<h3 id="81-feature-description">8.1 Feature Description</h3>
+<p>Face enhancement performs dedicated detail restoration on face regions after super-resolution is complete. It is suitable for video content where faces occupy a significant portion of the frame (e.g., interviews, vlogs, movies/TV series).</p>
+<h3 id="82-face-models">8.2 Face Models</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Output Size</th>
+<th>Quality</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>codeformer</strong> (recommended)</td>
+<td>Fixed 512×512</td>
+<td>🟢 Best</td>
+<td>Transformer architecture, natural restoration</td>
+</tr>
+<tr>
+<td><strong>face_dat_x4</strong></td>
+<td>4× super-resolution</td>
+<td>🟡 Average</td>
+<td>Older model, simple upscaling</td>
+</tr>
+</tbody></table>
+<h3 id="83-parameter-descriptions">8.3 Parameter Descriptions</h3>
+<h4 id="color-matching">Color Matching</h4>
+<ul>
+<li><strong>On</strong>: Performs color histogram matching before blending, eliminating tonal differences between face and background.</li>
+<li><strong>Off</strong> (default): No color matching.</li>
+</ul>
+<h4 id="fidelity-weight-000---100">Fidelity Weight (0.00 - 1.00)</h4>
+<p>Controls the balance between face restoration strength and original image fidelity:</p>
+<ul>
+<li><strong>0.0</strong>: Strongest restoration, clearest but may produce noise/artifacts, far from original.</li>
+<li><strong>0.5</strong> (default): Balance point, restores clarity while preserving natural feel.</li>
+<li><strong>1.0</strong>: Fully retains original, no restoration.</li>
+</ul>
+<blockquote>
+<p>💡 Recommended value: <strong>0.5~0.7</strong>. If faces appear distorted or over-smoothed, increase this value.</p>
+</blockquote>
+<h3 id="84-notes">8.4 Notes</h3>
+<ul>
+<li>Face enhancement requires approximately an additional <strong>1-2GB VRAM</strong>.</li>
+<li>Processing time increases by about 20-40% (depending on number and size of faces in the frame).</li>
+<li>For videos with no faces or very small faces (landscapes, distant shots), it is recommended to disable it to save time.</li>
+</ul>
+<hr>
+<h2 id="9-faq--troubleshooting">9. FAQ / Troubleshooting</h2>
+<h3 id="91-processing-speed-too-slow">9.1 Processing Speed Too Slow</h3>
+<ol>
+<li><strong>Check inference backend</strong>: Confirm the title bar shows TensorRT or CUDA. If it shows CPU, GPU is not active.</li>
+<li><strong>Increase input scale</strong>: The default 25% is already fast; if still slow → lower input scale to 10-15%.</li>
+<li><strong>Switch model</strong>: LVAx2 is 3-5× faster than BSRGANx4.</li>
+<li><strong>Performance mode</strong>: Switch to Extreme Performance.</li>
+<li><strong>Disable deblur and face enhancement</strong>: These features significantly increase processing time.</li>
+</ol>
+<h3 id="92-out-of-memory-oom--program-crashes">9.2 Out of Memory (OOM) / Program Crashes</h3>
+<ol>
+<li><strong>Reduce multithreading</strong>: Try step by step OFF → 2 threads.</li>
+<li><strong>Reduce batch size</strong>: Set to 1.</li>
+<li><strong>Switch to a lower VRAM model</strong>: BSRGANx4 → RealESR_Gx4 → LVAx2.</li>
+<li><strong>Reduce input scale</strong>: 25% → 15% → 10%.</li>
+<li><strong>Disable deblur and face enhancement</strong>.</li>
+<li><strong>Switch to Disk pipeline</strong> (reduces memory pressure).</li>
+</ol>
+<h3 id="93-output-video-has-no-audio">9.3 Output Video Has No Audio</h3>
+<ul>
+<li>Check if the source video has an audio track (some sources lack audio).</li>
+<li>Disk pipeline automatically preserves audio.</li>
+<li>Memory pipeline copies the audio stream via <code>-map 1:a?</code>; if the source audio codec is unusual, it may fail.</li>
+</ul>
+<h3 id="94-grid-like-seams-appear-in-image">9.4 Grid-Like Seams Appear in Image</h3>
+<ul>
+<li>Increase <strong>Tile Overlap</strong> parameter (16 → 32 or 64).</li>
+<li>Switch to Quality performance mode.</li>
+<li>Appropriately increase the input scale percentage.</li>
+</ul>
+<h3 id="95-ai-output-looks-too-plasticky">9.5 AI Output Looks Too &quot;Plasticky&quot;</h3>
+<ul>
+<li>Enable <strong>AI Fusion</strong>, choose Low or Medium.</li>
+<li>Switch to a more natural model (e.g., LVAx2).</li>
+<li>Use IRCNN for denoising preprocessing first.</li>
+</ul>
+<h3 id="96-program-not-responding--white-screen-on-startup">9.6 Program Not Responding / White Screen on Startup</h3>
+<ol>
+<li>Verify the <code>Assets/</code> folder and ONNX Runtime DLLs exist in the running directory.</li>
+<li>Install <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Visual C++ Redistributable 2015-2022</a>.</li>
+<li>For TensorRT versions, verify <code>qualityscaler_tensorrt.dll</code> is present.</li>
+</ol>
+<hr>
+<h2 id="appendix-full-processing-pipeline-overview">Appendix: Full Processing Pipeline Overview</h2>
+<pre><code>Input File (Image/Video)
+    │
+    ├─ Image: Directly enters AI inference
+    │
+    └─ Video:
+        │
+        ├─ Memory Pipeline:
+        │   ffmpeg decode → stdout → Go read → AI inference → Go write → stdin → ffmpeg encode → Output
+        │
+        └─ Disk Pipeline:
+            ffmpeg extract frames → disk storage → AI upscale frame by frame → disk storage → ffmpeg assemble → Output
+                │                                              │
+                └─ [Optional] Deblur preprocessing              └─ [Optional] VFR timecodes
+                └─ [Optional] Face detection + enhancement
+</code></pre>
+<hr>
+<blockquote>
+<p>📧 Feedback &amp; Technical Support: Please submit an Issue in the project repository.</p>
+</blockquote>
+</div></article>
+      </main>
+    </div></div>
+  </body>
+</html>

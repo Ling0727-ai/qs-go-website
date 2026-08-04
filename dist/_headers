@@ -1,5 +1,4 @@
 /*
-  X-Robots-Tag: index, follow
   X-Content-Type-Options: nosniff
 
 /sitemap.xml
@@ -7,3 +6,7 @@
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
+
+/doc/*.md
+  X-Robots-Tag: noindex, nofollow
+  Content-Type: text/markdown; charset=utf-8
