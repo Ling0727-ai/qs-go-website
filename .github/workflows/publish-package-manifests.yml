@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -120,6 +121,9 @@ jobs:
           fi
 
       - name: Publish Scoop manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: |
           mkdir -p bucket
           cp package-manifests/scoop/ling0727.qualityscalergo-cpu.json bucket/qualityscaler-go-cpu.json
@@ -129,7 +133,26 @@ jobs:
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          SAFE_TAG=$(printf '%s' "$RELEASE_TAG" | tr -c 'A-Za-z0-9._-' '-')
+          BRANCH="scoop-manifests-${SAFE_TAG}"
+          git checkout -B "$BRANCH"
           git add bucket/qualityscaler-go-cpu.json bucket/qualityscaler-go-cuda.json
           if [ -f bucket/qualityscaler-go-directml.json ]; then git add bucket/qualityscaler-go-directml.json; fi
-          git diff --cached --quiet || git commit -m "Update QualityScaler-Go to ${{ steps.release.outputs.tag }}"
-          git push
+          if git diff --cached --quiet; then
+            echo "Scoop manifests are already up to date."
+            exit 0
+          fi
+
+          git commit -m "Update QualityScaler-Go to ${RELEASE_TAG}"
+          git push origin "$BRANCH" --force
+
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Updated existing Scoop PR #${EXISTING_PR}."
+          else
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Update Scoop manifests to ${RELEASE_TAG}" \
+              --body "Automated Scoop manifest update for QualityScaler-Go CPU and CUDA editions."
+          fi

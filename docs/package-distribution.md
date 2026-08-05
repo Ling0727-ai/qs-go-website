@@ -5,7 +5,7 @@ The workflow in `.github/workflows/publish-package-manifests.yml` runs when `pub
 Publishing configuration:
 
 - `WINGET_TOKEN`: a GitHub token that can create a fork and pull request against `microsoft/winget-pkgs`.
-- Scoop manifests are committed to this repository's `bucket/` directory with the workflow's built-in `GITHUB_TOKEN`; no separate Scoop token or repository setting is required.
+- Scoop manifests are pushed to a generated branch in this repository and proposed through a pull request, so protected `main` branch rules remain enforced. The workflow uses its built-in `GITHUB_TOKEN`; no separate Scoop token or repository setting is required.
 
 The `full` and TensorRT editions are excluded. Complete ONNX CPU and ONNX CUDA installers and portable archives are required. ONNX DirectML is published when both matching assets exist and is otherwise skipped.
 
