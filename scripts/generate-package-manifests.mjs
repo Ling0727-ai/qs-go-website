@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const eventPath = process.env.GITHUB_EVENT_PATH;
+const eventPath = process.env.RELEASE_METADATA_PATH ?? process.env.GITHUB_EVENT_PATH;
 const outputDir = process.env.MANIFEST_OUTPUT_DIR ?? 'package-manifests';
 const release = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
 const rawRelease = release.release ?? release;
