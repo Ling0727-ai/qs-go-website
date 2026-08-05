@@ -1,8 +1,10 @@
 name: Publish Winget and Scoop manifests
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - public/version.json
   workflow_dispatch:
     inputs:
       release_tag:
@@ -28,16 +30,26 @@ jobs:
         with:
           node-version: 22
 
-      - name: Load release event for manual runs
-        if: github.event_name == 'workflow_dispatch'
+      - name: Read release version
+        id: release
+        env:
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [ -n "$INPUT_RELEASE_TAG" ]; then
+            echo "tag=$INPUT_RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$(jq -r '.version' public/version.json)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Load release metadata
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,name,assets > release-event.json
 
       - name: Generate manifests
         env:
-          GITHUB_EVENT_PATH: ${{ github.event_name == 'workflow_dispatch' && 'release-event.json' || github.event_path }}
+          GITHUB_EVENT_PATH: release-event.json
           GITHUB_REPOSITORY: ${{ github.repository }}
           PACKAGE_ID: Ling0727.QualityScalerGo
           PACKAGE_NAME: QualityScaler-Go
@@ -56,7 +68,7 @@ jobs:
         uses: vedantmgoyal9/winget-releaser@v2
         with:
           identifier: Ling0727.QualityScalerGo
-          release-tag: ${{ github.event.release.tag_name || inputs.release_tag }}
+          release-tag: ${{ steps.release.outputs.tag }}
           fork-user: ${{ github.repository_owner }}
           token: ${{ secrets.WINGET_TOKEN }}
         if: env.WINGET_TOKEN != ''
@@ -76,5 +88,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add bucket/qualityscaler-go-cpu.json bucket/qualityscaler-go-cuda.json bucket/qualityscaler-go-directml.json
-          git diff --cached --quiet || git commit -m "Update QualityScaler-Go to ${{ github.event.release.tag_name || inputs.release_tag }}"
+          git diff --cached --quiet || git commit -m "Update QualityScaler-Go to ${{ steps.release.outputs.tag }}"
           git push

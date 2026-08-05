@@ -28,6 +28,8 @@ Choose the backend that matches your machine:
 
 The Winget and Scoop automation covers the regular ONNX CPU, CUDA, and DirectML packages. `full` and TensorRT packages are excluded from those package-manager feeds.
 
+The distribution workflow starts automatically when `public/version.json` changes on `main`. It reads the `version` field, locates the matching GitHub Release, and publishes the package manifests for that release. The Release assets must already be uploaded before the workflow runs.
+
 ### Install with Winget
 
 After the Winget manifests have been accepted into the community source:
