@@ -45,7 +45,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
-        run: gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,name,assets > release-event.json
+        run: gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > release-event.json
 
       - name: Generate manifests
         env:

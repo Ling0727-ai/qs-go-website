@@ -16,16 +16,16 @@ if (!tag) {
 const version = tag.replace(/^v/i, '');
 const assets = (rawRelease.assets ?? []).map((asset) => ({
   ...asset,
-  browser_download_url: asset.browser_download_url ?? asset.browserDownloadUrl,
-  digest: asset.digest ?? asset.digest,
+  browser_download_url: asset.browser_download_url ?? asset.browserDownloadUrl ?? asset.downloadUrl,
+  digest: asset.digest ?? asset.sha256,
 }));
 const repository = process.env.GITHUB_REPOSITORY ?? 'Ling0727-ai/qs-go-website';
 const owner = process.env.PACKAGE_PUBLISHER ?? repository.split('/')[0];
 const packageId = process.env.PACKAGE_ID ?? 'Ling0727.QualityScalerGo';
 const displayName = process.env.PACKAGE_NAME ?? 'QualityScaler-Go';
 
-if (!tag || !version || !assets.length) {
-  throw new Error('Release event does not contain a tag and assets.');
+if (!assets.length) {
+  throw new Error(`Release metadata for ${tag} does not contain assets. Keys: ${Object.keys(rawRelease).join(', ')}`);
 }
 
 const pickAsset = (pattern, description) => {
