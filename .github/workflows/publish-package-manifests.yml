@@ -132,7 +132,7 @@ jobs:
 
       - name: Publish Scoop manifest
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.WINGET_TOKEN || github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: |
           mkdir -p bucket
@@ -160,9 +160,12 @@ jobs:
           if [ -n "$EXISTING_PR" ]; then
             echo "Updated existing Scoop PR #${EXISTING_PR}."
           else
-            gh pr create \
+            if ! gh pr create \
               --base main \
               --head "$BRANCH" \
               --title "Update Scoop manifests to ${RELEASE_TAG}" \
-              --body "Automated Scoop manifest update for QualityScaler-Go CPU and CUDA editions."
+              --body "Automated Scoop manifest update for QualityScaler-Go CPU and CUDA editions."; then
+              echo "::warning::Scoop branch was pushed, but automatic PR creation is disabled."
+              echo "Create it at: https://github.com/${GITHUB_REPOSITORY}/compare/main...${BRANCH}?expand=1"
+            fi
           fi
