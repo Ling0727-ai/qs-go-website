@@ -14,14 +14,13 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     env:
       WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
-      SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
     steps:
       - name: Check out website repository
         uses: actions/checkout@v4
@@ -67,28 +66,61 @@ jobs:
           path: package-manifests
 
       - name: Submit to Winget
-        uses: vedantmgoyal9/winget-releaser@v2
-        with:
-          identifier: Ling0727.QualityScalerGo
-          release-tag: ${{ steps.release.outputs.tag }}
-          fork-user: ${{ github.repository_owner }}
-          token: ${{ secrets.WINGET_TOKEN }}
         if: env.WINGET_TOKEN != ''
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_TOKEN }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          FORK_OWNER: ${{ github.repository_owner }}
+        run: |
+          if ! gh api "repos/${FORK_OWNER}/winget-pkgs" >/dev/null 2>&1; then
+            gh api --method POST repos/microsoft/winget-pkgs/forks >/dev/null
+            for attempt in {1..20}; do
+              gh api "repos/${FORK_OWNER}/winget-pkgs" >/dev/null 2>&1 && break
+              sleep 3
+            done
+          fi
+
+          gh repo clone "${FORK_OWNER}/winget-pkgs" winget-pkgs -- --depth 1
+          cd winget-pkgs
+          git remote add upstream https://github.com/microsoft/winget-pkgs.git
+          git fetch upstream master --depth 1
+
+          SAFE_TAG=$(printf '%s' "$RELEASE_TAG" | tr -c 'A-Za-z0-9._-' '-')
+          BRANCH="qualityscaler-go-${SAFE_TAG}"
+          git checkout -B "$BRANCH" upstream/master
+          cp -R ../package-manifests/winget/manifests/. manifests/
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add manifests
+          if git diff --cached --quiet; then
+            echo "Winget manifests are already up to date."
+            exit 0
+          fi
+
+          git commit -m "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}"
+          git push origin "$BRANCH" --force
+
+          EXISTING_PR=$(gh pr list --repo microsoft/winget-pkgs --head "${FORK_OWNER}:${BRANCH}" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Updated existing Winget PR #${EXISTING_PR}."
+          else
+            gh pr create \
+              --repo microsoft/winget-pkgs \
+              --base master \
+              --head "${FORK_OWNER}:${BRANCH}" \
+              --title "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}" \
+              --body "Automated submission for QualityScaler-Go CPU and CUDA editions."
+          fi
 
       - name: Publish Scoop manifest
-        if: env.SCOOP_BUCKET_TOKEN != ''
-        env:
-          SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
-          SCOOP_BUCKET_REPOSITORY: ${{ secrets.SCOOP_BUCKET_REPOSITORY }}
         run: |
-          git clone "https://x-access-token:${SCOOP_BUCKET_TOKEN}@github.com/${SCOOP_BUCKET_REPOSITORY}.git" scoop-bucket
-          mkdir -p "scoop-bucket/bucket"
-          cp package-manifests/scoop/ling0727.qualityscalergo-cpu.json "scoop-bucket/bucket/qualityscaler-go-cpu.json"
-          cp package-manifests/scoop/ling0727.qualityscalergo-cuda.json "scoop-bucket/bucket/qualityscaler-go-cuda.json"
+          mkdir -p bucket
+          cp package-manifests/scoop/ling0727.qualityscalergo-cpu.json bucket/qualityscaler-go-cpu.json
+          cp package-manifests/scoop/ling0727.qualityscalergo-cuda.json bucket/qualityscaler-go-cuda.json
           if [ -f package-manifests/scoop/ling0727.qualityscalergo-directml.json ]; then
-            cp package-manifests/scoop/ling0727.qualityscalergo-directml.json "scoop-bucket/bucket/qualityscaler-go-directml.json"
+            cp package-manifests/scoop/ling0727.qualityscalergo-directml.json bucket/qualityscaler-go-directml.json
           fi
-          cd scoop-bucket
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add bucket/qualityscaler-go-cpu.json bucket/qualityscaler-go-cuda.json

@@ -57,16 +57,18 @@ fs.mkdirSync(outputDir, { recursive: true });
 
 for (const { variant, installer: asset } of variantAssets) {
   const variantId = `${packageId}.${variant[0].toUpperCase()}${variant.slice(1)}`;
-  const wingetDir = path.join(outputDir, 'winget', owner, displayName, variant, version);
+  const identifierParts = variantId.split('.');
+  const wingetDir = path.join(outputDir, 'winget', 'manifests', identifierParts[0][0].toLowerCase(), ...identifierParts, version);
   fs.mkdirSync(wingetDir, { recursive: true });
-  fs.writeFileSync(path.join(wingetDir, `${variantId}.yaml`), `PackageIdentifier: ${variantId}\nPackageVersion: ${version}\nPackageLocale: en-US\nPublisher: ${owner}\nPackageName: ${displayName} ${variant.toUpperCase()}\nLicense: MIT\nShortDescription: AI image and video quality scaler (${variant.toUpperCase()} edition).\nManifestType: defaultLocale\nManifestVersion: 1.9.0\n`);
-  fs.writeFileSync(path.join(wingetDir, `${variantId}.installer.yaml`), `PackageIdentifier: ${variantId}\nPackageVersion: ${version}\nInstallerType: ${asset.name.endsWith('.msi') ? 'msi' : 'inno'}\nInstallers:\n  - Architecture: x64\n    InstallerUrl: ${asset.browser_download_url}\n    InstallerSha256: ${asset.digest.replace(/^sha256:/, '')}\nManifestType: installer\nManifestVersion: 1.9.0\n`);
+  fs.writeFileSync(path.join(wingetDir, `${variantId}.yaml`), `PackageIdentifier: ${variantId}\nPackageVersion: ${version}\nDefaultLocale: en-US\nManifestType: version\nManifestVersion: 1.9.0\n`);
+  fs.writeFileSync(path.join(wingetDir, `${variantId}.locale.en-US.yaml`), `PackageIdentifier: ${variantId}\nPackageVersion: ${version}\nPackageLocale: en-US\nPublisher: ${owner}\nPublisherUrl: https://github.com/${repository.split('/')[0]}\nPackageName: ${displayName} ${variant.toUpperCase()}\nPackageUrl: https://github.com/${repository}\nLicense: Proprietary\nShortDescription: AI image and video quality scaler (${variant.toUpperCase()} edition).\nManifestType: defaultLocale\nManifestVersion: 1.9.0\n`);
+  fs.writeFileSync(path.join(wingetDir, `${variantId}.installer.yaml`), `PackageIdentifier: ${variantId}\nPackageVersion: ${version}\nInstallerType: ${asset.name.endsWith('.msi') ? 'msi' : 'nullsoft'}\nInstallers:\n  - Architecture: x64\n    InstallerUrl: ${asset.browser_download_url}\n    InstallerSha256: ${asset.digest.replace(/^sha256:/, '')}\nManifestType: installer\nManifestVersion: 1.9.0\n`);
 }
 
 const scoopDir = path.join(outputDir, 'scoop');
 fs.mkdirSync(scoopDir, { recursive: true });
 for (const { variant, archive: asset } of variantAssets) {
-  fs.writeFileSync(path.join(scoopDir, `${packageId.toLowerCase()}-${variant}.json`), `${JSON.stringify({ version, description: `AI image and video quality scaler (${variant.toUpperCase()} edition).`, homepage: `https://github.com/${repository}`, license: 'MIT', architecture: { '64bit': { url: asset.browser_download_url, hash: asset.digest.replace(/^sha256:/, '') } }, bin: 'QualityScaler-Go.exe', shortcuts: [['QualityScaler-Go.exe', `${displayName} ${variant.toUpperCase()}`]] }, null, 2)}\n`);
+  fs.writeFileSync(path.join(scoopDir, `${packageId.toLowerCase()}-${variant}.json`), `${JSON.stringify({ version, description: `AI image and video quality scaler (${variant.toUpperCase()} edition).`, homepage: `https://github.com/${repository}`, license: 'Proprietary', architecture: { '64bit': { url: asset.browser_download_url, hash: asset.digest.replace(/^sha256:/, '') } }, bin: 'QualityScaler-Go.exe', shortcuts: [['QualityScaler-Go.exe', `${displayName} ${variant.toUpperCase()}`]] }, null, 2)}\n`);
 }
 
 console.log(`Generated manifests for ${packageId} ${version}`);

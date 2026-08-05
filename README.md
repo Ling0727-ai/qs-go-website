@@ -22,11 +22,11 @@ Choose the backend that matches your machine:
 | --- | --- |
 | `onnx-cpu` | Maximum compatibility and machines without a supported GPU |
 | `onnx-cuda` | NVIDIA GPUs with CUDA and cuDNN available |
-| `onnx-directml` | DirectML-compatible Windows GPU devices |
+| `onnx-directml` | DirectML-compatible Windows GPU devices - coming soon / 敬请期待 |
 | `tensorrt-gpu` | NVIDIA users who need the TensorRT execution path |
 | `full` | Users who need the complete bundled backend set |
 
-The Winget and Scoop automation covers the regular ONNX CPU, CUDA, and DirectML packages. `full` and TensorRT packages are excluded from those package-manager feeds.
+The Winget and Scoop automation currently publishes the regular ONNX CPU and CUDA packages. DirectML support is coming soon and will be published automatically when release assets become available. `full` and TensorRT packages are excluded from those package-manager feeds.
 
 The distribution workflow starts automatically when `public/version.json` changes on `main`. It reads the `version` field, locates the matching GitHub Release, and publishes the package manifests for that release. The Release assets must already be uploaded before the workflow runs.
 
@@ -37,7 +37,6 @@ After the Winget manifests have been accepted into the community source:
 ```powershell
 winget install --id Ling0727.QualityScalerGo.Cpu
 winget install --id Ling0727.QualityScalerGo.Cuda
-winget install --id Ling0727.QualityScalerGo.Directml
 ```
 
 Upgrade an installed package with:
@@ -46,14 +45,14 @@ Upgrade an installed package with:
 winget upgrade --id Ling0727.QualityScalerGo.Cpu
 ```
 
-Replace `Cpu` with `Cuda` or `Directml` when upgrading another edition.
+Replace `Cpu` with `Cuda` when upgrading the CUDA edition. The DirectML package is coming soon.
 
 ### Install with Scoop
 
-Add the project Scoop bucket, then install the edition you need. Replace `OWNER/BUCKET-REPOSITORY` with the configured Scoop bucket repository:
+Add this repository as the project Scoop bucket, then install the edition you need:
 
 ```powershell
-scoop bucket add qualityscaler-go https://github.com/OWNER/BUCKET-REPOSITORY
+scoop bucket add qualityscaler-go https://github.com/Ling0727-ai/qs-go-website
 scoop install qualityscaler-go/qualityscaler-go-cpu
 ```
 
@@ -61,8 +60,9 @@ Other editions:
 
 ```powershell
 scoop install qualityscaler-go/qualityscaler-go-cuda
-scoop install qualityscaler-go/qualityscaler-go-directml
 ```
+
+The DirectML Scoop package is coming soon / 敬请期待.
 
 Update an installed package with:
 
