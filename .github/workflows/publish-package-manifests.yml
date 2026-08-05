@@ -108,16 +108,26 @@ jobs:
           git commit -m "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}"
           git push origin "$BRANCH" --force
 
-          EXISTING_PR=$(gh pr list --repo microsoft/winget-pkgs --head "${FORK_OWNER}:${BRANCH}" --state open --json number --jq '.[0].number // empty')
+          EXISTING_PR=$(gh api --method GET repos/microsoft/winget-pkgs/pulls \
+            -f head="${FORK_OWNER}:${BRANCH}" \
+            -f state=open \
+            --jq '.[0].number // empty')
           if [ -n "$EXISTING_PR" ]; then
             echo "Updated existing Winget PR #${EXISTING_PR}."
           else
-            gh pr create \
+            if ! gh pr create \
               --repo microsoft/winget-pkgs \
               --base master \
               --head "${FORK_OWNER}:${BRANCH}" \
               --title "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}" \
-              --body "Automated submission for QualityScaler-Go CPU and CUDA editions."
+              --body "Automated submission for QualityScaler-Go CPU and CUDA editions."; then
+              EXISTING_PR=$(gh api --method GET repos/microsoft/winget-pkgs/pulls \
+                -f head="${FORK_OWNER}:${BRANCH}" \
+                -f state=open \
+                --jq '.[0].number // empty')
+              if [ -z "$EXISTING_PR" ]; then exit 1; fi
+              echo "Winget PR #${EXISTING_PR} already exists."
+            fi
           fi
 
       - name: Publish Scoop manifest
