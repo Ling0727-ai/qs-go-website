@@ -80,8 +80,10 @@ jobs:
             done
           fi
 
-          gh repo clone "${FORK_OWNER}/winget-pkgs" winget-pkgs -- --depth 1
+          gh auth setup-git
+          git clone --depth 1 "https://github.com/${FORK_OWNER}/winget-pkgs.git" winget-pkgs
           cd winget-pkgs
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${FORK_OWNER}/winget-pkgs.git"
           if git remote get-url upstream >/dev/null 2>&1; then
             git remote set-url upstream https://github.com/microsoft/winget-pkgs.git
           else
