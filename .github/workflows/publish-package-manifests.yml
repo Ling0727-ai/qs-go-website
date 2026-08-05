@@ -82,7 +82,11 @@ jobs:
 
           gh repo clone "${FORK_OWNER}/winget-pkgs" winget-pkgs -- --depth 1
           cd winget-pkgs
-          git remote add upstream https://github.com/microsoft/winget-pkgs.git
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream https://github.com/microsoft/winget-pkgs.git
+          else
+            git remote add upstream https://github.com/microsoft/winget-pkgs.git
+          fi
           git fetch upstream master --depth 1
 
           SAFE_TAG=$(printf '%s' "$RELEASE_TAG" | tr -c 'A-Za-z0-9._-' '-')
