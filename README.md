@@ -28,6 +28,47 @@ Choose the backend that matches your machine:
 
 The Winget and Scoop automation covers the regular ONNX CPU, CUDA, and DirectML packages. `full` and TensorRT packages are excluded from those package-manager feeds.
 
+### Install with Winget
+
+After the Winget manifests have been accepted into the community source:
+
+```powershell
+winget install --id Ling0727.QualityScalerGo.Cpu
+winget install --id Ling0727.QualityScalerGo.Cuda
+winget install --id Ling0727.QualityScalerGo.Directml
+```
+
+Upgrade an installed package with:
+
+```powershell
+winget upgrade --id Ling0727.QualityScalerGo.Cpu
+```
+
+Replace `Cpu` with `Cuda` or `Directml` when upgrading another edition.
+
+### Install with Scoop
+
+Add the project Scoop bucket, then install the edition you need. Replace `OWNER/BUCKET-REPOSITORY` with the configured Scoop bucket repository:
+
+```powershell
+scoop bucket add qualityscaler-go https://github.com/OWNER/BUCKET-REPOSITORY
+scoop install qualityscaler-go/qualityscaler-go-cpu
+```
+
+Other editions:
+
+```powershell
+scoop install qualityscaler-go/qualityscaler-go-cuda
+scoop install qualityscaler-go/qualityscaler-go-directml
+```
+
+Update an installed package with:
+
+```powershell
+scoop update qualityscaler-go
+scoop update qualityscaler-go/qualityscaler-go-cpu
+```
+
 ## Documentation
 
 - [中文用户手册](public/doc/USER_MANUAL-zh_cn.md)
