@@ -5,7 +5,14 @@ const eventPath = process.env.GITHUB_EVENT_PATH;
 const outputDir = process.env.MANIFEST_OUTPUT_DIR ?? 'package-manifests';
 const release = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
 const rawRelease = release.release ?? release;
-const tag = rawRelease.tag_name ?? rawRelease.tagName;
+const tag = rawRelease.tag_name
+  ?? rawRelease.tagName
+  ?? release.tag_name
+  ?? release.tagName
+  ?? process.env.RELEASE_TAG;
+if (!tag) {
+  throw new Error(`Release metadata does not contain a tag. Keys: ${Object.keys(rawRelease).join(', ')}`);
+}
 const version = tag.replace(/^v/i, '');
 const assets = (rawRelease.assets ?? []).map((asset) => ({
   ...asset,

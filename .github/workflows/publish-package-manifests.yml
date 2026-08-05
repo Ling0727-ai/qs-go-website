@@ -50,6 +50,7 @@ jobs:
       - name: Generate manifests
         env:
           GITHUB_EVENT_PATH: release-event.json
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PACKAGE_ID: Ling0727.QualityScalerGo
           PACKAGE_NAME: QualityScaler-Go
