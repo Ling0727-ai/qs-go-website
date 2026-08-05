@@ -93,42 +93,53 @@ jobs:
           git fetch upstream master --depth 1
 
           SAFE_TAG=$(printf '%s' "$RELEASE_TAG" | tr -c 'A-Za-z0-9._-' '-')
-          BRANCH="qualityscaler-go-${SAFE_TAG}"
-          git checkout -B "$BRANCH" upstream/master
-          cp -R ../package-manifests/winget/manifests/. manifests/
-
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add manifests
-          if git diff --cached --quiet; then
-            echo "Winget manifests are already up to date."
-            exit 0
-          fi
 
-          git commit -m "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}"
-          git push origin "$BRANCH" --force
+          SOURCE_BASE="../package-manifests/winget/manifests/l/Ling0727/QualityScalerGo"
+          for VARIANT_DIR in "$SOURCE_BASE"/*; do
+            [ -d "$VARIANT_DIR" ] || continue
+            VARIANT=$(basename "$VARIANT_DIR")
+            VARIANT_SLUG=$(printf '%s' "$VARIANT" | tr '[:upper:]' '[:lower:]')
+            PACKAGE_IDENTIFIER="Ling0727.QualityScalerGo.${VARIANT}"
+            BRANCH="qualityscaler-go-${VARIANT_SLUG}-${SAFE_TAG}"
 
-          EXISTING_PR=$(gh api --method GET repos/microsoft/winget-pkgs/pulls \
-            -f head="${FORK_OWNER}:${BRANCH}" \
-            -f state=open \
-            --jq '.[0].number // empty')
-          if [ -n "$EXISTING_PR" ]; then
-            echo "Updated existing Winget PR #${EXISTING_PR}."
-          else
+            git checkout -B "$BRANCH" upstream/master
+            mkdir -p manifests/l/Ling0727/QualityScalerGo
+            cp -R "$VARIANT_DIR" manifests/l/Ling0727/QualityScalerGo/
+            git add "manifests/l/Ling0727/QualityScalerGo/${VARIANT}"
+
+            if git diff --cached --quiet; then
+              echo "${PACKAGE_IDENTIFIER} is already up to date."
+              continue
+            fi
+
+            git commit -m "New version: ${PACKAGE_IDENTIFIER} ${RELEASE_TAG}"
+            git push origin "$BRANCH" --force
+
+            EXISTING_PR=$(gh api --method GET repos/microsoft/winget-pkgs/pulls \
+              -f head="${FORK_OWNER}:${BRANCH}" \
+              -f state=open \
+              --jq '.[0].number // empty')
+            if [ -n "$EXISTING_PR" ]; then
+              echo "Updated existing ${PACKAGE_IDENTIFIER} PR #${EXISTING_PR}."
+              continue
+            fi
+
             if ! gh pr create \
               --repo microsoft/winget-pkgs \
               --base master \
               --head "${FORK_OWNER}:${BRANCH}" \
-              --title "New version: Ling0727.QualityScalerGo ${RELEASE_TAG}" \
-              --body "Automated submission for QualityScaler-Go CPU and CUDA editions."; then
+              --title "New version: ${PACKAGE_IDENTIFIER} ${RELEASE_TAG}" \
+              --body "Automated submission for ${PACKAGE_IDENTIFIER}."; then
               EXISTING_PR=$(gh api --method GET repos/microsoft/winget-pkgs/pulls \
                 -f head="${FORK_OWNER}:${BRANCH}" \
                 -f state=open \
                 --jq '.[0].number // empty')
               if [ -z "$EXISTING_PR" ]; then exit 1; fi
-              echo "Winget PR #${EXISTING_PR} already exists."
+              echo "${PACKAGE_IDENTIFIER} PR #${EXISTING_PR} already exists."
             fi
-          fi
+          done
 
       - name: Publish Scoop manifest
         env:
