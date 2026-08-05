@@ -1,0 +1,19 @@
+{
+  "version": "5.0.1-rc1",
+  "description": "AI image and video quality scaler (CUDA edition).",
+  "homepage": "https://github.com/Ling0727-ai/qs-go-website",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Ling0727-ai/qs-go-website/releases/download/v5.0.1-rc1/QualityScaler-Go-5.0.1-rc1-onnx-cuda-win-amd64-wails.zip",
+      "hash": "3930b6c9635ffe090b785dcf31d76d4f8be7c095783ec049a10724c5980ce5e9"
+    }
+  },
+  "bin": "QualityScaler-Go.exe",
+  "shortcuts": [
+    [
+      "QualityScaler-Go.exe",
+      "QualityScaler-Go CUDA"
+    ]
+  ]
+}

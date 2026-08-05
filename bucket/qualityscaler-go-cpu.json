@@ -1,0 +1,19 @@
+{
+  "version": "5.0.1-rc1",
+  "description": "AI image and video quality scaler (CPU edition).",
+  "homepage": "https://github.com/Ling0727-ai/qs-go-website",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Ling0727-ai/qs-go-website/releases/download/v5.0.1-rc1/QualityScaler-Go-5.0.1-rc1-onnx-cpu-win-amd64-wails.zip",
+      "hash": "c79b9ba0691f20a2e794ccb4a38c033bdcfc270b1418446889d9ef4a87108501"
+    }
+  },
+  "bin": "QualityScaler-Go.exe",
+  "shortcuts": [
+    [
+      "QualityScaler-Go.exe",
+      "QualityScaler-Go CPU"
+    ]
+  ]
+}
