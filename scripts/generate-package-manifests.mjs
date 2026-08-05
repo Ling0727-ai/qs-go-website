@@ -28,28 +28,34 @@ if (!assets.length) {
   throw new Error(`Release metadata for ${tag} does not contain assets. Keys: ${Object.keys(rawRelease).join(', ')}`);
 }
 
-const pickAsset = (pattern, description) => {
-  const matches = assets.filter((asset) => pattern.test(asset.name));
-  if (matches.length !== 1) {
-    throw new Error(`${description}: expected exactly one matching asset, found ${matches.length}.`);
+const requiredVariants = ['cpu', 'cuda'];
+const optionalVariants = ['directml'];
+
+const findVariantAssets = (variant, required) => {
+  const installers = assets.filter((asset) => new RegExp(`onnx-${variant}.*win.*setup\\.(?:exe|msi)$`, 'i').test(asset.name));
+  const archives = assets.filter((asset) => new RegExp(`onnx-${variant}.*win.*\\.(?:zip|7z)$`, 'i').test(asset.name));
+
+  if (installers.length === 1 && archives.length === 1) {
+    return { variant, installer: installers[0], archive: archives[0] };
   }
-  return matches[0];
+
+  if (!required && installers.length === 0 && archives.length === 0) {
+    console.log(`Skipping optional ${variant} edition: no matching Release assets.`);
+    return null;
+  }
+
+  throw new Error(`${variant} edition: expected one Windows installer and one archive, found ${installers.length} installer(s) and ${archives.length} archive(s).`);
 };
 
-const variants = ['cpu', 'cuda', 'directml'];
-const installerAssets = variants.map((variant) => ({
-  variant,
-  asset: pickAsset(new RegExp(`onnx-${variant}.*setup\\.(?:exe|msi)$`, 'i'), `Winget ${variant} installer asset`),
-}));
-const archiveAssets = variants.map((variant) => ({
-  variant,
-  asset: pickAsset(new RegExp(`onnx-${variant}\\.(?:zip|7z)$`, 'i'), `Scoop ${variant} archive asset`),
-}));
+const variantAssets = [
+  ...requiredVariants.map((variant) => findVariantAssets(variant, true)),
+  ...optionalVariants.map((variant) => findVariantAssets(variant, false)),
+].filter(Boolean);
 
 fs.rmSync(outputDir, { recursive: true, force: true });
 fs.mkdirSync(outputDir, { recursive: true });
 
-for (const { variant, asset } of installerAssets) {
+for (const { variant, installer: asset } of variantAssets) {
   const variantId = `${packageId}.${variant[0].toUpperCase()}${variant.slice(1)}`;
   const wingetDir = path.join(outputDir, 'winget', owner, displayName, variant, version);
   fs.mkdirSync(wingetDir, { recursive: true });
@@ -59,7 +65,7 @@ for (const { variant, asset } of installerAssets) {
 
 const scoopDir = path.join(outputDir, 'scoop');
 fs.mkdirSync(scoopDir, { recursive: true });
-for (const { variant, asset } of archiveAssets) {
+for (const { variant, archive: asset } of variantAssets) {
   fs.writeFileSync(path.join(scoopDir, `${packageId.toLowerCase()}-${variant}.json`), `${JSON.stringify({ version, description: `AI image and video quality scaler (${variant.toUpperCase()} edition).`, homepage: `https://github.com/${repository}`, license: 'MIT', architecture: { '64bit': { url: asset.browser_download_url, hash: asset.digest.replace(/^sha256:/, '') } }, bin: 'QualityScaler-Go.exe', shortcuts: [['QualityScaler-Go.exe', `${displayName} ${variant.toUpperCase()}`]] }, null, 2)}\n`);
 }
 
