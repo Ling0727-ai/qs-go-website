@@ -195,16 +195,39 @@ Launch QualityScaler-Go and observe the inference backend in the title bar or lo
 
 ## 3. Version Selection Guide
 
-QualityScaler-Go is provided in 4 versions. Choose based on your hardware:
+QualityScaler-Go is provided in 5 versions. Choose based on your hardware:
 
 | Version | Inference Backend | Target User | Required Environment |
 |---------|-------------------|-------------|----------------------|
 | **onnx-cpu** | ONNX CPU | No NVIDIA GPU, maximum compatibility | No GPU needed |
 | **onnx-cuda** | ONNX + CUDA | Nvidia GPU users who don't want to set up TensorRT | NVIDIA GPU + CUDA DLLs |
+| **onnx-directml** | ONNX + DirectML | Windows GPU devices with DirectML support | DirectML-compatible driver |
 | **tensorrt-gpu** | TensorRT → ONNX → CPU fallback | Nvidia GPU users seeking maximum performance | TensorRT 10.x + CUDA 12.x |
 | **full** | All backends + gocv acceleration | One download, auto-adapts to hardware | TensorRT + OpenCV |
 
 > **Recommendation**: Most NVIDIA GPU users should choose the **tensorrt-gpu** version for the fastest speed. Integrated graphics / no dedicated GPU users should pick **onnx-cpu**.
+
+### 3.1 Hardware requirements by task
+
+The two workflows have different bottlenecks. Image upscaling is primarily limited by the peak memory required for one image, the model, and optional restoration stages. Video upscaling must continuously decode, transport, infer, and encode frames, so CPU capacity, RAM, VRAM, temporary storage, and sustained cooling matter more.
+
+| Task | Baseline requirement | Recommended configuration | Main constraints |
+|------|----------------------|---------------------------|------------------|
+| Image upscaling | Windows PC capable of ONNX CPU; GPU optional | 8GB+ RAM; DirectML-compatible integrated/discrete GPU or NVIDIA GPU + CUDA | Large images, BSRGAN, deblur, and face enhancement raise peak VRAM use |
+| Video upscaling | Windows PC with FFmpeg support; ONNX CPU fallback available | 16GB+ RAM; GPU with a usable hardware encoder; SSD space for temporary files | Long videos, 4K output, concurrency, and Disk mode increase sustained resource use |
+
+**Image upscaling guidance**
+
+- Without an NVIDIA GPU, start with `onnx-cpu` or `onnx-directml`.
+- On low-memory devices, use a smaller model, lower the input scale, and keep batch size at 1.
+- Large images need additional RAM and VRAM headroom; after an OOM, reduce input size or switch to a lighter model first.
+
+**Video upscaling guidance**
+
+- Confirm that FFmpeg can decode the input and that the selected output encoder is available.
+- Use Memory mode for CFR video; use Disk mode for VFR video, resume support, or frame inspection.
+- For long videos, increase thread count and batch size gradually instead of starting with maximum concurrency.
+- Disk mode needs free space for intermediate frames; the exact amount depends on duration, frame count, resolution, and frame format.
 
 ---
 
@@ -665,13 +688,30 @@ ffmpeg extract frames → write to disk → read frame files → AI inference �
 
 ### 7.4 Memory vs Disk Performance Comparison
 
-Below is benchmark reference data (1080p → 4K, RTX 3070 8GB, RealESR_Gx4):
+The accompanying paper reports the following preliminary measurements. The workload is a roughly 45-second 1080p Sintel clip exported to 2160p on an RTX 5070 Ti Laptop GPU. `I100O50` means 100% input scale and 50% output scale; `1b8t` means batch size 1 with 8 worker threads. These are single-run results and are workload-specific:
 
 | Metric | Memory Pipeline | Disk Pipeline | Difference |
 |--------|-----------------|---------------|------------|
-| Processing Speed | ~0.8 sec/frame | ~0.95 sec/frame | Memory ~15% faster |
-| Disk Usage | 0 GB (no temp files) | ~80 GB (intermediate frames) | Disk requires significant space |
-| RAM Usage | ~4 GB | ~2 GB | Memory uses slightly more RAM |
+| Configuration | Memory | Disk |
+| TensorRT 1b8t | 3:42 | 4:04 |
+| ONNX CUDA 1b8t | 7:48 | 8:02 |
+| TensorRT 1b1t | 9:52 | 10:45 |
+| DirectML 1b1t | 12:25 | 12:42 |
+| ONNX CUDA 1b1t | 15:28 | 15:45 |
+| QualityScaler baseline | 18:41 | - |
+
+In a separate `I50O100` ablation, TensorRT `1b8t` took 50 seconds in Memory mode and 95 seconds in Disk mode. That experiment changes the model input workload and should not be ranked directly against the table above.
+
+### 7.5 DIV2K compatibility test record
+
+Using `0801.jpeg` from the DIV2K Validation Set with `1b8t I50O100`, the recorded single-image results were:
+
+| Platform | ONNX CPU | DirectML |
+| --- | ---: | ---: |
+| Intel Core Ultra 7 | 28 s | 3 s (integrated GPU) |
+| 13th Gen Intel Core i5-13500H | 28 s | 4 s (integrated GPU) |
+
+This table documents compatibility behavior on integrated graphics for one image and one test environment. It is not a substitute for a broader performance benchmark.
 | Resume Support | ❌ Not supported | ✅ Supported | — |
 | VFR Compatibility | ❌ Not supported | ✅ Supported | — |
 | Stability | 🟡 Occasional freezes | 🟢 Very stable | — |
