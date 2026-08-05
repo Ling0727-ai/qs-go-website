@@ -8,8 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Release tag to process
-        required: true
+        description: Release tag to process, for example v5.0.1-rc1; leave empty to use public/version.json
+        required: false
+        default: ''
         type: string
 
 permissions:
