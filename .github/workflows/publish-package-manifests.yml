@@ -1,0 +1,80 @@
+name: Publish Winget and Scoop manifests
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to process
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+      SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+    steps:
+      - name: Check out website repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Load release event for manual runs
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,name,assets > release-event.json
+
+      - name: Generate manifests
+        env:
+          GITHUB_EVENT_PATH: ${{ github.event_name == 'workflow_dispatch' && 'release-event.json' || github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PACKAGE_ID: Ling0727.QualityScalerGo
+          PACKAGE_NAME: QualityScaler-Go
+          PACKAGE_PUBLISHER: Ling0727-ai
+          WINGET_ASSET_REGEX: ${{ vars.WINGET_ASSET_REGEX }}
+          SCOOP_ASSET_REGEX: ${{ vars.SCOOP_ASSET_REGEX }}
+        run: node scripts/generate-package-manifests.mjs
+
+      - name: Upload generated manifests
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-manifests
+          path: package-manifests
+
+      - name: Submit to Winget
+        uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: Ling0727.QualityScalerGo
+          release-tag: ${{ github.event.release.tag_name || inputs.release_tag }}
+          fork-user: ${{ github.repository_owner }}
+          token: ${{ secrets.WINGET_TOKEN }}
+        if: env.WINGET_TOKEN != ''
+
+      - name: Publish Scoop manifest
+        if: env.SCOOP_BUCKET_TOKEN != ''
+        env:
+          SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+          SCOOP_BUCKET_REPOSITORY: ${{ secrets.SCOOP_BUCKET_REPOSITORY }}
+        run: |
+          git clone "https://x-access-token:${SCOOP_BUCKET_TOKEN}@github.com/${SCOOP_BUCKET_REPOSITORY}.git" scoop-bucket
+          mkdir -p "scoop-bucket/bucket"
+          cp package-manifests/scoop/ling0727.qualityscalergo-cpu.json "scoop-bucket/bucket/qualityscaler-go-cpu.json"
+          cp package-manifests/scoop/ling0727.qualityscalergo-cuda.json "scoop-bucket/bucket/qualityscaler-go-cuda.json"
+          cp package-manifests/scoop/ling0727.qualityscalergo-directml.json "scoop-bucket/bucket/qualityscaler-go-directml.json"
+          cd scoop-bucket
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add bucket/qualityscaler-go-cpu.json bucket/qualityscaler-go-cuda.json bucket/qualityscaler-go-directml.json
+          git diff --cached --quiet || git commit -m "Update QualityScaler-Go to ${{ github.event.release.tag_name || inputs.release_tag }}"
+          git push

@@ -195,16 +195,39 @@ ls "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines_runt
 
 ## 3. 版本选择指南
 
-QualityScaler-Go 提供 4 个版本，根据你的硬件选择：
+QualityScaler-Go 提供 5 个版本，根据你的硬件选择：
 
 | 版本 | 推理后端 | 适用人群 | 需要环境 |
 |------|---------|---------|---------|
 | **onnx-cpu** | ONNX CPU | 无 NVIDIA 显卡，兼容性最强 | 无需 GPU |
 | **onnx-cuda** | ONNX + CUDA | 有 N 卡，不想配置 TensorRT | NVIDIA 显卡 + CUDA DLL |
+| **onnx-directml** | ONNX + DirectML | 支持 DirectML 的 Windows GPU | DirectML 兼容驱动 |
 | **tensorrt-gpu** | TensorRT → ONNX → CPU 回退 | 追求极限性能的 N 卡用户 | TensorRT 10.x + CUDA 12.x |
 | **full** | 全部后端 + gocv 加速 | 一次性下载，自动适配硬件 | TensorRT + OpenCV |
 
 > **推荐**: 大多数 N 卡用户选择 **tensorrt-gpu** 版本，速度最快；集成显卡/无独显用户选择 **onnx-cpu**。
+
+### 3.1 图片超分与视频超分的硬件要求
+
+两类任务的瓶颈不同。图片超分主要受单张图片分辨率、模型和显存峰值影响；视频超分还需要持续完成解码、帧传输、推理和编码，因此对 CPU、内存、显存、磁盘和散热稳定性更敏感。
+
+| 任务 | 基础要求 | 推荐配置 | 主要限制 |
+|------|----------|----------|----------|
+| 图片超分 | 支持 ONNX CPU 的 Windows 电脑；GPU 可选 | 8GB 以上内存；兼容 DirectML 的核显或独显，或 NVIDIA GPU + CUDA | 大图、BSRGAN、去模糊和人脸增强会提高显存峰值 |
+| 视频超分 | 支持 FFmpeg 的 Windows 电脑；CPU 可运行 ONNX CPU | 16GB 以上内存；具备硬件编码器的 GPU；SSD 临时空间 | 长视频、4K 输出、多线程和 Disk 管线会增加持续资源占用 |
+
+**图片超分建议**
+
+- 无 NVIDIA GPU 时优先尝试 `onnx-cpu` 或 `onnx-directml`。
+- 低显存设备使用较小模型、降低输入缩放，并将 batch 保持为 1。
+- 超大图片应预留额外内存和显存；发生 OOM 时先降低输入尺寸或切换轻量模型。
+
+**视频超分建议**
+
+- 先确认输入视频能够被 FFmpeg 正常解码，输出编码器也可用。
+- CFR 视频优先使用 Memory 管线；VFR 视频、需要断点恢复或逐帧检查时使用 Disk 管线。
+- 长视频不建议一开始就启用高并发和大 batch；应根据显存和内存逐步增加线程数。
+- Disk 管线需要为中间帧预留磁盘空间，具体大小取决于视频时长、帧数、分辨率和帧格式。
 
 ---
 
@@ -665,13 +688,30 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 
 ### 7.4 Memory vs Disk 性能对比
 
-以下为实测参考数据（1080p → 4K，RTX 3070 8GB，RealESR_Gx4）：
+论文中的初步实验记录如下。测试素材为约 45 秒的 1080p Sintel 视频，输出为 2160p，主测试平台为 RTX 5070 Ti Laptop GPU；`I100O50` 表示输入 100%、输出 50%，`1b8t` 表示 batch=1、8 个工作线程。以下是单次运行结果，不代表所有硬件或素材：
 
 | 指标 | Memory 管线 | Disk 管线 | 差异 |
 |------|-----------|----------|------|
-| 处理速度 | ~0.8 秒/帧 | ~0.95 秒/帧 | Memory 快约 15% |
-| 磁盘占用 | 0 GB（无临时文件） | ~80 GB（中间帧） | Disk 需要大量磁盘空间 |
-| 内存占用 | ~4 GB | ~2 GB | Memory 内存占用稍高 |
+| 配置 | Memory | Disk |
+| TensorRT 1b8t | 3:42 | 4:04 |
+| ONNX CUDA 1b8t | 7:48 | 8:02 |
+| TensorRT 1b1t | 9:52 | 10:45 |
+| DirectML 1b1t | 12:25 | 12:42 |
+| ONNX CUDA 1b1t | 15:28 | 15:45 |
+| QualityScaler 基线 | 18:41 | - |
+
+在另一组 `I50O100` 消融实验中，TensorRT `1b8t` 的 Memory/Disk 时间分别为 50 秒和 95 秒。该组改变了模型输入负载，不能与上表直接进行速度排名。
+
+### 7.5 DIV2K 兼容性测试记录
+
+使用 DIV2K Validation Set 中的 `0801.jpeg`，配置为 `1b8t I50O100`，记录到以下单张图片结果：
+
+| 平台 | ONNX CPU | DirectML |
+|------|---------:|---------:|
+| Intel Core Ultra 7 | 28 秒 | 3 秒（核显） |
+| 第 13 代 Intel Core i5-13500H | 28 秒 | 4 秒（核显） |
+
+该表用于说明不同后端在核显平台上的兼容性表现，仅代表这一张图片和当前测试环境，不能替代完整性能测试。
 | 断点续传 | ❌ 不支持 | ✅ 支持 | — |
 | VFR 兼容 | ❌ 不支持 | ✅ 支持 | — |
 | 稳定性 | 🟡 偶有卡死 | 🟢 非常稳定 | — |
