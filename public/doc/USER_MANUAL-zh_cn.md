@@ -55,7 +55,7 @@ ONNX Runtime 底层依赖 VC++ 运行时库。如果缺失，程序启动时会�
 
 ### 2.3 NVIDIA GPU 加速环境
 
-GPU 加速需要三层组件，**层层依赖**。表格汇总见 [2.4 节](#24-各版本依赖汇总)。
+GPU 加速需要显卡驱动、CUDA 和 cuDNN。各版本的依赖见 [2.4 节](#24-各版本依赖汇总)。TensorRT 运行时随 `tensorrt-gpu` 和 `full` 发布包提供，不需要单独安装。
 
 #### 第一层：NVIDIA 显卡驱动
 
@@ -67,11 +67,11 @@ nvidia-smi
 ```
 如果命令正常输出 GPU 信息，说明驱动已安装。
 
-#### 第二层：CUDA Toolkit 12.x（必需）
+#### 第二层：CUDA Toolkit 12.4+（必需）
 
 CUDA 提供 GPU 并行计算的基础运行时库（`cudart64_*.dll` 等），是 **ONNX CUDA 和 TensorRT 的通用前提**。
 
-- **推荐版本**: CUDA 12.4 ~ 13.1
+- **版本要求**: CUDA 12.4 或更高版本
 - **安装路径**: 默认 `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\`
 - **环境变量**: 安装器通常自动设 `CUDA_PATH`
 
@@ -83,7 +83,7 @@ nvcc --version
 echo $env:CUDA_PATH
 ```
 
-#### 第三层-1：cuDNN 9.x（ONNX CUDA / TensorRT 必需）⚠️ 关键
+#### 第三层：cuDNN 9.x（ONNX CUDA / TensorRT 必需）⚠️ 关键
 
 **仅安装 CUDA 是不够的！** ONNX Runtime 的 CUDA provider 依赖 cuDNN（CUDA Deep Neural Network Library）才能启用 GPU 加速。**缺少 cuDNN 是最常见的 GPU 未生效原因。**
 
@@ -107,17 +107,11 @@ echo $env:CUDA_PATH
 - 程序启动时日志会输出 `Added cuDNN to PATH: ...`（表示已检测到）
 - 如果 CUDA 已安装但推理仍走 CPU，**大概率是缺少 cuDNN**
 
-#### 第三层-2：TensorRT 10.x（仅 tensorrt-gpu / full 版本）
+#### TensorRT 运行时（仅 tensorrt-gpu / full 版本）
 
-追求极致性能的用户才需要 TensorRT。它依赖 CUDA + cuDNN。
+TensorRT 只在 `tensorrt-gpu` 和 `full` 版本中启用。运行时、`qualityscaler_tensorrt.dll` 以及相关 NVIDIA DLL 都已随发布包提供，用户不需要从 NVIDIA 官网另行下载或安装 TensorRT。
 
-- **推荐版本**: TensorRT 10.x（10.16+）
-- **推荐安装路径**: `C:\TensorRT-10.16.0.72`
-- **关键 DLL**: `qualityscaler_tensorrt.dll`（由项目提供）依赖 `nvinfer_10.dll`
-
-> 📥 下载：从 [NVIDIA TensorRT 官网](https://developer.nvidia.com/tensorrt) 下载
-
-> 💡 **日常用户提示**：如果不追求极限性能，**onnx-cuda 版本已足够**，无需安装 TensorRT。TensorRT 的额外加速（约 20-40%）仅在批量处理长视频时明显。
+请保留发布包中的 DLL，不要用其他 CUDA、cuDNN 或 TensorRT 安装中的文件覆盖它们。混用不同版本的 DLL 可能导致后端加载失败。不需要 TensorRT 时，`onnx-cuda` 版本即可满足一般使用。
 
 ### 2.4 各版本依赖汇总
 
@@ -126,10 +120,10 @@ echo $env:CUDA_PATH
 | VC++ Redist 2015-2022 | ✅ | ✅ | ✅ | ✅ |
 | ONNX Runtime DLL | ✅ | ✅ | ✅ | ✅ |
 | NVIDIA 显卡 + 驱动 | ❌ | ✅ | ✅ | ✅ |
-| CUDA Toolkit 12.x | ❌ | ✅ | ✅ | ✅ |
+| CUDA Toolkit 12.4+ | ❌ | ✅ | ✅ | ✅ |
 | **cuDNN 9.x** | ❌ | ✅ **必需** | ✅ **必需** | ✅ **必需** |
-| TensorRT 10.x | ❌ | ❌ | ✅ | ✅ |
-| qualityscaler_tensorrt.dll | ❌ | ❌ | ✅ | ✅ |
+| TensorRT 运行时 DLL（随包提供） | ❌ | ❌ | ✅ 内置 | ✅ 内置 |
+| qualityscaler_tensorrt.dll | ❌ | ❌ | ✅ 内置 | ✅ 内置 |
 | OpenCV (gocv) | ❌ | ❌ | ❌ | ✅ |
 
 ### 2.5 依赖关系图
@@ -141,12 +135,12 @@ echo $env:CUDA_PATH
 
 GPU 加速（onnx-cuda / tensorrt-gpu / full）
   ├─ NVIDIA 显卡驱动
-  ├─ CUDA Toolkit 12.x
+  ├─ CUDA Toolkit 12.4+
   └─ cuDNN 9.x  ← ⚠️ 最易遗漏！没有它，ONNX Runtime 无法使用 GPU
 
 TensorRT 加速（tensorrt-gpu / full）
-  └─ TensorRT 10.x  ← 在 CUDA + cuDNN 的基础上叠加
-  └─ qualityscaler_tensorrt.dll
+  └─ 发布包内置 TensorRT 运行时和 qualityscaler_tensorrt.dll
+  └─ 不需要单独安装 TensorRT
 ```
 
 ### 2.6 环境验证清单
@@ -177,16 +171,18 @@ ls "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines_runt
 - `CUDA (GPU 0)` — CUDA + cuDNN 正常，GPU 加速生效 ✅
 - `CPU (ONNX)` — GPU 未生效，请检查 CUDA 和 cuDNN 安装 ❌
 
+如果程序无法启动、GPU 后端加载失败或运行异常，请先更新 NVIDIA 显卡驱动，再检查 CUDA 和 cuDNN。驱动版本过旧也可能导致 GPU 后端不可用。
+
 ### 2.7 常见环境坑
 
 **❌ "我装了 CUDA，为什么还是 CPU 推理？"**
-→ **99% 是因为没装 cuDNN**。CUDA Toolkit 不包含 cuDNN，需单独下载安装。详见上方「第三层-1：cuDNN 9.x」段落。
+→ **多数情况是没有安装 cuDNN**。CUDA Toolkit 不包含 cuDNN，需单独下载安装。详见上方「第三层：cuDNN 9.x」段落。
 
 **❌ "cuDNN 装了，但程序找不到？"**
 → 检查 cuDNN 的 `bin/` 目录是否在系统 PATH 中。程序会自动搜索 `C:\Program Files\NVIDIA\CUDNN\v9*\bin\`，如果放在其他位置，需要手动添加 PATH 或将 DLL 复制到 CUDA 的 `bin/` 目录。
 
 **❌ "TensorRT 引擎文件报错？"**
-→ `.engine` 文件绑定具体 GPU 架构（SM 版本），不可跨显卡使用。换显卡后需要删除 `AI-tensorrt/*.engine` 重新生成。详见 [3. 版本选择指南](#3-版本选择指南)。
+→ `.engine` 文件绑定具体 GPU 架构（SM 版本），不可跨显卡使用。换显卡后需要删除 `AI-tensorrt/*.engine` 重新生成。不要替换发布包内的 TensorRT DLL。详见 [3. 版本选择指南](#3-版本选择指南)。
 
 **❌ "ffmpeg 找不到 / 报错？"**
 → 发布包通常自带 ffmpeg，如果缺失，从 [ffmpeg.org](https://ffmpeg.org/download.html) 下载 Windows 版本，将 `ffmpeg.exe` 和 `ffprobe.exe` 放到程序目录或系统 PATH 中。
@@ -202,8 +198,8 @@ QualityScaler-Go 提供 5 个版本，根据你的硬件选择：
 | **onnx-cpu** | ONNX CPU | 无 NVIDIA 显卡，兼容性最强 | 无需 GPU |
 | **onnx-cuda** | ONNX + CUDA | 有 N 卡，不想配置 TensorRT | NVIDIA 显卡 + CUDA DLL |
 | **onnx-directml** | ONNX + DirectML | 支持 DirectML 的 Windows GPU | DirectML 兼容驱动 |
-| **tensorrt-gpu** | TensorRT → ONNX → CPU 回退 | 追求极限性能的 N 卡用户 | TensorRT 10.x + CUDA 12.x |
-| **full** | 全部后端 + gocv 加速 | 一次性下载，自动适配硬件 | TensorRT + OpenCV |
+| **tensorrt-gpu** | TensorRT → ONNX → CPU 回退 | 追求极限性能的 N 卡用户 | 内置 TensorRT；需要 CUDA 12.4+ |
+| **full** | 全部后端 + gocv 加速 | 一次性下载，自动适配硬件 | 内置 TensorRT + OpenCV |
 
 > **推荐**: 大多数 N 卡用户选择 **tensorrt-gpu** 版本，速度最快；集成显卡/无独显用户选择 **onnx-cpu**。
 
@@ -789,7 +785,7 @@ ffmpeg 提取帧 → 写入磁盘 → 读取帧文件 → AI 推理 → 写入�
 
 1. 确认运行目录下存在 `Assets/` 文件夹及 ONNX Runtime DLL
 2. 安装 [Visual C++ Redistributable 2015-2022](https://aka.ms/vs/17/release/vc_redist.x64.exe)
-3. TensorRT 版本确认 `qualityscaler_tensorrt.dll` 存在
+3. 如果使用 TensorRT，确认发布包内的 `qualityscaler_tensorrt.dll` 和相关 DLL 没有被删除或替换
 
 ---
 

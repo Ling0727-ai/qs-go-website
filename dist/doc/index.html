@@ -100,17 +100,17 @@
 <p>📥 下载：<a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">vc_redist.x64.exe</a></p>
 </blockquote>
 <h3 id="23-nvidia-gpu-加速环境">2.3 NVIDIA GPU 加速环境</h3>
-<p>GPU 加速需要三层组件，<strong>层层依赖</strong>。表格汇总见 <a href="#24-%E5%90%84%E7%89%88%E6%9C%AC%E4%BE%9D%E8%B5%96%E6%B1%87%E6%80%BB">2.4 节</a>。</p>
+<p>GPU 加速需要显卡驱动、CUDA 和 cuDNN。各版本的依赖见 <a href="#24-%E5%90%84%E7%89%88%E6%9C%AC%E4%BE%9D%E8%B5%96%E6%B1%87%E6%80%BB">2.4 节</a>。TensorRT 运行时随 <code>tensorrt-gpu</code> 和 <code>full</code> 发布包提供，不需要单独安装。</p>
 <h4 id="第一层nvidia-显卡驱动">第一层：NVIDIA 显卡驱动</h4>
 <p>所有 GPU 加速方案的基础。建议通过 NVIDIA GeForce Experience 或官网下载最新 Game Ready / Studio 驱动。</p>
 <p>验证方式：</p>
 <pre><code class="language-powershell">nvidia-smi
 </code></pre>
 <p>如果命令正常输出 GPU 信息，说明驱动已安装。</p>
-<h4 id="第二层cuda-toolkit-12x必需">第二层：CUDA Toolkit 12.x（必需）</h4>
+<h4 id="第二层cuda-toolkit-124必需">第二层：CUDA Toolkit 12.4+（必需）</h4>
 <p>CUDA 提供 GPU 并行计算的基础运行时库（<code>cudart64_*.dll</code> 等），是 <strong>ONNX CUDA 和 TensorRT 的通用前提</strong>。</p>
 <ul>
-<li><strong>推荐版本</strong>: CUDA 12.4 ~ 13.1</li>
+<li><strong>版本要求</strong>: CUDA 12.4 或更高版本</li>
 <li><strong>安装路径</strong>: 默认 <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\</code></li>
 <li><strong>环境变量</strong>: 安装器通常自动设 <code>CUDA_PATH</code></li>
 </ul>
@@ -120,7 +120,7 @@ nvcc --version
 # 或检查环境变量
 echo $env:CUDA_PATH
 </code></pre>
-<h4 id="第三层-1cudnn-9xonnx-cuda--tensorrt-必需-关键">第三层-1：cuDNN 9.x（ONNX CUDA / TensorRT 必需）⚠️ 关键</h4>
+<h4 id="第三层cudnn-9xonnx-cuda--tensorrt-必需-关键">第三层：cuDNN 9.x（ONNX CUDA / TensorRT 必需）⚠️ 关键</h4>
 <p><strong>仅安装 CUDA 是不够的！</strong> ONNX Runtime 的 CUDA provider 依赖 cuDNN（CUDA Deep Neural Network Library）才能启用 GPU 加速。<strong>缺少 cuDNN 是最常见的 GPU 未生效原因。</strong></p>
 <ul>
 <li><strong>推荐版本</strong>: cuDNN 9.x（v9.0 以上）</li>
@@ -145,19 +145,9 @@ echo $env:CUDA_PATH
 <li>程序启动时日志会输出 <code>Added cuDNN to PATH: ...</code>（表示已检测到）</li>
 <li>如果 CUDA 已安装但推理仍走 CPU，<strong>大概率是缺少 cuDNN</strong></li>
 </ul>
-<h4 id="第三层-2tensorrt-10x仅-tensorrt-gpu--full-版本">第三层-2：TensorRT 10.x（仅 tensorrt-gpu / full 版本）</h4>
-<p>追求极致性能的用户才需要 TensorRT。它依赖 CUDA + cuDNN。</p>
-<ul>
-<li><strong>推荐版本</strong>: TensorRT 10.x（10.16+）</li>
-<li><strong>推荐安装路径</strong>: <code>C:\TensorRT-10.16.0.72</code></li>
-<li><strong>关键 DLL</strong>: <code>qualityscaler_tensorrt.dll</code>（由项目提供）依赖 <code>nvinfer_10.dll</code></li>
-</ul>
-<blockquote>
-<p>📥 下载：从 <a href="https://developer.nvidia.com/tensorrt">NVIDIA TensorRT 官网</a> 下载</p>
-</blockquote>
-<blockquote>
-<p>💡 <strong>日常用户提示</strong>：如果不追求极限性能，<strong>onnx-cuda 版本已足够</strong>，无需安装 TensorRT。TensorRT 的额外加速（约 20-40%）仅在批量处理长视频时明显。</p>
-</blockquote>
+<h4 id="tensorrt-运行时仅-tensorrt-gpu--full-版本">TensorRT 运行时（仅 tensorrt-gpu / full 版本）</h4>
+<p>TensorRT 只在 <code>tensorrt-gpu</code> 和 <code>full</code> 版本中启用。运行时、<code>qualityscaler_tensorrt.dll</code> 以及相关 NVIDIA DLL 都已随发布包提供，用户不需要从 NVIDIA 官网另行下载或安装 TensorRT。</p>
+<p>请保留发布包中的 DLL，不要用其他 CUDA、cuDNN 或 TensorRT 安装中的文件覆盖它们。混用不同版本的 DLL 可能导致后端加载失败。不需要 TensorRT 时，<code>onnx-cuda</code> 版本即可满足一般使用。</p>
 <h3 id="24-各版本依赖汇总">2.4 各版本依赖汇总</h3>
 <table>
 <thead>
@@ -191,7 +181,7 @@ echo $env:CUDA_PATH
 <td align="center">✅</td>
 </tr>
 <tr>
-<td>CUDA Toolkit 12.x</td>
+<td>CUDA Toolkit 12.4+</td>
 <td align="center">❌</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
@@ -205,18 +195,18 @@ echo $env:CUDA_PATH
 <td align="center">✅ <strong>必需</strong></td>
 </tr>
 <tr>
-<td>TensorRT 10.x</td>
+<td>TensorRT 运行时 DLL（随包提供）</td>
 <td align="center">❌</td>
 <td align="center">❌</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
+<td align="center">✅ 内置</td>
+<td align="center">✅ 内置</td>
 </tr>
 <tr>
 <td>qualityscaler_tensorrt.dll</td>
 <td align="center">❌</td>
 <td align="center">❌</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
+<td align="center">✅ 内置</td>
+<td align="center">✅ 内置</td>
 </tr>
 <tr>
 <td>OpenCV (gocv)</td>
@@ -233,12 +223,12 @@ echo $env:CUDA_PATH
 
 GPU 加速（onnx-cuda / tensorrt-gpu / full）
   ├─ NVIDIA 显卡驱动
-  ├─ CUDA Toolkit 12.x
+  ├─ CUDA Toolkit 12.4+
   └─ cuDNN 9.x  ← ⚠️ 最易遗漏！没有它，ONNX Runtime 无法使用 GPU
 
 TensorRT 加速（tensorrt-gpu / full）
-  └─ TensorRT 10.x  ← 在 CUDA + cuDNN 的基础上叠加
-  └─ qualityscaler_tensorrt.dll
+  └─ 发布包内置 TensorRT 运行时和 qualityscaler_tensorrt.dll
+  └─ 不需要单独安装 TensorRT
 </code></pre>
 <h3 id="26-环境验证清单">2.6 环境验证清单</h3>
 <p>安装完成后，按以下步骤验证环境是否就绪：</p>
@@ -265,13 +255,14 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 <li><code>CUDA (GPU 0)</code> — CUDA + cuDNN 正常，GPU 加速生效 ✅</li>
 <li><code>CPU (ONNX)</code> — GPU 未生效，请检查 CUDA 和 cuDNN 安装 ❌</li>
 </ul>
+<p>如果程序无法启动、GPU 后端加载失败或运行异常，请先更新 NVIDIA 显卡驱动，再检查 CUDA 和 cuDNN。驱动版本过旧也可能导致 GPU 后端不可用。</p>
 <h3 id="27-常见环境坑">2.7 常见环境坑</h3>
 <p><strong>❌ &quot;我装了 CUDA，为什么还是 CPU 推理？&quot;</strong>
-→ <strong>99% 是因为没装 cuDNN</strong>。CUDA Toolkit 不包含 cuDNN，需单独下载安装。详见上方「第三层-1：cuDNN 9.x」段落。</p>
+→ <strong>多数情况是没有安装 cuDNN</strong>。CUDA Toolkit 不包含 cuDNN，需单独下载安装。详见上方「第三层：cuDNN 9.x」段落。</p>
 <p><strong>❌ &quot;cuDNN 装了，但程序找不到？&quot;</strong>
 → 检查 cuDNN 的 <code>bin/</code> 目录是否在系统 PATH 中。程序会自动搜索 <code>C:\Program Files\NVIDIA\CUDNN\v9*\bin\</code>，如果放在其他位置，需要手动添加 PATH 或将 DLL 复制到 CUDA 的 <code>bin/</code> 目录。</p>
 <p><strong>❌ &quot;TensorRT 引擎文件报错？&quot;</strong>
-→ <code>.engine</code> 文件绑定具体 GPU 架构（SM 版本），不可跨显卡使用。换显卡后需要删除 <code>AI-tensorrt/*.engine</code> 重新生成。详见 <a href="#3-%E7%89%88%E6%9C%AC%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97">3. 版本选择指南</a>。</p>
+→ <code>.engine</code> 文件绑定具体 GPU 架构（SM 版本），不可跨显卡使用。换显卡后需要删除 <code>AI-tensorrt/*.engine</code> 重新生成。不要替换发布包内的 TensorRT DLL。详见 <a href="#3-%E7%89%88%E6%9C%AC%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97">3. 版本选择指南</a>。</p>
 <p><strong>❌ &quot;ffmpeg 找不到 / 报错？&quot;</strong>
 → 发布包通常自带 ffmpeg，如果缺失，从 <a href="https://ffmpeg.org/download.html">ffmpeg.org</a> 下载 Windows 版本，将 <code>ffmpeg.exe</code> 和 <code>ffprobe.exe</code> 放到程序目录或系统 PATH 中。</p>
 <hr>
@@ -308,13 +299,13 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 <td><strong>tensorrt-gpu</strong></td>
 <td>TensorRT → ONNX → CPU 回退</td>
 <td>追求极限性能的 N 卡用户</td>
-<td>TensorRT 10.x + CUDA 12.x</td>
+<td>内置 TensorRT；需要 CUDA 12.4+</td>
 </tr>
 <tr>
 <td><strong>full</strong></td>
 <td>全部后端 + gocv 加速</td>
 <td>一次性下载，自动适配硬件</td>
-<td>TensorRT + OpenCV</td>
+<td>内置 TensorRT + OpenCV</td>
 </tr>
 </tbody></table>
 <blockquote>
@@ -1422,7 +1413,7 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 <ol>
 <li>确认运行目录下存在 <code>Assets/</code> 文件夹及 ONNX Runtime DLL</li>
 <li>安装 <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Visual C++ Redistributable 2015-2022</a></li>
-<li>TensorRT 版本确认 <code>qualityscaler_tensorrt.dll</code> 存在</li>
+<li>如果使用 TensorRT，确认发布包内的 <code>qualityscaler_tensorrt.dll</code> 和相关 DLL 没有被删除或替换</li>
 </ol>
 <hr>
 <h2 id="附录处理流水线全貌">附录：处理流水线全貌</h2>

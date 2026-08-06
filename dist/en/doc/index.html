@@ -100,17 +100,17 @@
 <p>📥 Download: <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">vc_redist.x64.exe</a></p>
 </blockquote>
 <h3 id="23-nvidia-gpu-acceleration-environment">2.3 NVIDIA GPU Acceleration Environment</h3>
-<p>GPU acceleration requires three layers of components, <strong>each dependent on the previous</strong>. See the summary table in <a href="#24-dependency-summary-by-version">Section 2.4</a>.</p>
+<p>GPU acceleration requires the graphics driver, CUDA, and cuDNN. See the dependency summary in <a href="#24-dependency-summary-by-version">Section 2.4</a>. The TensorRT runtime is included in the <code>tensorrt-gpu</code> and <code>full</code> packages and does not need to be installed separately.</p>
 <h4 id="layer-1-nvidia-graphics-driver">Layer 1: NVIDIA Graphics Driver</h4>
 <p>The foundation for all GPU acceleration. It is recommended to download the latest Game Ready or Studio Driver via NVIDIA GeForce Experience or the official website.</p>
 <p>Verification:</p>
 <pre><code class="language-powershell">nvidia-smi
 </code></pre>
 <p>If the command outputs GPU information, the driver is installed.</p>
-<h4 id="layer-2-cuda-toolkit-12x-required">Layer 2: CUDA Toolkit 12.x (Required)</h4>
+<h4 id="layer-2-cuda-toolkit-124-required">Layer 2: CUDA Toolkit 12.4+ (Required)</h4>
 <p>CUDA provides the fundamental parallel computing runtime libraries (<code>cudart64_*.dll</code> etc.) and is a <strong>common prerequisite for ONNX CUDA and TensorRT</strong>.</p>
 <ul>
-<li><strong>Recommended Version</strong>: CUDA 12.4 ~ 13.1</li>
+<li><strong>Version requirement</strong>: CUDA 12.4 or newer</li>
 <li><strong>Installation Path</strong>: Default <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\</code></li>
 <li><strong>Environment Variable</strong>: The installer usually sets <code>CUDA_PATH</code> automatically.</li>
 </ul>
@@ -120,7 +120,7 @@ nvcc --version
 # Or check environment variable
 echo $env:CUDA_PATH
 </code></pre>
-<h4 id="layer-3-1-cudnn-9x-required-for-onnx-cuda--tensorrt--critical">Layer 3-1: cuDNN 9.x (Required for ONNX CUDA / TensorRT) ⚠️ Critical</h4>
+<h4 id="layer-3-cudnn-9x-required-for-onnx-cuda--tensorrt--critical">Layer 3: cuDNN 9.x (Required for ONNX CUDA / TensorRT) ⚠️ Critical</h4>
 <p><strong>Installing only CUDA is not enough!</strong> ONNX Runtime&#39;s CUDA provider relies on cuDNN (CUDA Deep Neural Network Library) to enable GPU acceleration. <strong>Missing cuDNN is the most common reason GPU acceleration fails.</strong></p>
 <ul>
 <li><strong>Recommended Version</strong>: cuDNN 9.x (v9.0 and above)</li>
@@ -145,19 +145,9 @@ Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\
 <li>The program log will show <code>Added cuDNN to PATH: ...</code> at startup (indicates detection).</li>
 <li>If CUDA is installed but inference still runs on CPU, <strong>it is most likely due to missing cuDNN</strong>.</li>
 </ul>
-<h4 id="layer-3-2-tensorrt-10x-only-for-tensorrt-gpu--full-versions">Layer 3-2: TensorRT 10.x (Only for tensorrt-gpu / full versions)</h4>
-<p>Required only for users pursuing ultimate performance. It depends on CUDA + cuDNN.</p>
-<ul>
-<li><strong>Recommended Version</strong>: TensorRT 10.x (10.16+)</li>
-<li><strong>Recommended Installation Path</strong>: <code>C:\TensorRT-10.16.0.72</code></li>
-<li><strong>Key DLL</strong>: <code>qualityscaler_tensorrt.dll</code> (provided by the project) depends on <code>nvinfer_10.dll</code></li>
-</ul>
-<blockquote>
-<p>📥 Download: From the <a href="https://developer.nvidia.com/tensorrt">NVIDIA TensorRT website</a></p>
-</blockquote>
-<blockquote>
-<p>💡 <strong>Note for everyday users</strong>: If you don&#39;t need extreme performance, the <strong>onnx-cuda version is sufficient</strong>; TensorRT is not required. The extra speedup from TensorRT (approximately 20-40%) is most noticeable when batch-processing long videos.</p>
-</blockquote>
+<h4 id="tensorrt-runtime-tensorrt-gpu--full-only">TensorRT runtime (tensorrt-gpu / full only)</h4>
+<p>TensorRT is enabled only in the <code>tensorrt-gpu</code> and <code>full</code> packages. The runtime, <code>qualityscaler_tensorrt.dll</code>, and the related NVIDIA DLLs are shipped with those packages. You do not need to download or install TensorRT separately from the NVIDIA website.</p>
+<p>Keep the DLLs that come with the package. Do not replace them with files from another CUDA, cuDNN, or TensorRT installation, because mixing versions can prevent the backend from loading. For general use, the <code>onnx-cuda</code> package is sufficient.</p>
 <h3 id="24-dependency-summary-by-version">2.4 Dependency Summary by Version</h3>
 <table>
 <thead>
@@ -191,7 +181,7 @@ Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\
 <td align="center">✅</td>
 </tr>
 <tr>
-<td>CUDA Toolkit 12.x</td>
+<td>CUDA Toolkit 12.4+</td>
 <td align="center">❌</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
@@ -205,18 +195,18 @@ Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\
 <td align="center">✅ <strong>Required</strong></td>
 </tr>
 <tr>
-<td>TensorRT 10.x</td>
+<td>TensorRT runtime DLLs (bundled)</td>
 <td align="center">❌</td>
 <td align="center">❌</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
+<td align="center">✅ Bundled</td>
+<td align="center">✅ Bundled</td>
 </tr>
 <tr>
 <td>qualityscaler_tensorrt.dll</td>
 <td align="center">❌</td>
 <td align="center">❌</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
+<td align="center">✅ Bundled</td>
+<td align="center">✅ Bundled</td>
 </tr>
 <tr>
 <td>OpenCV (gocv)</td>
@@ -233,12 +223,12 @@ Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\
 
 GPU Acceleration (onnx-cuda / tensorrt-gpu / full)
   ├─ NVIDIA Graphics Driver
-  ├─ CUDA Toolkit 12.x
+  ├─ CUDA Toolkit 12.4+
   └─ cuDNN 9.x  ← ⚠️ Most easily missed! Without it, ONNX Runtime cannot use GPU.
 
 TensorRT Acceleration (tensorrt-gpu / full)
-  └─ TensorRT 10.x  ← Added on top of CUDA + cuDNN
-  └─ qualityscaler_tensorrt.dll
+  └─ TensorRT runtime and qualityscaler_tensorrt.dll are bundled
+  └─ No separate TensorRT installation is required
 </code></pre>
 <h3 id="26-environment-verification-checklist">2.6 Environment Verification Checklist</h3>
 <p>After installation, verify the environment is ready with these steps:</p>
@@ -265,13 +255,14 @@ Launch QualityScaler-Go and observe the inference backend in the title bar or lo
 <li><code>CUDA (GPU 0)</code> — CUDA + cuDNN working correctly, GPU acceleration active ✅</li>
 <li><code>CPU (ONNX)</code> — GPU not active, please check CUDA and cuDNN installations ❌</li>
 </ul>
+<p>If the program does not start, the GPU backend fails to load, or processing behaves unexpectedly, update the NVIDIA graphics driver first. An outdated driver can also prevent the GPU backend from working.</p>
 <h3 id="27-common-environment-pitfalls">2.7 Common Environment Pitfalls</h3>
 <p><strong>❌ &quot;I installed CUDA, why is it still doing CPU inference?&quot;</strong>
-→ <strong>99% of the time it&#39;s because cuDNN is not installed.</strong> CUDA Toolkit does not include cuDNN; it must be downloaded and installed separately. See &quot;Layer 3-1: cuDNN 9.x&quot; above.</p>
+→ <strong>In most cases, cuDNN is not installed.</strong> CUDA Toolkit does not include cuDNN; it must be downloaded and installed separately. See &quot;Layer 3: cuDNN 9.x&quot; above.</p>
 <p><strong>❌ &quot;I installed cuDNN, but the program can&#39;t find it?&quot;</strong>
 → Check if cuDNN&#39;s <code>bin/</code> directory is in the system PATH. The program automatically searches <code>C:\Program Files\NVIDIA\CUDNN\v9*\bin\</code>; if you placed it elsewhere, you must add it to PATH or copy the DLLs to CUDA&#39;s <code>bin/</code> directory.</p>
 <p><strong>❌ &quot;TensorRT engine file error?&quot;</strong>
-→ <code>.engine</code> files are tied to the specific GPU architecture (SM version) and cannot be shared across different GPUs. If you change graphics cards, you need to delete <code>AI-tensorrt/*.engine</code> and regenerate them. See <a href="#3-version-selection-guide">3. Version Selection Guide</a>.</p>
+→ <code>.engine</code> files are tied to the specific GPU architecture (SM version) and cannot be shared across different GPUs. If you change graphics cards, delete <code>AI-tensorrt/*.engine</code> and regenerate them. Do not replace the TensorRT DLLs shipped with the package. See <a href="#3-version-selection-guide">3. Version Selection Guide</a>.</p>
 <p><strong>❌ &quot;ffmpeg not found / error?&quot;</strong>
 → The release package usually includes ffmpeg. If it is missing, download the Windows build from <a href="https://ffmpeg.org/download.html">ffmpeg.org</a> and place <code>ffmpeg.exe</code> and <code>ffprobe.exe</code> in the program directory or your system PATH.</p>
 <hr>
@@ -308,13 +299,13 @@ Launch QualityScaler-Go and observe the inference backend in the title bar or lo
 <td><strong>tensorrt-gpu</strong></td>
 <td>TensorRT → ONNX → CPU fallback</td>
 <td>Nvidia GPU users seeking maximum performance</td>
-<td>TensorRT 10.x + CUDA 12.x</td>
+<td>Bundled TensorRT; CUDA 12.4+ required</td>
 </tr>
 <tr>
 <td><strong>full</strong></td>
 <td>All backends + gocv acceleration</td>
 <td>One download, auto-adapts to hardware</td>
-<td>TensorRT + OpenCV</td>
+<td>Bundled TensorRT + OpenCV</td>
 </tr>
 </tbody></table>
 <blockquote>
@@ -1422,7 +1413,7 @@ This is the most direct troubleshooting step. In existing tests, most freeze cas
 <ol>
 <li>Verify the <code>Assets/</code> folder and ONNX Runtime DLLs exist in the running directory.</li>
 <li>Install <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Visual C++ Redistributable 2015-2022</a>.</li>
-<li>For TensorRT versions, verify <code>qualityscaler_tensorrt.dll</code> is present.</li>
+<li>If using TensorRT, confirm that the package&#39;s <code>qualityscaler_tensorrt.dll</code> and related DLLs have not been deleted or replaced.</li>
 </ol>
 <hr>
 <h2 id="appendix-full-processing-pipeline-overview">Appendix: Full Processing Pipeline Overview</h2>
