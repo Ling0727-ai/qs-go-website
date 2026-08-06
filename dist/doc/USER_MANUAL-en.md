@@ -656,19 +656,19 @@ ffmpeg extract frames → write to disk → read frame files → AI inference �
 - Logs stuck at "Upscaling video" stage.
 
 **Common Root Causes:**
-1. ffmpeg version compatibility issues — the pipe's rawvideo protocol is unstable in some ffmpeg builds.
-2. Pipe buffer full — AI inference speed cannot keep up with decode speed, causing pipe block/deadlock.
-3. GPU VRAM exhausted — multithreading + large model depletes VRAM, inference thread hangs.
-4. Special input video codec — abnormal rawvideo decoding for certain codecs.
+1. ffmpeg version compatibility: the rawvideo pipe is unstable in some builds.
+2. Full pipe buffer: decoding is faster than AI inference, so the pipe blocks.
+3. Insufficient GPU VRAM: multithreading with a large model can exhaust VRAM and stall inference.
+4. Unusual input codec: some codecs can cause rawvideo decoding errors.
 
 **Solutions (in order of priority):**
 
-> **🔧 Step 1: Switch to Disk Pipeline**
-> 
+> **Step 1: Switch to Disk Pipeline**
+>
 > In the "Performance & Hardware" tab, change "Pipeline Mode" from **Memory** to **Disk**.
-> This is the simplest and most effective solution; 90% of freeze issues complete normally after switching to Disk.
-> 
-> Although the Disk pipeline is slightly slower (about 10-20% slower), it is extremely stable and almost never freezes.
+> This is the most direct troubleshooting step. In existing tests, most freeze cases completed normally after switching to Disk.
+>
+> The Disk pipeline is usually 10-20% slower, but it is more stable and is a good first fallback when Memory freezes.
 
 **Step 2: Reduce concurrent load**
 - Change performance mode to **Quality** or **Balanced**.
@@ -688,33 +688,29 @@ ffmpeg extract frames → write to disk → read frame files → AI inference �
 
 ### 7.4 Memory vs Disk Performance Comparison
 
-The accompanying paper reports the following preliminary measurements. The workload is a roughly 45-second 1080p Sintel clip exported to 2160p on an RTX 5070 Ti Laptop GPU. `I100O50` means 100% input scale and 50% output scale; `1b8t` means batch size 1 with 8 worker threads. These are single-run results and are workload-specific:
+The paper includes a preliminary set of measurements. The workload is a roughly 45-second 1080p Sintel clip exported to 2160p on an RTX 5070 Ti Laptop GPU. `I100O50` means 100% input scale and 50% output scale; `1b8t` means batch size 1 with 8 worker threads. The times below come from single runs and only show the differences observed in this setup:
 
-| Metric | Memory Pipeline | Disk Pipeline | Difference |
-|--------|-----------------|---------------|------------|
-| Configuration | Memory | Disk |
+| Configuration | Memory Pipeline | Disk Pipeline |
+|--------------|-----------------|---------------|
 | TensorRT 1b8t | 3:42 | 4:04 |
 | ONNX CUDA 1b8t | 7:48 | 8:02 |
 | TensorRT 1b1t | 9:52 | 10:45 |
 | DirectML 1b1t | 12:25 | 12:42 |
 | ONNX CUDA 1b1t | 15:28 | 15:45 |
-| QualityScaler baseline | 18:41 | - |
+| QualityScaler baseline | 18:41 | N/A |
 
-In a separate `I50O100` ablation, TensorRT `1b8t` took 50 seconds in Memory mode and 95 seconds in Disk mode. That experiment changes the model input workload and should not be ranked directly against the table above.
+In a separate `I50O100` experiment, TensorRT `1b8t` took 50 seconds in Memory mode and 95 seconds in Disk mode. The input workload is different, so these results should not be compared directly with the table above.
 
 ### 7.5 DIV2K compatibility test record
 
-Using `0801.jpeg` from the DIV2K Validation Set with `1b8t I50O100`, the recorded single-image results were:
+The following single-image results use `0801.jpeg` from the DIV2K Validation Set with `1b1t I50O100`:
 
 | Platform | ONNX CPU | DirectML |
 | --- | ---: | ---: |
 | Intel Core Ultra 7 | 28 s | 3 s (integrated GPU) |
 | 13th Gen Intel Core i5-13500H | 28 s | 4 s (integrated GPU) |
 
-This table documents compatibility behavior on integrated graphics for one image and one test environment. It is not a substitute for a broader performance benchmark.
-| Resume Support | ❌ Not supported | ✅ Supported | — |
-| VFR Compatibility | ❌ Not supported | ✅ Supported | — |
-| Stability | 🟡 Occasional freezes | 🟢 Very stable | — |
+This table reflects compatibility for one image in one test environment. It should not be read as a general performance ranking across hardware or backends.
 
 ---
 

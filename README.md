@@ -77,22 +77,22 @@ scoop update qualityscaler-go/qualityscaler-go-cpu
 - [English user manual](public/doc/USER_MANUAL-en.md)
 - [Package distribution setup](docs/package-distribution.md)
 
-The performance figures in the user manuals are guidance or preliminary examples unless they are accompanied by a reproducible workload, hardware configuration, software versions, and repeated measurements. They should not be treated as universal benchmarks.
+Unless a result includes a reproducible workload, hardware configuration, software versions, and repeated measurements, treat the performance figures in the user manuals as preliminary guidance rather than universal benchmarks.
 
 ### Preliminary performance snapshot
 
-The accompanying paper reports a preliminary single-run comparison on a 45-second 1080p Sintel clip exported to 2160p, using an NVIDIA RTX 5070 Ti Laptop GPU. At input/output setting `I100O50`, the fastest recorded configuration was TensorRT `1b8t` in Memory mode at 3:42; the corresponding Disk run took 4:04. ONNX CUDA `1b1t` took 15:28 in Memory mode and 15:45 in Disk mode. These results are workload-specific and are not a replacement for repeated benchmarks.
+The paper includes a preliminary single-run comparison using a 45-second 1080p Sintel clip exported to 2160p on an NVIDIA RTX 5070 Ti Laptop GPU. With `I100O50`, TensorRT `1b8t` was the fastest recorded configuration at 3:42 in Memory mode and 4:04 in Disk mode. ONNX CUDA `1b1t` took 15:28 in Memory mode and 15:45 in Disk mode. These times apply only to this workload and are not a substitute for repeated benchmarks.
 
 ### Compatibility test snapshot
 
-Using `0801.jpeg` from the DIV2K Validation Set with `1b8t I50O100`, the recorded single-image results were:
+The following single-image results use `0801.jpeg` from the DIV2K Validation Set with `1b1t I50O100`:
 
 | Platform | ONNX CPU | DirectML |
 | --- | ---: | ---: |
 | Intel Core Ultra 7 | 28 s | 3 s (integrated GPU) |
 | 13th Gen Intel Core i5-13500H | 28 s | 4 s (integrated GPU) |
 
-These are compatibility measurements for one image and should not be interpreted as a general CPU/GPU performance ranking.
+These measurements reflect one image and one test environment. They should not be interpreted as a general CPU/GPU performance ranking.
 
 ## Website development
 

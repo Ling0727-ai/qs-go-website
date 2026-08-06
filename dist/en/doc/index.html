@@ -1236,17 +1236,17 @@ Pipeline Mode: Memory
 </ul>
 <p><strong>Common Root Causes:</strong></p>
 <ol>
-<li>ffmpeg version compatibility issues — the pipe&#39;s rawvideo protocol is unstable in some ffmpeg builds.</li>
-<li>Pipe buffer full — AI inference speed cannot keep up with decode speed, causing pipe block/deadlock.</li>
-<li>GPU VRAM exhausted — multithreading + large model depletes VRAM, inference thread hangs.</li>
-<li>Special input video codec — abnormal rawvideo decoding for certain codecs.</li>
+<li>ffmpeg version compatibility: the rawvideo pipe is unstable in some builds.</li>
+<li>Full pipe buffer: decoding is faster than AI inference, so the pipe blocks.</li>
+<li>Insufficient GPU VRAM: multithreading with a large model can exhaust VRAM and stall inference.</li>
+<li>Unusual input codec: some codecs can cause rawvideo decoding errors.</li>
 </ol>
 <p><strong>Solutions (in order of priority):</strong></p>
 <blockquote>
-<p><strong>🔧 Step 1: Switch to Disk Pipeline</strong></p>
+<p><strong>Step 1: Switch to Disk Pipeline</strong></p>
 <p>In the &quot;Performance &amp; Hardware&quot; tab, change &quot;Pipeline Mode&quot; from <strong>Memory</strong> to <strong>Disk</strong>.
-This is the simplest and most effective solution; 90% of freeze issues complete normally after switching to Disk.</p>
-<p>Although the Disk pipeline is slightly slower (about 10-20% slower), it is extremely stable and almost never freezes.</p>
+This is the most direct troubleshooting step. In existing tests, most freeze cases completed normally after switching to Disk.</p>
+<p>The Disk pipeline is usually 10-20% slower, but it is more stable and is a good first fallback when Memory freezes.</p>
 </blockquote>
 <p><strong>Step 2: Reduce concurrent load</strong></p>
 <ul>
@@ -1269,62 +1269,49 @@ This is the simplest and most effective solution; 90% of freeze issues complete 
 <li>Switch to a model with lower VRAM usage (e.g., LVAx2 instead of BSRGANx4).</li>
 </ul>
 <h3 id="74-memory-vs-disk-performance-comparison">7.4 Memory vs Disk Performance Comparison</h3>
-<p>The accompanying paper reports the following preliminary measurements. The workload is a roughly 45-second 1080p Sintel clip exported to 2160p on an RTX 5070 Ti Laptop GPU. <code>I100O50</code> means 100% input scale and 50% output scale; <code>1b8t</code> means batch size 1 with 8 worker threads. These are single-run results and are workload-specific:</p>
+<p>The paper includes a preliminary set of measurements. The workload is a roughly 45-second 1080p Sintel clip exported to 2160p on an RTX 5070 Ti Laptop GPU. <code>I100O50</code> means 100% input scale and 50% output scale; <code>1b8t</code> means batch size 1 with 8 worker threads. The times below come from single runs and only show the differences observed in this setup:</p>
 <table>
 <thead>
 <tr>
-<th>Metric</th>
+<th>Configuration</th>
 <th>Memory Pipeline</th>
 <th>Disk Pipeline</th>
-<th>Difference</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Configuration</td>
-<td>Memory</td>
-<td>Disk</td>
-<td></td>
-</tr>
-<tr>
 <td>TensorRT 1b8t</td>
 <td>3:42</td>
 <td>4:04</td>
-<td></td>
 </tr>
 <tr>
 <td>ONNX CUDA 1b8t</td>
 <td>7:48</td>
 <td>8:02</td>
-<td></td>
 </tr>
 <tr>
 <td>TensorRT 1b1t</td>
 <td>9:52</td>
 <td>10:45</td>
-<td></td>
 </tr>
 <tr>
 <td>DirectML 1b1t</td>
 <td>12:25</td>
 <td>12:42</td>
-<td></td>
 </tr>
 <tr>
 <td>ONNX CUDA 1b1t</td>
 <td>15:28</td>
 <td>15:45</td>
-<td></td>
 </tr>
 <tr>
 <td>QualityScaler baseline</td>
 <td>18:41</td>
-<td>-</td>
-<td></td>
+<td>N/A</td>
 </tr>
 </tbody></table>
-<p>In a separate <code>I50O100</code> ablation, TensorRT <code>1b8t</code> took 50 seconds in Memory mode and 95 seconds in Disk mode. That experiment changes the model input workload and should not be ranked directly against the table above.</p>
+<p>In a separate <code>I50O100</code> experiment, TensorRT <code>1b8t</code> took 50 seconds in Memory mode and 95 seconds in Disk mode. The input workload is different, so these results should not be compared directly with the table above.</p>
 <h3 id="75-div2k-compatibility-test-record">7.5 DIV2K compatibility test record</h3>
-<p>Using <code>0801.jpeg</code> from the DIV2K Validation Set with <code>1b8t I50O100</code>, the recorded single-image results were:</p>
+<p>The following single-image results use <code>0801.jpeg</code> from the DIV2K Validation Set with <code>1b1t I50O100</code>:</p>
 <table>
 <thead>
 <tr>
@@ -1344,10 +1331,7 @@ This is the simplest and most effective solution; 90% of freeze issues complete 
 <td align="right">4 s (integrated GPU)</td>
 </tr>
 </tbody></table>
-<p>This table documents compatibility behavior on integrated graphics for one image and one test environment. It is not a substitute for a broader performance benchmark.
-| Resume Support | ❌ Not supported | ✅ Supported | — |
-| VFR Compatibility | ❌ Not supported | ✅ Supported | — |
-| Stability | 🟡 Occasional freezes | 🟢 Very stable | — |</p>
+<p>This table reflects compatibility for one image in one test environment. It should not be read as a general performance ranking across hardware or backends.</p>
 <hr>
 <h2 id="8-face-enhancement">8. Face Enhancement</h2>
 <h3 id="81-feature-description">8.1 Feature Description</h3>

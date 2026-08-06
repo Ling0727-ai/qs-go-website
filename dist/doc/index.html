@@ -1236,17 +1236,17 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 </ul>
 <p><strong>根本原因（常见）：</strong></p>
 <ol>
-<li>ffmpeg 版本兼容性问题 — 管道的 rawvideo 协议在某些 ffmpeg 版本中不稳定</li>
-<li>管道缓冲区满 — AI 推理速度跟不上解码速度，导致管道阻塞死锁</li>
-<li>GPU 显存不足 — 多线程 + 大模型导致显存用尽，推理线程挂起</li>
-<li>输入视频编码格式特殊 — 某些编码格式的 rawvideo 解码异常</li>
+<li>ffmpeg 版本兼容性问题：某些版本的 rawvideo 管道不够稳定</li>
+<li>管道缓冲区已满：解码速度超过 AI 推理速度，管道因此阻塞</li>
+<li>GPU 显存不足：多线程配合大模型可能耗尽显存，让推理线程停住</li>
+<li>输入视频编码特殊：部分编码格式可能导致 rawvideo 解码异常</li>
 </ol>
 <p><strong>解决方案（按优先级排序）：</strong></p>
 <blockquote>
 <p><strong>🔧 第一步：切换到 Disk 管线</strong></p>
 <p>在「性能与硬件」标签页中，将「管线模式」从 <strong>Memory</strong> 改为 <strong>Disk</strong>。
-这是最简单、最有效的解决方案，90% 的卡死问题切换到 Disk 后即可正常完成。</p>
-<p>Disk 管线虽然稍慢（约慢 10-20%），但稳定性极高，几乎不会卡死。</p>
+这是最直接的排查方法。已有测试中，大多数卡死问题在切换到 Disk 后可以正常完成。</p>
+<p>Disk 管线通常会慢 10-20%，但更稳定，适合优先排查 Memory 管线卡死问题。</p>
 </blockquote>
 <p><strong>第二步：降低并发压力</strong></p>
 <ul>
@@ -1269,62 +1269,49 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 <li>切换到显存占用更低的模型（如 LVAx2 替代 BSRGANx4）</li>
 </ul>
 <h3 id="74-memory-vs-disk-性能对比">7.4 Memory vs Disk 性能对比</h3>
-<p>论文中的初步实验记录如下。测试素材为约 45 秒的 1080p Sintel 视频，输出为 2160p，主测试平台为 RTX 5070 Ti Laptop GPU；<code>I100O50</code> 表示输入 100%、输出 50%，<code>1b8t</code> 表示 batch=1、8 个工作线程。以下是单次运行结果，不代表所有硬件或素材：</p>
+<p>论文记录了一组初步测试结果。测试素材是一段约 45 秒的 1080p Sintel 视频，输出为 2160p，测试平台为 RTX 5070 Ti Laptop GPU。<code>I100O50</code> 表示输入 100%、输出 50%；<code>1b8t</code> 表示 batch=1、8 个工作线程。下面的时间均来自单次运行，只用于展示这套环境下的差异：</p>
 <table>
 <thead>
 <tr>
-<th>指标</th>
+<th>配置</th>
 <th>Memory 管线</th>
 <th>Disk 管线</th>
-<th>差异</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>配置</td>
-<td>Memory</td>
-<td>Disk</td>
-<td></td>
-</tr>
-<tr>
 <td>TensorRT 1b8t</td>
 <td>3:42</td>
 <td>4:04</td>
-<td></td>
 </tr>
 <tr>
 <td>ONNX CUDA 1b8t</td>
 <td>7:48</td>
 <td>8:02</td>
-<td></td>
 </tr>
 <tr>
 <td>TensorRT 1b1t</td>
 <td>9:52</td>
 <td>10:45</td>
-<td></td>
 </tr>
 <tr>
 <td>DirectML 1b1t</td>
 <td>12:25</td>
 <td>12:42</td>
-<td></td>
 </tr>
 <tr>
 <td>ONNX CUDA 1b1t</td>
 <td>15:28</td>
 <td>15:45</td>
-<td></td>
 </tr>
 <tr>
 <td>QualityScaler 基线</td>
 <td>18:41</td>
-<td>-</td>
-<td></td>
+<td>不适用</td>
 </tr>
 </tbody></table>
-<p>在另一组 <code>I50O100</code> 消融实验中，TensorRT <code>1b8t</code> 的 Memory/Disk 时间分别为 50 秒和 95 秒。该组改变了模型输入负载，不能与上表直接进行速度排名。</p>
+<p>在另一组 <code>I50O100</code> 实验中，TensorRT <code>1b8t</code> 在 Memory 和 Disk 下分别用时 50 秒和 95 秒。由于输入负载不同，这组结果不能直接与上表比较。</p>
 <h3 id="75-div2k-兼容性测试记录">7.5 DIV2K 兼容性测试记录</h3>
-<p>使用 DIV2K Validation Set 中的 <code>0801.jpeg</code>，配置为 <code>1b8t I50O100</code>，记录到以下单张图片结果：</p>
+<p>下面是使用 DIV2K Validation Set 中 <code>0801.jpeg</code> 的单图测试结果，配置为 <code>1b1t I50O100</code>：</p>
 <table>
 <thead>
 <tr>
@@ -1344,10 +1331,7 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 <td align="right">4 秒（核显）</td>
 </tr>
 </tbody></table>
-<p>该表用于说明不同后端在核显平台上的兼容性表现，仅代表这一张图片和当前测试环境，不能替代完整性能测试。
-| 断点续传 | ❌ 不支持 | ✅ 支持 | — |
-| VFR 兼容 | ❌ 不支持 | ✅ 支持 | — |
-| 稳定性 | 🟡 偶有卡死 | 🟢 非常稳定 | — |</p>
+<p>该表只反映这张图片和当前测试环境下的兼容性表现，不能代表不同硬件或后端的整体性能排名。</p>
 <hr>
 <h2 id="8-人脸增强">8. 人脸增强</h2>
 <h3 id="81-功能说明">8.1 功能说明</h3>
