@@ -210,16 +210,17 @@ Copy cudnn\lib\x64\*.lib   to → C:\Program Files\NVIDIA GPU Computing Toolkit\
 </tr>
 <tr>
 <td>OpenCV (gocv)</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">✅</td>
+<td align="center">✅ Bundled</td>
+<td align="center">✅ Bundled</td>
+<td align="center">✅ Bundled</td>
+<td align="center">✅ Bundled</td>
 </tr>
 </tbody></table>
 <h3 id="25-dependency-graph">2.5 Dependency Graph</h3>
 <pre><code>Base Layer (All versions)
   └─ Visual C++ Redistributable 2015-2022
   └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+  └─ OpenCV (gocv)
 
 GPU Acceleration (onnx-cuda / tensorrt-gpu / full)
   ├─ NVIDIA Graphics Driver
@@ -303,13 +304,13 @@ Launch QualityScaler-Go and observe the inference backend in the title bar or lo
 </tr>
 <tr>
 <td><strong>full</strong></td>
-<td>All backends + gocv acceleration</td>
-<td>One download, auto-adapts to hardware</td>
-<td>Bundled TensorRT + OpenCV</td>
+<td>All inference engines with manual switching</td>
+<td>Users who need to switch between engines</td>
+<td>Environment for the selected engine</td>
 </tr>
 </tbody></table>
 <blockquote>
-<p><strong>Recommendation</strong>: Most NVIDIA GPU users should choose the <strong>tensorrt-gpu</strong> version for the fastest speed. Integrated graphics / no dedicated GPU users should pick <strong>onnx-cpu</strong>.</p>
+<p><strong>Note</strong>: Every version includes OpenCV. Other packages contain the engine they require plus backward-compatible fallback engines. The <code>full</code> package contains all engines and lets users switch between them manually.</p>
 </blockquote>
 <h3 id="31-hardware-requirements-by-task">3.1 Hardware requirements by task</h3>
 <p>The two workflows have different bottlenecks. Image upscaling is primarily limited by the peak memory required for one image, the model, and optional restoration stages. Video upscaling must continuously decode, transport, infer, and encode frames, so CPU capacity, RAM, VRAM, temporary storage, and sustained cooling matter more.</p>

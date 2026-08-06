@@ -124,7 +124,7 @@ Keep the DLLs that come with the package. Do not replace them with files from an
 | **cuDNN 9.x** | ❌ | ✅ **Required** | ✅ **Required** | ✅ **Required** |
 | TensorRT runtime DLLs (bundled) | ❌ | ❌ | ✅ Bundled | ✅ Bundled |
 | qualityscaler_tensorrt.dll | ❌ | ❌ | ✅ Bundled | ✅ Bundled |
-| OpenCV (gocv) | ❌ | ❌ | ❌ | ✅ |
+| OpenCV (gocv) | ✅ Bundled | ✅ Bundled | ✅ Bundled | ✅ Bundled |
 
 ### 2.5 Dependency Graph
 
@@ -132,6 +132,7 @@ Keep the DLLs that come with the package. Do not replace them with files from an
 Base Layer (All versions)
   └─ Visual C++ Redistributable 2015-2022
   └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+  └─ OpenCV (gocv)
 
 GPU Acceleration (onnx-cuda / tensorrt-gpu / full)
   ├─ NVIDIA Graphics Driver
@@ -199,9 +200,9 @@ QualityScaler-Go is provided in 5 versions. Choose based on your hardware:
 | **onnx-cuda** | ONNX + CUDA | Nvidia GPU users who don't want to set up TensorRT | NVIDIA GPU + CUDA DLLs |
 | **onnx-directml** | ONNX + DirectML | Windows GPU devices with DirectML support | DirectML-compatible driver |
 | **tensorrt-gpu** | TensorRT → ONNX → CPU fallback | Nvidia GPU users seeking maximum performance | Bundled TensorRT; CUDA 12.4+ required |
-| **full** | All backends + gocv acceleration | One download, auto-adapts to hardware | Bundled TensorRT + OpenCV |
+| **full** | All inference engines with manual switching | Users who need to switch between engines | Environment for the selected engine |
 
-> **Recommendation**: Most NVIDIA GPU users should choose the **tensorrt-gpu** version for the fastest speed. Integrated graphics / no dedicated GPU users should pick **onnx-cpu**.
+> **Note**: Every version includes OpenCV. Other packages contain the engine they require plus backward-compatible fallback engines. The `full` package contains all engines and lets users switch between them manually.
 
 ### 3.1 Hardware requirements by task
 

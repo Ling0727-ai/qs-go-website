@@ -124,7 +124,7 @@ TensorRT 只在 `tensorrt-gpu` 和 `full` 版本中启用。运行时、`quality
 | **cuDNN 9.x** | ❌ | ✅ **必需** | ✅ **必需** | ✅ **必需** |
 | TensorRT 运行时 DLL（随包提供） | ❌ | ❌ | ✅ 内置 | ✅ 内置 |
 | qualityscaler_tensorrt.dll | ❌ | ❌ | ✅ 内置 | ✅ 内置 |
-| OpenCV (gocv) | ❌ | ❌ | ❌ | ✅ |
+| OpenCV (gocv) | ✅ 内置 | ✅ 内置 | ✅ 内置 | ✅ 内置 |
 
 ### 2.5 依赖关系图
 
@@ -132,6 +132,7 @@ TensorRT 只在 `tensorrt-gpu` 和 `full` 版本中启用。运行时、`quality
 基础层（所有版本）
   └─ Visual C++ Redistributable 2015-2022
   └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+  └─ OpenCV (gocv)
 
 GPU 加速（onnx-cuda / tensorrt-gpu / full）
   ├─ NVIDIA 显卡驱动
@@ -199,9 +200,9 @@ QualityScaler-Go 提供 5 个版本，根据你的硬件选择：
 | **onnx-cuda** | ONNX + CUDA | 有 N 卡，不想配置 TensorRT | NVIDIA 显卡 + CUDA DLL |
 | **onnx-directml** | ONNX + DirectML | 支持 DirectML 的 Windows GPU | DirectML 兼容驱动 |
 | **tensorrt-gpu** | TensorRT → ONNX → CPU 回退 | 追求极限性能的 N 卡用户 | 内置 TensorRT；需要 CUDA 12.4+ |
-| **full** | 全部后端 + gocv 加速 | 一次性下载，自动适配硬件 | 内置 TensorRT + OpenCV |
+| **full** | 内置全部推理引擎，可手动切换 | 需要在不同引擎之间切换的用户 | 与所选引擎对应的环境 |
 
-> **推荐**: 大多数 N 卡用户选择 **tensorrt-gpu** 版本，速度最快；集成显卡/无独显用户选择 **onnx-cpu**。
+> **说明**: 各版本都内置 OpenCV。普通版本只包含当前版本所需的引擎，以及用于回退的向下兼容引擎；`full` 版本包含全部引擎，并支持手动切换。
 
 ### 3.1 图片超分与视频超分的硬件要求
 

@@ -24,7 +24,9 @@ Choose the backend that matches your machine:
 | `onnx-cuda` | NVIDIA GPUs with CUDA and cuDNN available |
 | `onnx-directml` | DirectML-compatible Windows GPU devices - coming soon / 敬请期待 |
 | `tensorrt-gpu` | NVIDIA users who need the TensorRT execution path |
-| `full` | Users who need the complete bundled backend set |
+| `full` | Users who need to switch inference engines manually |
+
+All packages include OpenCV. Other packages contain their required engine plus backward-compatible fallback engines. The `full` package includes all engines and allows users to switch between them manually.
 
 The Winget and Scoop automation currently publishes the regular ONNX CPU and CUDA packages. DirectML support is coming soon and will be published automatically when release assets become available. `full` and TensorRT packages are excluded from those package-manager feeds.
 

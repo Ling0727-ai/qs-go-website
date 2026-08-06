@@ -210,16 +210,17 @@ echo $env:CUDA_PATH
 </tr>
 <tr>
 <td>OpenCV (gocv)</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
-<td align="center">✅</td>
+<td align="center">✅ 内置</td>
+<td align="center">✅ 内置</td>
+<td align="center">✅ 内置</td>
+<td align="center">✅ 内置</td>
 </tr>
 </tbody></table>
 <h3 id="25-依赖关系图">2.5 依赖关系图</h3>
 <pre><code>基础层（所有版本）
   └─ Visual C++ Redistributable 2015-2022
   └─ ONNX Runtime DLLs (onnxruntime.dll + onnxruntime_providers_shared.dll)
+  └─ OpenCV (gocv)
 
 GPU 加速（onnx-cuda / tensorrt-gpu / full）
   ├─ NVIDIA 显卡驱动
@@ -303,13 +304,13 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 </tr>
 <tr>
 <td><strong>full</strong></td>
-<td>全部后端 + gocv 加速</td>
-<td>一次性下载，自动适配硬件</td>
-<td>内置 TensorRT + OpenCV</td>
+<td>内置全部推理引擎，可手动切换</td>
+<td>需要在不同引擎之间切换的用户</td>
+<td>与所选引擎对应的环境</td>
 </tr>
 </tbody></table>
 <blockquote>
-<p><strong>推荐</strong>: 大多数 N 卡用户选择 <strong>tensorrt-gpu</strong> 版本，速度最快；集成显卡/无独显用户选择 <strong>onnx-cpu</strong>。</p>
+<p><strong>说明</strong>: 各版本都内置 OpenCV。普通版本只包含当前版本所需的引擎，以及用于回退的向下兼容引擎；<code>full</code> 版本包含全部引擎，并支持手动切换。</p>
 </blockquote>
 <h3 id="31-图片超分与视频超分的硬件要求">3.1 图片超分与视频超分的硬件要求</h3>
 <p>两类任务的瓶颈不同。图片超分主要受单张图片分辨率、模型和显存峰值影响；视频超分还需要持续完成解码、帧传输、推理和编码，因此对 CPU、内存、显存、磁盘和散热稳定性更敏感。</p>
