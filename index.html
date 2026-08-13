@@ -26,6 +26,20 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background: #070b14;
+      }
+
+      html.js-loading #app {
+        visibility: hidden;
+      }
+    </style>
+    <script>document.documentElement.classList.add('js-loading')</script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -58,6 +72,7 @@
         <p><a href="/doc/">阅读中文用户手册</a> · <a href="/en/">English</a></p>
       </main>
     </div>
+    <noscript><style>#app { visibility: visible; color: #e7edf7; padding: 24px; }</style></noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -16,7 +16,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
-    <script type="module" crossorigin src="/assets/index-C8-ofkqL.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background: #070b14;
+      }
+
+      html.js-loading #app {
+        visibility: hidden;
+      }
+    </style>
+    <script>document.documentElement.classList.add('js-loading')</script>
+    <script type="module" crossorigin src="/assets/index-nkFE9Pov.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-anRyxIjn.css">
 
     <meta name="twitter:title" content="页面未找到 | QualityScaler-Go" />
@@ -26,5 +40,6 @@
   </head>
   <body>
     <div id="app"><main><h1>页面未找到</h1><p><a href="/">返回 QualityScaler-Go 首页</a></p></main></div>
+    <noscript><style>#app { visibility: visible; color: #e7edf7; padding: 24px; }</style></noscript>
   </body>
 </html>

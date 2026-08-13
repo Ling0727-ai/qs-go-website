@@ -16,7 +16,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
-    <script type="module" crossorigin src="/assets/index-C8-ofkqL.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background: #070b14;
+      }
+
+      html.js-loading #app {
+        visibility: hidden;
+      }
+    </style>
+    <script>document.documentElement.classList.add('js-loading')</script>
+    <script type="module" crossorigin src="/assets/index-nkFE9Pov.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-anRyxIjn.css">
 
     <link rel="canonical" href="https://qualityscaler-go.lingxin.org/" />
@@ -37,5 +51,6 @@
       <section><h2>多种 AI 修复模型</h2><p>包含适用于照片、动漫、人脸、噪声与模糊素材的模型，支持 2x 至 4x 超分辨率。</p></section>
       <nav aria-label="相关页面"><a href="/doc/">阅读用户手册</a> · <a href="/en/">English</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">源代码</a> · <a href="https://ko-fi.com/lingxin07">赞助项目</a></nav>
     </main></div>
+    <noscript><style>#app { visibility: visible; color: #e7edf7; padding: 24px; }</style></noscript>
   </body>
 </html>

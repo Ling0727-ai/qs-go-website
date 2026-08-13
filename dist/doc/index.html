@@ -16,7 +16,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
-    <script type="module" crossorigin src="/assets/index-C8-ofkqL.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100%;
+        background: #070b14;
+      }
+
+      html.js-loading #app {
+        visibility: hidden;
+      }
+    </style>
+    <script>document.documentElement.classList.add('js-loading')</script>
+    <script type="module" crossorigin src="/assets/index-nkFE9Pov.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-anRyxIjn.css">
 
     <link rel="canonical" href="https://qualityscaler-go.lingxin.org/doc/" />
@@ -1440,5 +1454,6 @@ ls &quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v*\bin\cudnn_engines
 </div></article>
       </main>
     </div></div>
+    <noscript><style>#app { visibility: visible; color: #e7edf7; padding: 24px; }</style></noscript>
   </body>
 </html>
