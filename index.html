@@ -33,13 +33,31 @@
         min-width: 320px;
         min-height: 100%;
         background: #070b14;
+        color: #e7edf7;
+        font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
       }
 
-      html.js-loading #app {
-        visibility: hidden;
+      #app > main:not([class]) {
+        width: min(760px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 96px 0;
+      }
+
+      #app > main:not([class]) h1 {
+        margin: 0 0 24px;
+        font-size: clamp(2.2rem, 6vw, 4.5rem);
+        line-height: 1.08;
+      }
+
+      #app > main:not([class]) p {
+        color: #93a4bb;
+        line-height: 1.7;
+      }
+
+      #app > main:not([class]) a {
+        color: #60a5fa;
       }
     </style>
-    <script>document.documentElement.classList.add('js-loading')</script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -72,7 +90,6 @@
         <p><a href="/doc/">阅读中文用户手册</a> · <a href="/en/">English</a></p>
       </main>
     </div>
-    <noscript><style>#app { visibility: visible; color: #e7edf7; padding: 24px; }</style></noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
