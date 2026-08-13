@@ -8,6 +8,7 @@ import {
   Download,
   FileVideo,
   GitFork,
+  Heart,
   ImageUp,
   Languages,
   Layers3,
@@ -97,6 +98,7 @@ const copy = {
     englishManual: 'English manual',
     chineseManual: 'Chinese manual',
     source: 'Source repository',
+    sponsor: 'Sponsor on Ko-fi',
   },
   zh: {
     nav: ['功能', '管线', '模型', '下载', '文档'],
@@ -167,6 +169,7 @@ const copy = {
     englishManual: '英文手册',
     chineseManual: '中文手册',
     source: '源码仓库',
+    sponsor: '赞助项目',
   },
 } as const
 
@@ -533,10 +536,16 @@ onBeforeUnmount(() => {
         <img src="/miao.png" alt="" width="24" height="24" />
         QualityScaler-Go
       </span>
-      <a href="https://github.com/Ling0727-ai/QualityScaler-go" target="_blank" rel="noreferrer">
-        <Boxes :size="16" />
-        {{ t.source }}
-      </a>
+      <div class="footer-links">
+        <a href="https://ko-fi.com/lingxin07" target="_blank" rel="noreferrer">
+          <Heart :size="16" />
+          {{ t.sponsor }}
+        </a>
+        <a href="https://github.com/Ling0727-ai/QualityScaler-go" target="_blank" rel="noreferrer">
+          <Boxes :size="16" />
+          {{ t.source }}
+        </a>
+      </div>
     </footer>
   </div>
 </template>

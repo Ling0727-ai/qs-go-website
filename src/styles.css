@@ -104,7 +104,8 @@ a:focus-visible {
 .button,
 .download-link,
 .footer span,
-.footer a {
+.footer a,
+.footer-links {
   display: inline-flex;
   align-items: center;
 }
@@ -931,6 +932,16 @@ h1 span {
   gap: 9px;
 }
 
+.footer-links {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
 .footer span {
   color: var(--text);
   font-weight: 800;
@@ -1128,5 +1139,9 @@ h1 span {
   .footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .footer-links {
+    justify-content: flex-start;
   }
 }

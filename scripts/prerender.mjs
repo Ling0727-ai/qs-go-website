@@ -1,6 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
-import { marked } from 'marked'
+import {mkdir, readFile, writeFile} from 'node:fs/promises'
+import {join} from 'node:path'
+import {marked} from 'marked'
 
 const siteUrl = 'https://qualityscaler-go.lingxin.org'
 const distDir = join(process.cwd(), 'dist')
@@ -69,6 +69,7 @@ for (const page of rootPages) {
     sameAs: [
       'https://github.com/Ling0727-ai/QualityScaler-go',
       'https://github.com/Ling0727-ai/qs-go-website',
+      'https://ko-fi.com/lingxin07',
     ],
   }
   await writePage(page.output, renderPage(page, structuredData))
@@ -120,7 +121,7 @@ function rootContent(lang) {
         <section><h2>Image and video upscaling</h2><p>Process individual files or folders, preserve video audio and frame rate, enhance faces, and export results in batches.</p></section>
         <section><h2>Hardware-aware acceleration</h2><p>Choose TensorRT, ONNX CUDA, or ONNX CPU builds. Automatic fallback keeps the application usable across different hardware.</p></section>
         <section><h2>AI restoration models</h2><p>Includes models for photos, anime, faces, noise, blur, and 2x to 4x super-resolution.</p></section>
-        <nav aria-label="Related pages"><a href="/en/doc/">Read the user manual</a> · <a href="/">中文</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Source code</a></nav>
+        <nav aria-label="Related pages"><a href="/en/doc/">Read the user manual</a> · <a href="/">中文</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Source code</a> · <a href="https://ko-fi.com/lingxin07">Sponsor on Ko-fi</a></nav>
       </main>`
   }
 
@@ -130,7 +131,7 @@ function rootContent(lang) {
       <section><h2>图片与视频超分辨率</h2><p>支持单文件和文件夹批量处理，保留视频音频与帧率，并可进行人脸增强。</p></section>
       <section><h2>按硬件选择加速后端</h2><p>提供 TensorRT、ONNX CUDA 和 ONNX CPU 版本，并支持自动回退以适配不同硬件。</p></section>
       <section><h2>多种 AI 修复模型</h2><p>包含适用于照片、动漫、人脸、噪声与模糊素材的模型，支持 2x 至 4x 超分辨率。</p></section>
-      <nav aria-label="相关页面"><a href="/doc/">阅读用户手册</a> · <a href="/en/">English</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">源代码</a></nav>
+      <nav aria-label="相关页面"><a href="/doc/">阅读用户手册</a> · <a href="/en/">English</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">源代码</a> · <a href="https://ko-fi.com/lingxin07">赞助项目</a></nav>
     </main>`
 }
 
