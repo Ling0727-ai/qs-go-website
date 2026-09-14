@@ -26,6 +26,7 @@ type Edition = {
   desc: string
   specs: string[]
   recommended?: boolean
+  status?: string
 }
 
 const copy = {
@@ -38,6 +39,11 @@ const copy = {
       'Upscale images and videos with local AI models. QualityScaler-Go supports Real-ESRGAN, BSRGAN, CodeFormer, TensorRT acceleration, face enhancement, and batch processing.',
     download: 'Download free',
     github: 'View on GitHub',
+    comparisonTitle: 'Real detail, processed locally',
+    comparisonCaption: '0801 · Real-ESRGAN x4 · 2x output resolution',
+    comparisonBefore: 'Before',
+    comparisonAfter: 'After',
+    comparisonHint: 'Drag to compare',
     terminalTitle: 'QualityScaler-Go pipeline',
     terminalLines: [
       '$ qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4',
@@ -85,18 +91,22 @@ const copy = {
     modelsDesc: 'Choose a model based on real photos, anime, faces, noise, blur, and restoration strength.',
     downloadKicker: 'Download',
     downloadTitle: 'Choose your edition',
-    downloadDesc: 'Four builds target different hardware. If you are unsure, choose Full.',
+    downloadDesc: 'Five Windows builds target different hardware, with support on select Ubuntu versions. If you are unsure, choose Full.',
     recommended: 'Recommended',
     editions: [
-      ['full', 'QualityScaler Full', 'All backends + auto-detect', 'The complete package with TensorRT, ONNX CUDA, ONNX CPU, and OpenCV.', ['Auto detect', 'TensorRT', 'CUDA', 'CPU'], true],
-      ['tensorrt', 'TensorRT GPU', 'Maximum performance', 'Optimized for NVIDIA GPUs with TensorRT acceleration.', ['TensorRT', 'CUDA'], false],
-      ['cuda', 'ONNX CUDA', 'NVIDIA GPU via ONNX', 'CUDA-accelerated ONNX Runtime for a simpler GPU setup.', ['CUDA'], false],
-      ['cpu', 'ONNX CPU', 'Universal compatibility', 'Pure CPU inference. Works without a dedicated GPU.', ['CPU'], false],
+      ['cpu', 'ONNX CPU', 'Universal compatibility', 'Pure CPU inference for Windows and supported Ubuntu versions.', ['CPU', 'Windows'], false],
+      ['directml', 'DirectML', 'New Windows build', 'DirectML acceleration for compatible Windows GPUs. Availability is pending release.', ['DirectML', 'Windows'], false, 'Waiting'],
+      ['cuda', 'ONNX CUDA', 'NVIDIA GPU via ONNX', 'CUDA-accelerated ONNX Runtime for Windows NVIDIA GPUs.', ['CUDA', 'Windows'], false],
+      ['tensorrt', 'TensorRT GPU', 'Maximum performance', 'TensorRT acceleration for Windows NVIDIA GPUs.', ['TensorRT', 'CUDA', 'Windows'], false],
+      ['full', 'Full', 'Switch inference engines', 'One Windows package for switching between the available inference engines.', ['Engine switching', 'Auto detect', 'Windows'], true],
     ],
     docsTitle: 'Manuals and setup notes',
     docsDesc: 'CUDA, cuDNN, TensorRT, model choices, VRAM tiers, and troubleshooting.',
     englishManual: 'English manual',
     chineseManual: 'Chinese manual',
+    supportKicker: 'Open source support',
+    supportTitle: 'Keep local AI tools moving',
+    supportDesc: 'If QualityScaler-Go helps your workflow, a small contribution helps keep the project maintained.',
     source: 'Source repository',
     sponsor: 'Sponsor on Ko-fi',
   },
@@ -109,6 +119,11 @@ const copy = {
       '使用本地 AI 模型放大图片和视频。QualityScaler-Go 支持 Real-ESRGAN、BSRGAN、CodeFormer、TensorRT 加速、人脸增强和批量处理。',
     download: '免费下载',
     github: '在 GitHub 查看',
+    comparisonTitle: '真实细节，本地处理',
+    comparisonCaption: '0801 · Real-ESRGAN x4 · 输出分辨率提升 2 倍',
+    comparisonBefore: '处理前',
+    comparisonAfter: '处理后',
+    comparisonHint: '拖动对比',
     terminalTitle: 'QualityScaler-Go 处理流水线',
     terminalLines: [
       '$ qualityscaler --input photo.jpg --model realesrgan-x4 --scale 4',
@@ -156,18 +171,22 @@ const copy = {
     modelsDesc: '根据真实照片、动漫、人脸、噪声、模糊和修复强度选择模型。',
     downloadKicker: '下载',
     downloadTitle: '选择你的版本',
-    downloadDesc: '四种构建适配不同硬件。不确定时选择 Full。',
+    downloadDesc: '五种 Windows 构建适配不同硬件，部分 Ubuntu 版本也可使用。不确定时选择 Full。',
     recommended: '推荐',
     editions: [
-      ['full', 'QualityScaler Full', '全部后端 + 自动检测', '完整包，包含 TensorRT、ONNX CUDA、ONNX CPU 和 OpenCV。', ['自动检测', 'TensorRT', 'CUDA', 'CPU'], true],
-      ['tensorrt', 'TensorRT GPU', '最高性能', '面向 NVIDIA GPU 的 TensorRT 加速版本。', ['TensorRT', 'CUDA'], false],
-      ['cuda', 'ONNX CUDA', 'ONNX 方式调用 NVIDIA GPU', 'CUDA 加速的 ONNX Runtime，配置更简单。', ['CUDA'], false],
-      ['cpu', 'ONNX CPU', '通用兼容', '纯 CPU 推理，无需独立显卡。', ['CPU'], false],
+      ['cpu', 'ONNX CPU', '通用兼容', '适用于 Windows，部分 Ubuntu 版本也可使用。', ['CPU', 'Windows'], false],
+      ['directml', 'DirectML', 'Windows 新版本', '面向兼容 Windows GPU 的 DirectML 加速版本，当前等待发布。', ['DirectML', 'Windows'], false, 'Waiting'],
+      ['cuda', 'ONNX CUDA', 'ONNX 方式调用 NVIDIA GPU', '面向 Windows NVIDIA GPU 的 CUDA 加速 ONNX Runtime。', ['CUDA', 'Windows'], false],
+      ['tensorrt', 'TensorRT GPU', '最高性能', '面向 Windows NVIDIA GPU 的 TensorRT 加速版本。', ['TensorRT', 'CUDA', 'Windows'], false],
+      ['full', 'Full', '可切换推理引擎', '一个 Windows 安装包，在可用推理引擎之间自由切换。', ['引擎切换', '自动检测', 'Windows'], true],
     ],
     docsTitle: '手册与安装说明',
     docsDesc: 'CUDA、cuDNN、TensorRT、模型选择、显存分级和故障排查。',
     englishManual: '英文手册',
     chineseManual: '中文手册',
+    supportKicker: '开源支持',
+    supportTitle: '让本地 AI 工具持续前进',
+    supportDesc: '如果 QualityScaler-Go 对你的工作有帮助，可以用一份小额支持帮助项目持续维护。',
     source: '源码仓库',
     sponsor: '赞助项目',
   },
@@ -178,6 +197,9 @@ const lang = ref<Lang>(routePath === '/en' || routePath.startsWith('/en/') ? 'en
 const version = ref('v5.0.1-rc1')
 const downloadUrl = ref('https://github.com/Ling0727-ai/qs-go-website/releases/')
 const terminalStep = ref(0)
+const comparisonPosition = ref(50)
+const comparisonVisual = ref<HTMLElement | null>(null)
+const isDraggingComparison = ref(false)
 const isDocPage = ref(routePath.startsWith('/doc') || routePath.startsWith('/en/doc'))
 const docHtml = ref('')
 const docLoading = ref(false)
@@ -194,8 +216,48 @@ const featureIcons = [ImageUp, FileVideo, ScanFace, Cpu, Layers3, Zap]
 const models = ['Real-ESRGAN x4', 'Real-ESRGAN Anime', 'BSRGAN x2', 'BSRGAN x4', 'Real-CUGAN v3 x2', 'Real-CUGAN v3 x3', 'Real-CUGAN v3 x4', 'CodeFormer', 'Face Enhance x4', 'SCUNet GAN', 'SCUNet PSNR', 'DeblurGAN v2', 'IRCNN', 'MSharpx4']
 
 const editions = computed<Edition[]>(() =>
-  t.value.editions.map(([id, name, label, desc, specs, recommended]) => ({ id, name, label, desc, specs: [...specs], recommended })),
+  t.value.editions.map(([id, name, label, desc, specs, recommended, status]) => ({ id, name, label, desc, specs: [...specs], recommended, status })),
 )
+
+function updateComparisonFromPointer(event: PointerEvent) {
+  const visual = comparisonVisual.value
+  if (!visual) return
+
+  const rect = visual.getBoundingClientRect()
+  const nextPosition = ((event.clientX - rect.left) / rect.width) * 100
+  comparisonPosition.value = Math.min(100, Math.max(0, nextPosition))
+}
+
+function startComparisonDrag(event: PointerEvent) {
+  isDraggingComparison.value = true
+  updateComparisonFromPointer(event)
+  ;(event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId)
+}
+
+function moveComparisonDrag(event: PointerEvent) {
+  if (isDraggingComparison.value) updateComparisonFromPointer(event)
+}
+
+function stopComparisonDrag() {
+  isDraggingComparison.value = false
+}
+
+function adjustComparisonByKey(event: KeyboardEvent) {
+  const step = event.shiftKey ? 10 : 1
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+    comparisonPosition.value = Math.max(0, comparisonPosition.value - step)
+    event.preventDefault()
+  } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+    comparisonPosition.value = Math.min(100, comparisonPosition.value + step)
+    event.preventDefault()
+  } else if (event.key === 'Home') {
+    comparisonPosition.value = 0
+    event.preventDefault()
+  } else if (event.key === 'End') {
+    comparisonPosition.value = 100
+    event.preventDefault()
+  }
+}
 
 const manualFile = computed(() => (lang.value === 'zh' ? '/doc/USER_MANUAL-zh_cn.md' : '/doc/USER_MANUAL-en.md'))
 
@@ -390,18 +452,59 @@ onBeforeUnmount(() => {
           </a>
         </div>
 
-        <div class="terminal" aria-label="Processing command preview">
-          <div class="terminal-bar">
-            <span class="dot red"></span>
-            <span class="dot amber"></span>
-            <span class="dot green"></span>
-            <strong>{{ t.terminalTitle }}</strong>
-          </div>
-          <div class="terminal-body">
-            <p v-for="(line, index) in t.terminalLines" :key="line" :class="{ prompt: index === 0, active: index === terminalStep }">
-              {{ line }}
-            </p>
-            <p class="cursor-line">$ <span></span></p>
+        <div class="hero-proof">
+          <figure class="comparison-card">
+            <div
+              ref="comparisonVisual"
+              class="comparison-visual"
+              :class="{ dragging: isDraggingComparison }"
+              @pointerdown="startComparisonDrag"
+              @pointermove="moveComparisonDrag"
+              @pointerup="stopComparisonDrag"
+              @pointercancel="stopComparisonDrag"
+            >
+              <img class="comparison-image" src="/pic/0801.jpg" alt="" />
+              <div class="comparison-after" :style="{ clipPath: `inset(0 0 0 ${comparisonPosition}%)` }">
+                <img class="comparison-image" src="/pic/0801_RealESR_Gx4_InputR-50_OutputR-100.jpg" alt="" />
+              </div>
+              <span class="comparison-label comparison-label-before">{{ t.comparisonBefore }}</span>
+              <span class="comparison-label comparison-label-after">{{ t.comparisonAfter }}</span>
+              <span class="comparison-divider" :style="{ left: `${comparisonPosition}%` }" aria-hidden="true">
+                <button
+                  class="comparison-handle"
+                  type="button"
+                  role="slider"
+                  :aria-label="t.comparisonHint"
+                  :aria-valuenow="Math.round(comparisonPosition)"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  tabindex="0"
+                  @pointerdown.stop="startComparisonDrag"
+                  @keydown="adjustComparisonByKey"
+                >
+                  <span></span>
+                </button>
+              </span>
+            </div>
+            <figcaption>
+              <strong>{{ t.comparisonTitle }}</strong>
+              <span>{{ t.comparisonCaption }}</span>
+            </figcaption>
+          </figure>
+
+          <div class="terminal" aria-label="Processing command preview">
+            <div class="terminal-bar">
+              <span class="dot red"></span>
+              <span class="dot amber"></span>
+              <span class="dot green"></span>
+              <strong>{{ t.terminalTitle }}</strong>
+            </div>
+            <div class="terminal-body">
+              <p v-for="(line, index) in t.terminalLines" :key="line" :class="{ prompt: index === 0, active: index === terminalStep }">
+                {{ line }}
+              </p>
+              <p class="cursor-line">$ <span></span></p>
+            </div>
           </div>
         </div>
 
@@ -484,6 +587,7 @@ onBeforeUnmount(() => {
           <article v-for="edition in editions" :key="edition.id" :class="['download-card', { recommended: edition.recommended }]">
             <span v-if="edition.recommended" class="rec-badge">{{ t.recommended }}</span>
             <h3>{{ edition.name }}</h3>
+            <span v-if="edition.status" class="edition-status">{{ edition.status }}</span>
             <strong>{{ edition.label }}</strong>
             <p>{{ edition.desc }}</p>
             <div class="spec-list">
@@ -495,6 +599,18 @@ onBeforeUnmount(() => {
             </a>
           </article>
         </div>
+      </section>
+
+      <section class="support-strip" aria-labelledby="support-title">
+        <div>
+          <p class="section-kicker">{{ t.supportKicker }}</p>
+          <h2 id="support-title">{{ t.supportTitle }}</h2>
+          <p>{{ t.supportDesc }}</p>
+        </div>
+        <a class="support-link" href="https://ko-fi.com/lingxin07" target="_blank" rel="noreferrer">
+          <Heart :size="16" />
+          {{ t.sponsor }}
+        </a>
       </section>
 
       <section id="docs" class="docs-strip">
@@ -537,10 +653,6 @@ onBeforeUnmount(() => {
         QualityScaler-Go
       </span>
       <div class="footer-links">
-        <a href="https://ko-fi.com/lingxin07" target="_blank" rel="noreferrer">
-          <Heart :size="16" />
-          {{ t.sponsor }}
-        </a>
         <a href="https://github.com/Ling0727-ai/QualityScaler-go" target="_blank" rel="noreferrer">
           <Boxes :size="16" />
           {{ t.source }}
