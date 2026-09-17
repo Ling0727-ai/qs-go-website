@@ -80,6 +80,16 @@ for (const page of rootPages) {
     description: page.description,
     url: page.canonical,
     image: `${siteUrl}/miao.png`,
+    screenshot: `${siteUrl}/pic/0801_RealESR_Gx4_InputR-50_OutputR-100.jpg`,
+    downloadUrl: 'https://github.com/Ling0727-ai/QualityScaler-go/releases',
+    isAccessibleForFree: true,
+    featureList: [
+      'Local image and video super-resolution',
+      'Real-ESRGAN and BSRGAN restoration models',
+      'CodeFormer face enhancement',
+      'TensorRT, ONNX CUDA, and ONNX CPU editions',
+      'Batch processing with preserved video audio and frame rate',
+    ],
     dateModified: page.lastmod,
     license: 'https://opensource.org/licenses/MIT',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -171,21 +181,23 @@ function rootContent(lang) {
   if (lang === 'en') {
     return `
       <main id="top">
-        <section><h1>QualityScaler-Go local AI image and video upscaling</h1><p>Upscale images and videos locally with Real-ESRGAN, BSRGAN, CodeFormer, TensorRT, and ONNX CUDA. Your files never need to leave your computer.</p></section>
-        <section><h2>Image and video upscaling</h2><p>Process individual files or folders, preserve video audio and frame rate, enhance faces, and export results in batches.</p></section>
-        <section><h2>Hardware-aware acceleration</h2><p>Choose TensorRT, ONNX CUDA, or ONNX CPU builds. Automatic fallback keeps the application usable across different hardware.</p></section>
-        <section><h2>AI restoration models</h2><p>Includes models for photos, anime, faces, noise, blur, and 2x to 4x super-resolution.</p></section>
-        <nav aria-label="Related pages"><a href="/en/doc/">Read the user manual</a> · <a href="/">中文</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Source code</a> · <a href="https://ko-fi.com/lingxin07">Sponsor on Ko-fi</a></nav>
+        <section><h1>QualityScaler-Go: local AI image and video upscaling</h1><p>QualityScaler-Go is a free, open-source desktop application for restoring and enlarging images and videos on your own Windows or Linux computer. It uses Real-ESRGAN, BSRGAN, and CodeFormer; source media stays local instead of being uploaded to a cloud service.</p></section>
+        <section><h2>What QualityScaler-Go processes</h2><p>Choose individual images, videos, or folders for batch work. The video pipeline preserves the original audio and frame rate while it extracts frames, applies the selected model, and assembles the result. Use it for photo restoration, anime artwork, compressed footage, face enhancement, noise reduction, blur reduction, and 2x to 4x super-resolution.</p></section>
+        <section><h2>Choose an edition for your hardware</h2><p>TensorRT editions target supported NVIDIA GPUs for maximum throughput. ONNX CUDA editions use CUDA where TensorRT is unavailable, while ONNX CPU editions provide a no-GPU fallback. The application can automatically fall back when a preferred accelerator or model cannot run on the current machine.</p></section>
+        <section><h2>Models and processing controls</h2><p>Real-ESRGAN and BSRGAN provide general image restoration; CodeFormer can improve detected faces. The interface exposes model selection, scale, tile and VRAM-related controls, face enhancement, and memory or disk video-pipeline modes so that long videos can be balanced against available storage and GPU memory.</p></section>
+        <section><h2>Before downloading</h2><p>Review the installation requirements, edition guide, model descriptions, and troubleshooting steps in the manual. Release packages and source code are published on GitHub, where users can also report reproducible issues and verify the project license.</p></section>
+        <nav aria-label="Related QualityScaler-Go resources"><a href="/en/doc/">Read the complete user manual</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">Download releases</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Browse source code</a> · <a href="/">中文页面</a></nav>
       </main>`
   }
 
   return `
     <main id="top">
-      <section><h1>QualityScaler-Go 本地 AI 图片与视频超分辨率工具</h1><p>使用 Real-ESRGAN、BSRGAN、CodeFormer、TensorRT 和 ONNX CUDA 在本机增强图片与视频，文件无需上传云端。</p></section>
-      <section><h2>图片与视频超分辨率</h2><p>支持单文件和文件夹批量处理，保留视频音频与帧率，并可进行人脸增强。</p></section>
-      <section><h2>按硬件选择加速后端</h2><p>提供 TensorRT、ONNX CUDA 和 ONNX CPU 版本，并支持自动回退以适配不同硬件。</p></section>
-      <section><h2>多种 AI 修复模型</h2><p>包含适用于照片、动漫、人脸、噪声与模糊素材的模型，支持 2x 至 4x 超分辨率。</p></section>
-      <nav aria-label="相关页面"><a href="/doc/">阅读用户手册</a> · <a href="/en/">English</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">源代码</a> · <a href="https://ko-fi.com/lingxin07">赞助项目</a></nav>
+      <section><h1>QualityScaler-Go：本地 AI 图片与视频超分辨率工具</h1><p>QualityScaler-Go 是免费的开源桌面软件，可在 Windows 或 Linux 本机修复和放大图片、视频。它使用 Real-ESRGAN、BSRGAN 与 CodeFormer，源文件无需上传至云端。</p></section>
+      <section><h2>可处理的素材和任务</h2><p>支持选择单张图片、单个视频或文件夹批量处理。视频管线会在逐帧增强后重新合成，并保留原始音频和帧率。可用于照片修复、动漫图像、压缩视频、人脸增强、降噪、去模糊，以及 2x 至 4x 超分辨率。</p></section>
+      <section><h2>按硬件选择加速版本</h2><p>TensorRT 版本面向兼容的 NVIDIA GPU，以获得更高吞吐；没有 TensorRT 环境时可选择 ONNX CUDA 版本；ONNX CPU 版本则提供不依赖独立显卡的回退方案。首选加速器或模型无法运行时，程序可自动回退以保持可用。</p></section>
+      <section><h2>模型与处理控制</h2><p>Real-ESRGAN 和 BSRGAN 用于通用图像修复，CodeFormer 可改善检测到的人脸。界面提供模型、倍率、分块和显存相关设置，以及人脸增强、内存/磁盘视频管线等选项，便于根据显存和存储空间平衡长视频处理。</p></section>
+      <section><h2>下载前可查阅的资料</h2><p>用户手册说明安装要求、版本选择、模型用途和故障排查。发布包和完整源代码均在 GitHub 提供；用户可以核验许可证、下载版本或提交可复现的问题反馈。</p></section>
+      <nav aria-label="QualityScaler-Go 相关资源"><a href="/doc/">阅读完整用户手册</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">下载发布版本</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">浏览源代码</a> · <a href="/en/">English</a></nav>
     </main>`
 }
 
