@@ -17,8 +17,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <script>
-      document.documentElement.classList.add('js-loading')
-      window.setTimeout(() => document.documentElement.classList.remove('js-loading'), 3000)
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('qs-site-theme') === 'dark' ? 'dark' : 'light'
+      } catch {
+        document.documentElement.dataset.theme = 'light'
+      }
     </script>
     <style>
       html,
@@ -26,9 +29,10 @@
         margin: 0;
         min-width: 320px;
         min-height: 100%;
-        background: #070b14;
-        color: #e7edf7;
-        font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+        background: var(--bg, #f7f8fa);
+        color: var(--text-primary, #171b22);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
 
       #app > main:not([class]) {
@@ -40,24 +44,22 @@
       #app > main:not([class]) h1 {
         margin: 0 0 24px;
         font-size: clamp(2.2rem, 6vw, 4.5rem);
-        line-height: 1.08;
+        line-height: 1.04;
+        letter-spacing: -0.04em;
       }
 
       #app > main:not([class]) p {
-        color: #93a4bb;
+        color: var(--text-muted, #505a69);
         line-height: 1.7;
       }
 
       #app > main:not([class]) a {
-        color: #60a5fa;
+        color: var(--accent, #2563eb);
       }
 
-      html.js-loading #app {
-        visibility: hidden;
-      }
     </style>
-    <script type="module" crossorigin src="/assets/index-Bvcp_WHx.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_tQ7k0B.css">
+    <script type="module" crossorigin src="/assets/index-DxNTSEjS.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BXTWBezI.css">
 
     <link rel="canonical" href="https://qualityscaler-go.lingxin.org/en/" />
     <link rel="alternate" hreflang="zh-CN" href="https://qualityscaler-go.lingxin.org/" />
@@ -74,9 +76,9 @@
         <section><h1>QualityScaler-Go: local AI image and video upscaling</h1><p>QualityScaler-Go is a free, open-source desktop application for restoring and enlarging images and videos on your own Windows or Linux computer. It uses Real-ESRGAN, BSRGAN, and CodeFormer; source media stays local instead of being uploaded to a cloud service.</p></section>
         <section><h2>What QualityScaler-Go processes</h2><p>Choose individual images, videos, or folders for batch work. The video pipeline preserves the original audio and frame rate while it extracts frames, applies the selected model, and assembles the result. Use it for photo restoration, anime artwork, compressed footage, face enhancement, noise reduction, blur reduction, and 2x to 4x super-resolution.</p></section>
         <section><h2>Choose an edition for your hardware</h2><p>TensorRT editions target supported NVIDIA GPUs for maximum throughput. ONNX CUDA editions use CUDA where TensorRT is unavailable, while ONNX CPU editions provide a no-GPU fallback. The application can automatically fall back when a preferred accelerator or model cannot run on the current machine.</p></section>
-        <section><h2>Models and processing controls</h2><p>Real-ESRGAN and BSRGAN provide general image restoration; CodeFormer can improve detected faces. The interface exposes model selection, scale, tile and VRAM-related controls, face enhancement, and memory or disk video-pipeline modes so that long videos can be balanced against available storage and GPU memory.</p></section>
+        <section><h2>Models and processing controls</h2><p>Real-ESRGAN x4, Real-ESRGAN Anime, BSRGAN x2 and x4, Real-CUGAN v3 x2, x3 and x4, MSharpx4, CodeFormer, Face Enhance x4, SCUNet GAN, SCUNet PSNR, DeblurGAN v2, and IRCNN cover general restoration, anime, face enhancement, denoising, sharpening, and deblurring. Browse the <a href="https://huggingface.co/lingxin07/QualityScaler-Go_models">QualityScaler-Go model weights on Hugging Face</a>. The interface exposes model selection, scale, tile and VRAM-related controls, face enhancement, and memory or disk video-pipeline modes so that long videos can be balanced against available storage and GPU memory.</p></section>
         <section><h2>Before downloading</h2><p>Review the installation requirements, edition guide, model descriptions, and troubleshooting steps in the manual. Release packages and source code are published on GitHub, where users can also report reproducible issues and verify the project license.</p></section>
-        <nav aria-label="Related QualityScaler-Go resources"><a href="/en/doc/">Read the complete user manual</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">Download releases</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Browse source code</a> · <a href="/">中文页面</a></nav>
+      <nav aria-label="Related QualityScaler-Go resources"><a href="/en/doc/">Read the complete user manual</a> · <a href="https://huggingface.co/lingxin07/QualityScaler-Go_models">Browse model weights on Hugging Face</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">Download releases</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">Browse source code</a> · <a href="/">中文页面</a></nav>
       </main></div>
   </body>
 </html>

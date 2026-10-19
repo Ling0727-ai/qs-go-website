@@ -27,8 +27,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <script>
-      document.documentElement.classList.add('js-loading')
-      window.setTimeout(() => document.documentElement.classList.remove('js-loading'), 3000)
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('qs-site-theme') === 'dark' ? 'dark' : 'light'
+      } catch {
+        document.documentElement.dataset.theme = 'light'
+      }
     </script>
     <style>
       html,
@@ -36,9 +39,10 @@
         margin: 0;
         min-width: 320px;
         min-height: 100%;
-        background: #070b14;
-        color: #e7edf7;
-        font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+        background: var(--bg, #f7f8fa);
+        color: var(--text-primary, #171b22);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
 
       #app > main:not([class]) {
@@ -50,21 +54,19 @@
       #app > main:not([class]) h1 {
         margin: 0 0 24px;
         font-size: clamp(2.2rem, 6vw, 4.5rem);
-        line-height: 1.08;
+        line-height: 1.04;
+        letter-spacing: -0.04em;
       }
 
       #app > main:not([class]) p {
-        color: #93a4bb;
+        color: var(--text-muted, #505a69);
         line-height: 1.7;
       }
 
       #app > main:not([class]) a {
-        color: #60a5fa;
+        color: var(--accent, #2563eb);
       }
 
-      html.js-loading #app {
-        visibility: hidden;
-      }
     </style>
     <script type="application/ld+json">
       {

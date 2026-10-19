@@ -17,8 +17,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <script>
-      document.documentElement.classList.add('js-loading')
-      window.setTimeout(() => document.documentElement.classList.remove('js-loading'), 3000)
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('qs-site-theme') === 'dark' ? 'dark' : 'light'
+      } catch {
+        document.documentElement.dataset.theme = 'light'
+      }
     </script>
     <style>
       html,
@@ -26,9 +29,10 @@
         margin: 0;
         min-width: 320px;
         min-height: 100%;
-        background: #070b14;
-        color: #e7edf7;
-        font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+        background: var(--bg, #f7f8fa);
+        color: var(--text-primary, #171b22);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
 
       #app > main:not([class]) {
@@ -40,24 +44,22 @@
       #app > main:not([class]) h1 {
         margin: 0 0 24px;
         font-size: clamp(2.2rem, 6vw, 4.5rem);
-        line-height: 1.08;
+        line-height: 1.04;
+        letter-spacing: -0.04em;
       }
 
       #app > main:not([class]) p {
-        color: #93a4bb;
+        color: var(--text-muted, #505a69);
         line-height: 1.7;
       }
 
       #app > main:not([class]) a {
-        color: #60a5fa;
+        color: var(--accent, #2563eb);
       }
 
-      html.js-loading #app {
-        visibility: hidden;
-      }
     </style>
-    <script type="module" crossorigin src="/assets/index-Bvcp_WHx.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D_tQ7k0B.css">
+    <script type="module" crossorigin src="/assets/index-DxNTSEjS.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BXTWBezI.css">
 
     <link rel="canonical" href="https://qualityscaler-go.lingxin.org/" />
     <link rel="alternate" hreflang="zh-CN" href="https://qualityscaler-go.lingxin.org/" />
@@ -74,9 +76,9 @@
       <section><h1>QualityScaler-Go：本地 AI 图片与视频超分辨率工具</h1><p>QualityScaler-Go 是免费的开源桌面软件，可在 Windows 或 Linux 本机修复和放大图片、视频。它使用 Real-ESRGAN、BSRGAN 与 CodeFormer，源文件无需上传至云端。</p></section>
       <section><h2>可处理的素材和任务</h2><p>支持选择单张图片、单个视频或文件夹批量处理。视频管线会在逐帧增强后重新合成，并保留原始音频和帧率。可用于照片修复、动漫图像、压缩视频、人脸增强、降噪、去模糊，以及 2x 至 4x 超分辨率。</p></section>
       <section><h2>按硬件选择加速版本</h2><p>TensorRT 版本面向兼容的 NVIDIA GPU，以获得更高吞吐；没有 TensorRT 环境时可选择 ONNX CUDA 版本；ONNX CPU 版本则提供不依赖独立显卡的回退方案。首选加速器或模型无法运行时，程序可自动回退以保持可用。</p></section>
-      <section><h2>模型与处理控制</h2><p>Real-ESRGAN 和 BSRGAN 用于通用图像修复，CodeFormer 可改善检测到的人脸。界面提供模型、倍率、分块和显存相关设置，以及人脸增强、内存/磁盘视频管线等选项，便于根据显存和存储空间平衡长视频处理。</p></section>
+      <section><h2>模型与处理控制</h2><p>Real-ESRGAN x4、Real-ESRGAN Anime、BSRGAN x2 与 x4、Real-CUGAN v3 x2/x3/x4、MSharpx4、CodeFormer、Face Enhance x4、SCUNet GAN、SCUNet PSNR、DeblurGAN v2 和 IRCNN，覆盖通用图像修复、动漫增强、人脸修复、降噪、锐化与去模糊。可在 <a href="https://huggingface.co/lingxin07/QualityScaler-Go_models">Hugging Face 查看 QualityScaler-Go 模型权重</a>。界面提供模型、倍率、分块和显存相关设置，以及人脸增强、内存/磁盘视频管线等选项，便于根据显存和存储空间平衡长视频处理。</p></section>
       <section><h2>下载前可查阅的资料</h2><p>用户手册说明安装要求、版本选择、模型用途和故障排查。发布包和完整源代码均在 GitHub 提供；用户可以核验许可证、下载版本或提交可复现的问题反馈。</p></section>
-      <nav aria-label="QualityScaler-Go 相关资源"><a href="/doc/">阅读完整用户手册</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">下载发布版本</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">浏览源代码</a> · <a href="/en/">English</a></nav>
+      <nav aria-label="QualityScaler-Go 相关资源"><a href="/doc/">阅读完整用户手册</a> · <a href="https://huggingface.co/lingxin07/QualityScaler-Go_models">在 Hugging Face 查看模型权重</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go/releases">下载发布版本</a> · <a href="https://github.com/Ling0727-ai/QualityScaler-go">浏览源代码</a> · <a href="/en/">English</a></nav>
     </main></div>
   </body>
 </html>
