@@ -1,0 +1,19 @@
+{
+  "version": "5.0.1-rc2",
+  "description": "AI image and video quality scaler (DIRECTML edition).",
+  "homepage": "https://github.com/Ling0727-ai/qs-go-website",
+  "license": "Proprietary",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Ling0727-ai/qs-go-website/releases/download/v5.0.1-rc2/QualityScaler-Go-5.0.1-rc2-onnx-directml-win-amd64-wails.zip",
+      "hash": "3843734395239a34f13d3d409d7076b9d853fa98c2429d549a60d5ed17e0a75f"
+    }
+  },
+  "bin": "QualityScaler-Go.exe",
+  "shortcuts": [
+    [
+      "QualityScaler-Go.exe",
+      "QualityScaler-Go DIRECTML"
+    ]
+  ]
+}
